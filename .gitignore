@@ -1,18 +1,23 @@
 # Gradle files
+# Gradle 文件
 .gradle/
 build/
 
 # Local configuration file (sdk path, etc)
+# 本地配置文件（sdk路径等）
 local.properties
 
 # Log/OS Files
+# 日志/操作系统文件
 *.log
 
 # Android Studio generated files and folders
+# Android Studio生成的文件和文件夹
 captures/
 .externalNativeBuild/
 .cxx/
 *.apk
+output-metadata.json
 output.json
 
 # IntelliJ
@@ -23,11 +28,14 @@ deploymentTargetDropDown.xml
 render.experimental.xml
 
 # Keystore files
+# 密钥库文件
 *.jks
 *.keystore
 
 # Google Services (e.g. APIs or Firebase)
+# Google 服务（例如 API 或 Firebase）
 google-services.json
 
 # Android Profiling
+# Android 分析
 *.hprof
