@@ -1,0 +1,229 @@
+# alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
+[versions]
+agp = "8.6.0-alpha03"
+appcompat = "1.7.0"
+android-material = "1.13.0-alpha02"
+androidx-test-ext-junit = "1.1.5"
+activity-compose = "1.9.0"
+core-ktx = "1.13.1"
+constraintlayout = "2.1.4"
+constraintlayout-compose = "1.1.0-alpha13"
+compose-bom = "2024.05.00"
+coroutines-android = "1.8.1"
+coroutines-test = "1.8.1"
+coil-bom = "2.6.0"
+cameraX = "1.4.0-beta01"
+dagger-hilt-android = "2.51.1"
+devtools-ksp = "2.0.0-1.0.21"
+dataStore = "1.1.1"
+databinding-runtime = "8.4.1"
+desugar-jdk-libs = "2.0.4"
+espresso-core = "3.5.1"
+gridlayout = "1.1.0-beta01"
+google-accompanist = "0.34.0"
+graphics-shapes = "1.0.0-beta01"
+hilt-navigation-compose = "1.2.0"
+hilt-android = "2.51.1"
+hilt-android-compiler = "2.51.1"
+junit = "4.13.2"
+junit-jupiter-api = "5.10.2"
+kotlin = "2.0.0"
+kotlin-serialization = "2.0.0"
+kotlin-serialization-json = "1.6.3"
+kotlin-gradle-plugin = "2.0.0"
+kotlinx-collections-immutable = "0.3.7"
+lottie = "6.4.1"
+lifecycle-runtime-ktx = "2.8.0"
+lifecycle-viewmodel-ktx = "2.8.0"
+lifecycle-runtime-compose = "2.8.0"
+lifecycle-viewmodel-compose = "2.8.0"
+logging-interceptor = "4.12.0"
+moshi = "1.15.1"
+material3-android = "1.2.1"
+navigation-compose = "2.7.7"
+navigation-testing = "2.7.7"
+okhttp3 = "4.12.0"
+room = "2.6.1"
+retrofit = "2.11.0"
+splashscreen = "1.2.0-alpha01"
+
+# github open source library
+zxing = "3.5.3"
+threetenabp = "1.4.7"
+arouterCompiler = "1.5.2"
+capturable = "2.1.0"
+jiaozivideoplayer = "7.7.2.3300"
+aria-core = "3.8.16"
+aria-compiler = "3.8.16"
+itextCore = "8.0.4"
+zip4j = "2.11.5"
+calendar-compose = "2.5.1"
+composereorderable = "0.9.6"
+utilcodex = "1.31.1"
+luban = "1.1.8"
+
+# alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
+[plugins]
+# https://mvnrepository.com/artifact/com.android.application/com.android.application.gradle.plugin
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+# https://mvnrepository.com/artifact/com.google.dagger.hilt.android/com.google.dagger.hilt.android.gradle.plugin
+dagger-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt-android" }
+# https://github.com/google/ksp/releases
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "devtools-ksp" }
+# https://mvnrepository.com/artifact/org.jetbrains.kotlin.android/org.jetbrains.kotlin.android.gradle.plugin
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# 指南 https://developer.android.com/develop/ui/compose/compiler?hl=zh-cn
+# Compose Compiler Gradle 插件仅适用于 Kotlin 2.0 及更高版本，同 kotlin 版本相同
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
+[libraries]
+# https://mvnrepository.com/artifact/androidx.core/core-ktx
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
+# https://mvnrepository.com/artifact/androidx.appcompat/appcompat
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+# https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+# https://mvnrepository.com/artifact/androidx.gridlayout/gridlayout
+androidx-gridlayout = { group = "androidx.gridlayout", name = "gridlayout", version.ref = "gridlayout" }
+# https://mvnrepository.com/artifact/com.google.android.material/material
+android-material = { group = "com.google.android.material", name = "material", version.ref = "android-material" }
+# https://mvnrepository.com/artifact/androidx.compose.material3/material3-android
+androidx-material3-android = { group = "androidx.compose.material3", name = "material3-android", version.ref = "material3-android" }
+# https://mvnrepository.com/artifact/androidx.test.espresso/espresso-core
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+# https://mvnrepository.com/artifact/androidx.test.ext/junit
+androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
+# https://mvnrepository.com/artifact/androidx.activity/activity-compose
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
+# https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout-compose
+androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "constraintlayout-compose" }
+# https://mvnrepository.com/artifact/androidx.databinding/databinding-runtime
+androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding-runtime" }
+# https://mvnrepository.com/artifact/androidx.compose/compose-bom
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-material = { group = "androidx.compose.material", name = "material" }
+androidx-compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime" }
+androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-util = { group = "androidx.compose.ui", name = "ui-util" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-compose-ui-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
+# https://mvnrepository.com/artifact/androidx.graphics/graphics-shapes
+androidx-compose-ui-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-ktx
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-runtime-ktx" }
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-viewmodel-ktx
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle-viewmodel-ktx"}
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-runtime-compose
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-viewmodel-compose
+androidx-lifecycle-viewModel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose"}
+# https://mvnrepository.com/artifact/androidx.navigation/navigation-compose
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
+androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigation-testing" }
+# https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
+androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
+# https://mvnrepository.com/artifact/androidx.core/core-splashscreen
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
+# https://mvnrepository.com/artifact/androidx.datastore/datastore-preferences
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+# https://mvnrepository.com/artifact/androidx.room/room-runtime
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-paging = { group = "androidx.room", name = "room-paging", version.ref = "room" }
+# https://central.sonatype.com/artifact/com.airbnb.android/lottie-compose
+airbnb-android-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+# https://mvnrepository.com/artifact/androidx.camera/camera-camera2
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "cameraX" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraX" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraX" }
+androidx-camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "cameraX" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraX" }
+androidx-camera-mlkit-vision = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "cameraX" }
+androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraX" }
+# https://central.sonatype.com/artifact/io.coil-kt/coil-bom
+coil-kt-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
+coil-kt-coil = { group = "io.coil-kt", name = "coil" }
+coil-kt-compose = { group = "io.coil-kt", name = "coil-compose" }
+coil-kt-gif = { group = "io.coil-kt", name = "coil-gif" }
+coil-kt-svg = { group = "io.coil-kt", name = "coil-svg" }
+coil-kt-video = { group = "io.coil-kt", name = "coil-video" }
+coil-kt-test = { group = "io.coil-kt", name = "coil-test" }
+# https://mvnrepository.com/artifact/com.android.tools/desugar_jdk_libs
+desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
+# https://central.sonatype.com/artifact/com.google.dagger/hilt-android
+dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-android" }
+# https://central.sonatype.com/artifact/com.google.dagger/hilt-android-compiler
+dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt-android-compiler" }
+# https://github.com/google/accompanist/releases
+google-accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "google-accompanist" }
+google-accompanist-webview = { group = "com.google.accompanist", name = "accompanist-webview", version.ref = "google-accompanist" }
+# https://central.sonatype.com/artifact/junit/junit
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+# https://central.sonatype.com/artifact/org.junit.jupiter/junit-jupiter-api
+junit-jupiter-api = { group = "org.junit.jupiter", name = "junit-jupiter-api", version.ref = "junit-jupiter-api" }
+# https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-android
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines-android" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines-test" }
+# https://central.sonatype.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
+# https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-collections-immutable
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable"}
+# https://central.sonatype.com/artifact/org.jetbrains.kotlin/kotlin-serialization
+kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin-serialization" }
+# https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
+# https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
+squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
+# https://central.sonatype.com/artifact/com.squareup.okhttp3/logging-interceptor
+squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "logging-interceptor" }
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/retrofit
+squareup-retrofit2-retrofit = { group ="com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-kotlinx-serialization
+squareup-retrofit2-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-moshi/overview
+squareup-retrofit2-converter-moshi = { group ="com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.squareup.moshi/moshi
+squareup-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+squareup-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+squareup-moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+
+# github open source library
+# https://github.com/zxing/zxing
+google-zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
+# https://mvnrepository.com/artifact/com.jakewharton.threetenabp/threetenabp
+jakewharton-threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
+# https://github.com/alibaba/ARouter
+alibaba-arouter-compiler = { module = "com.alibaba:arouter-compiler", version.ref = "arouterCompiler" }
+# https://github.com/PatilShreyas/Capturable
+shreyaspatil-capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
+# https://github.com/Jzvd/JZVideo
+jzvd-jiaozivideoplayer = { module = "cn.jzvd:jiaozivideoplayer", version.ref = "jiaozivideoplayer" }
+# https://github.com/AriaLyy/Aria
+laoyuyu-aria-core = { module = "me.laoyuyu.aria:core", version.ref = "aria-core" }
+laoyuyu-aria-compiler = { module = "me.laoyuyu.aria:compiler", version.ref = "aria-compiler" }
+# https://mvnrepository.com/artifact/com.itextpdf/itext-core
+itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itextCore" }
+# https://github.com/srikanth-lingala/zip4j
+zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
+# https://mvnrepository.com/artifact/com.kizitonwose.calendar/compose
+kizitonwose-calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
+# https://github.com/aclassen/ComposeReorderable
+composereorderable-reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composereorderable" }
+# https://github.com/Blankj/AndroidUtilCode
+blankj-utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
+# https://github.com/Curzibn/Luban
+luban = { module = "top.zibin:Luban", version.ref = "luban" }
