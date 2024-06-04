@@ -1,5 +1,7 @@
 package com.example.common.config
 
 object AppConfig {
-    var DEBUG: Boolean = false
+    const val DEBUG = false
+    const val PRIVACY_URL = "https://composables.com/privacy"
+    const val TERMS_URL = "https://composables.com/terms"
 }
