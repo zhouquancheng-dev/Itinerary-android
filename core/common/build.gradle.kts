@@ -39,6 +39,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    api(libs.kotlinx.coroutines.android)
+
+    api(libs.kotlinx.collections.immutable)
+
+    // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 

@@ -2,7 +2,6 @@ package com.zqc.itinerary
 
 import com.example.common.BaseApplication
 import com.example.common.util.DataStoreUtils
-import com.zqc.itinerary.ui.login.obj.LoginState
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +27,6 @@ class MyApplication : BaseApplication() {
     private fun initData() {
         applicationScope.launch {
             DataStoreUtils.init(this@MyApplication)
-            LoginState.initialize(DataStoreUtils)
         }
     }
 

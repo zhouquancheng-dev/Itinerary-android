@@ -74,8 +74,20 @@ dependencies {
     debugApi(libs.androidx.compose.ui.tooling)
     debugApi(libs.androidx.compose.ui.test.manifest)
 
-    api(libs.airbnb.android.lottie.compose)
+    api(libs.androidx.lifecycle.runtime.ktx)
+    api(libs.androidx.lifecycle.runtime.compose)
+    api(libs.androidx.lifecycle.viewmodel.ktx)
+    api(libs.androidx.lifecycle.viewModel.compose)
 
+    // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    api(libs.androidx.navigation.compose)
+    androidTestApi(libs.androidx.navigation.testing)
+
+    api(libs.airbnb.android.lottie.compose)
+
+    api(libs.google.accompanist.permissions)
+    api(libs.google.accompanist.webview)
 }

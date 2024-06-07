@@ -3,6 +3,7 @@ package com.example.common.util
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 
@@ -12,6 +13,20 @@ inline fun <reified T : Activity> startActivity(context: Context) {
         val intent = Intent(it, T::class.java)
         it.startActivity(intent)
     }
+}
+
+inline fun startDeepLink(context: Context, deepLinkUri: String, configureIntent: (Intent) -> Unit = {}) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUri)).apply {
+        configureIntent(this)
+    }
+    context.startActivity(intent)
+}
+
+inline fun Activity.startDeepLink(deepLinkUri: String, configureIntent: (Intent) -> Unit = {}) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deepLinkUri)).apply {
+        configureIntent(this)
+    }
+    startActivity(intent)
 }
 
 inline fun <reified T : Activity> startAcWithBundle(

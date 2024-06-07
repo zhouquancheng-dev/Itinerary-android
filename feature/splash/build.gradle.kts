@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.dagger.hilt.android)
     kotlin("kapt")
 }
 
@@ -59,7 +58,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.android.compiler)
 }

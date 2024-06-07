@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.devtools.ksp)
-    alias(libs.plugins.dagger.hilt.android)
     id("kotlinx-serialization")
     kotlin("kapt")
 }
@@ -39,7 +38,4 @@ dependencies {
 
     implementation(libs.squareup.moshi)
     ksp(libs.squareup.moshi.kotlin.codegen)
-
-    implementation(libs.dagger.hilt.android)
-    kapt(libs.dagger.hilt.android.compiler)
 }

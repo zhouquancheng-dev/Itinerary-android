@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
     implementation(project(":core:common"))
     implementation(project(":core:model"))
 
@@ -53,6 +54,7 @@ dependencies {
     implementation(libs.squareup.retrofit2.converter.moshi)
     implementation(libs.squareup.moshi.kotlin)
 
+    // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 }

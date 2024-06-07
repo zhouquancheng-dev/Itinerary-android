@@ -29,9 +29,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.example.common.util.DataStoreUtils
 import com.example.common.util.startAcWithIntent
+import com.example.common.util.startDeepLink
+import com.example.splash.ds.DsKey.IS_FIRST_TIME_LAUNCH
+import com.example.splash.ds.DsKey.IS_PRIVACY_AGREE
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -46,10 +48,10 @@ class SplashActivity : ComponentActivity() {
                 var showDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(Unit) {
-                    val privacyAgreed = updatePrivacyAgree()
+                    val privacyAgreed = isPrivacyAgree()
                     if (privacyAgreed) {
-                        delay(200)
-                        navigateToWelcomeActivity()
+                        delay(300)
+                        navigateToActivity()
                     } else {
                         showDialog = true
                     }
@@ -60,7 +62,7 @@ class SplashActivity : ComponentActivity() {
                     onAcceptRequest = {
                         updatePrivacyAgreeState()
                         showDialog = false
-                        navigateToWelcomeActivity()
+                        navigateToActivity()
                     },
                     onRejectRequest = {
                         showDialog = false
@@ -74,22 +76,34 @@ class SplashActivity : ComponentActivity() {
         }
     }
 
-    private suspend fun updatePrivacyAgree(): Boolean {
-        return DataStoreUtils.getBooleanFlow("UPDATE_PRIVACY_AGREE").first()
+    private suspend fun isPrivacyAgree(): Boolean {
+        return DataStoreUtils.getBooleanFlow(IS_PRIVACY_AGREE).first()
     }
 
     private fun updatePrivacyAgreeState() {
-        lifecycleScope.launch(Dispatchers.IO) {
-            DataStoreUtils.putBoolean("UPDATE_PRIVACY_AGREE", true)
+        lifecycleScope.launch {
+            DataStoreUtils.putBoolean(IS_PRIVACY_AGREE, true)
         }
     }
 
-    private fun navigateToWelcomeActivity() {
-        startAcWithIntent<WelcomeActivity> {
-            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        finish()
+    private suspend fun isFirstTimeLaunch(): Boolean {
+        return DataStoreUtils.getBooleanFlow(IS_FIRST_TIME_LAUNCH, true).first()
     }
+
+    private fun navigateToActivity() {
+        val flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        lifecycleScope.launch {
+            if (isFirstTimeLaunch()) {
+                startAcWithIntent<WelcomeActivity> {
+                    it.flags = flags
+                }
+            } else {
+                startDeepLink("app://main")
+            }
+            finish()
+        }
+    }
+
 }
 
 @Composable

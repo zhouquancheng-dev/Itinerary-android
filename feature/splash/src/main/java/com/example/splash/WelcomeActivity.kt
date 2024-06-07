@@ -1,5 +1,6 @@
 package com.example.splash
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -31,6 +32,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -40,8 +42,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.util.DataStoreUtils
+import com.example.common.util.startDeepLink
+import com.example.splash.ds.DsKey.IS_FIRST_TIME_LAUNCH
 import com.example.ui.components.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
+import com.example.ui.theme.JetItineraryTheme
 import kotlinx.coroutines.launch
 
 class WelcomeActivity : ComponentActivity() {
@@ -50,7 +56,9 @@ class WelcomeActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WelcomeScreen()
+            JetItineraryTheme {
+                WelcomeScreen()
+            }
         }
     }
 
@@ -59,6 +67,7 @@ class WelcomeActivity : ComponentActivity() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WelcomeScreen() {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val dispatcherOwner = LocalOnBackPressedDispatcherOwner.current
@@ -70,6 +79,12 @@ private fun WelcomeScreen() {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             snapshotCurrentPage = page
         }
+    }
+
+    val navigateToMain: () -> Unit = {
+        scope.launch { DataStoreUtils.putBoolean(IS_FIRST_TIME_LAUNCH, false) }
+        startDeepLink(context, "app://main")
+        (context as? Activity)?.finish()
     }
 
     Column(
@@ -101,7 +116,7 @@ private fun WelcomeScreen() {
         Button(
             onClick = {
                 if (snapshotCurrentPage == 2) {
-
+                    navigateToMain()
                 } else {
                     scope.launch {
                         pagerState.animateScrollToPage(snapshotCurrentPage + 1)

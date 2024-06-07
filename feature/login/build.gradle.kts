@@ -27,6 +27,9 @@ android {
     buildFeatures {
         compose = true
     }
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 composeCompiler {
@@ -41,6 +44,8 @@ composeCompiler {
 }
 
 dependencies {
+    implementation(project(":core:common"))
+    implementation(project(":core:ui"))
     implementation(project(":core:model"))
     implementation(project(":core:network"))
 
@@ -51,6 +56,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.androidx.hilt.navigation.compose)
 }

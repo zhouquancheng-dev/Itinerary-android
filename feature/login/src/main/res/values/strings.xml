@@ -1,0 +1,86 @@
+<resources>
+    <string name="app_name">Itinerary</string>
+    <string name="app_logo_contentDescription">Application Logo</string>
+    <string name="startPage_text">Come and travel with your friends!</string>
+
+    <string name="welcomeFirst_contentDescription">Post travel companion news and invite travel companions to travel together</string>
+    <string name="welcomeSecond_contentDescription">Locate nearby friends and chat together</string>
+    <string name="welcomeThird_contentDescription">Join an interest community and chat together</string>
+
+    <string-array name="welcomeFirstPage_arrayText">
+        <item>Post</item>
+        <item>travel companion</item>
+        <item>news</item>
+        <item>Invite</item>
+        <item>playmates to travel together</item>
+    </string-array>
+
+    <string-array name="welcomeSecondPage_arrayText">
+        <item>Locate</item>
+        <item>nearby</item>
+        <item>friends</item>
+        <item>Chat and</item>
+        <item>communicate together</item>
+    </string-array>
+
+    <string-array name="welcomeThirdPage_arrayText">
+        <item>Join a</item>
+        <item>community of</item>
+        <item>interest</item>
+        <item>Together</item>
+        <item>chatting</item>
+    </string-array>
+
+    <string name="bottomBar_home_label">Home</string>
+    <string name="bottomBar_destination_label">Where to go</string>
+    <string name="bottomBar_message_label">Message</string>
+    <string name="bottomBar_mine_label">Mine</string>
+
+    <string name="next_text">Next step</string>
+    <string name="enterApp_text">Enter the application</string>
+    <string name="cancel_text">Cancel</string>
+    <string name="back_text">Back</string>
+
+    <string name="account_text">Account</string>
+    <string name="pwd_text">Password</string>
+    <string name="confirmPwd_text">Confirm Password</string>
+    <string name="forgetPassword_text">Forget the password?</string>
+    <string name="forgetPassword_text1">Forget the password</string>
+    <string name="login_text">Login</string>
+    <string name="otherLogin_text">Log in through another method</string>
+    <string name="wechat_text">WeChat login</string>
+    <string name="register_text">Don’t have an account? Click to register</string>
+
+    <string name="register_topBar_text">Register</string>
+    <string name="welcome_text">Welcome</string>
+    <string name="createAccount_text">Create your account to learn about travel guides</string>
+    <string name="phoneNumber_text">Phone number</string>
+    <string name="enterPhoneNumber_text">Enter the 11-digit mobile phone number</string>
+    <string name="enterSmsCode_text">Enter your verification code</string>
+    <string name="getSmsCode_text">Get verification code</string>
+    <string name="afterResend_text">Can be resent after</string>
+    <string name="pwdStrength_text">Password strength</string>
+    <string-array name="pwdStrength_Help_arrayText">
+        <item>Upper case letters or lower case letters</item>
+        <item>Number</item>
+        <item>Special characters (. , ; : ! @ # $ % ^ &amp; &lt; &gt; ( ) * ? = + -)</item>
+        <item>6 or more characters and containing any 3 or more types</item>
+    </string-array>
+
+    <string name="phoneLogin_text">Mobile SMS verification code login</string>
+    <string name="inputPhone_text">Enter your phone number</string>
+    <string name="inputAccount_text">Please enter your account number</string>
+    <string name="inputPhoneLocation_text">Please confirm your region and enter your phone number</string>
+    <string name="phoneNumberLocation_ChinaText">China(+86)</string>
+    <string name="phoneNumberLocation_HongKongText">Hong Kong(+852)</string>
+    <string name="phoneNumberError_text">Mobile phone number format is incorrect</string>
+    <string name="sendSmsCode_text">Get Sms code</string>
+
+    <string name="verify_text">SMS verification</string>
+    <string name="sendSmsCodeTo_text">Verification code has been sent to</string>
+    <string name="resend_text">Resend</string>
+
+    <string name="resetPwd_text">Please set a new login password</string>
+    <string name="finish_text">Finish</string>
+
+</resources>
