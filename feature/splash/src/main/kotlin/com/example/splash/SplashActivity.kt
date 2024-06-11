@@ -90,6 +90,10 @@ class SplashActivity : ComponentActivity() {
         return DataStoreUtils.getBooleanFlow(IS_FIRST_TIME_LAUNCH, true).first()
     }
 
+    private suspend fun isLogin(): Boolean {
+        return DataStoreUtils.getBooleanFlow("IS_LOGIN").first()
+    }
+
     private fun navigateToActivity() {
         val flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         lifecycleScope.launch {
@@ -98,7 +102,11 @@ class SplashActivity : ComponentActivity() {
                     it.flags = flags
                 }
             } else {
-                startDeepLink("app://main")
+                if (!isLogin()) {
+                    startDeepLink("login://main")
+                } else {
+                    startDeepLink("app://main")
+                }
             }
             finish()
         }

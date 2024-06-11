@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.cli.jvm.main
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -8,27 +10,53 @@ plugins {
     kotlin("kapt")
 }
 
+apply(rootProject.file("buildConfig.gradle.kts"))
+val autoConfig: Map<String, Any> by extra
+
 android {
     namespace = "com.zqc.itinerary"
-    compileSdk = 34
+    compileSdk = autoConfig["COMPILE_SDK"] as Int
 
     defaultConfig {
-        applicationId = "com.zqc.itinerary"
-        minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        applicationId = autoConfig["APPLICATION_ID"].toString()
+        minSdk = autoConfig["MIN_SDK"] as Int
+        targetSdk = autoConfig["TARGET_SDK"] as Int
+        versionCode = autoConfig["VERSION_CODE"] as Int
+        versionName = autoConfig["VERSION_NAME"].toString()
+
+        buildConfigField("String", "APPLICATION_ID", "\"${autoConfig["APPLICATION_ID"]}\"")
+        buildConfigField("String", "PRIVACY_URL", "\"${autoConfig["PRIVACY_URL"]}\"")
+        buildConfigField("String", "USER_PROTOCOL_URL", "\"${autoConfig["USER_PROTOCOL_URL"]}\"")
+        buildConfigField("String", "FILING_NO", "\"${autoConfig["FILING_NO"]}\"")
+        buildConfigField("String", "JIGUANG_APPKEY", "\"${autoConfig["JIGUANG_APPKEY"]}\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
         vectorDrawables {
             useSupportLibrary = true
         }
 
         resourceConfigurations.addAll(listOf("en", "zh-rCN"))
+
+        ndk {
+            abiFilters.addAll(listOf("armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+        }
+
+        manifestPlaceholders.putAll(
+            mapOf(
+                "JPUSH_PKGNAME" to "${autoConfig["APPLICATION_ID"]}",
+                "JPUSH_APPKEY" to "${autoConfig["JIGUANG_APPKEY"]}",
+                "JPUSH_CHANNEL" to "developer-default"
+            )
+        )
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            buildConfigField("boolean", "IS_DEBUG", "true")
+        }
+        getByName("release") {
+            buildConfigField("boolean", "IS_DEBUG", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -37,22 +65,27 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = "17"
     }
+
     buildFeatures {
+        buildConfig = true
         compose = true
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    // Allow references to generated code
+
     kapt {
         correctErrorTypes = true
     }
@@ -71,13 +104,13 @@ composeCompiler {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
-    implementation(files("libs/geetest_captcha_android_v1.8.3.1_20230927.aar"))
 
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(project(":core:ui"))
     implementation(project(":feature:splash"))
+    implementation(project(":feature:login"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

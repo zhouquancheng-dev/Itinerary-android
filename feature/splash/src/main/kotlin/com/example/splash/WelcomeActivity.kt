@@ -42,13 +42,17 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.util.ClickUtils.isFastClick
 import com.example.common.util.DataStoreUtils
 import com.example.common.util.startDeepLink
 import com.example.splash.ds.DsKey.IS_FIRST_TIME_LAUNCH
 import com.example.ui.components.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.theme.JetItineraryTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class WelcomeActivity : ComponentActivity() {
 
@@ -82,9 +86,18 @@ private fun WelcomeScreen() {
     }
 
     val navigateToMain: () -> Unit = {
-        scope.launch { DataStoreUtils.putBoolean(IS_FIRST_TIME_LAUNCH, false) }
-        startDeepLink(context, "app://main")
-        (context as? Activity)?.finish()
+        scope.launch {
+            DataStoreUtils.putBoolean(IS_FIRST_TIME_LAUNCH, false)
+            val isLogin = withContext(Dispatchers.IO) {
+                DataStoreUtils.getBooleanFlow("IS_LOGIN").first()
+            }
+            if (!isLogin) {
+                startDeepLink(context, "login://main")
+            } else {
+                startDeepLink(context, "app://main")
+            }
+            (context as? Activity)?.finish()
+        }
     }
 
     Column(
@@ -119,7 +132,9 @@ private fun WelcomeScreen() {
                     navigateToMain()
                 } else {
                     scope.launch {
-                        pagerState.animateScrollToPage(snapshotCurrentPage + 1)
+                        if (!isFastClick()) {
+                            pagerState.animateScrollToPage(snapshotCurrentPage + 1)
+                        }
                     }
                 }
             },

@@ -5,7 +5,7 @@ object ClickUtils {
     private var lastClickTime: Long = 0
 
     fun isFastClick(minInterval: Long = MIN_DELAY): Boolean {
-        check(minInterval < 0) { "minInterval cannot be negative" }
+        check(minInterval > 0) { "minInterval cannot be negative" }
         val now = System.currentTimeMillis()
         val isFast = (now - lastClickTime) <= minInterval
         lastClickTime = now

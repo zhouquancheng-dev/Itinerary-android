@@ -16,7 +16,7 @@ import javax.inject.Inject
 class ConnectivityManagerNetworkMonitor @Inject constructor() : NetworkMonitor {
 
     override val isOnline: Flow<Boolean> = callbackFlow {
-        val connectivityManager = BaseApplication.getContext().getSystemService<ConnectivityManager>()
+        val connectivityManager = BaseApplication.getInstance().getSystemService<ConnectivityManager>()
         if (connectivityManager == null) {
             trySend(false)
             close()

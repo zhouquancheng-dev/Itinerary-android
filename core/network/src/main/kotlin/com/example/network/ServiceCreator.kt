@@ -75,7 +75,7 @@ object ServiceCreator {
 
     private fun cache(): Cache {
         val cacheSize = 50L * 1024L * 1024L // 50 MB
-        return Cache(File(BaseApplication.getContext().cacheDir, "http_cache"), cacheSize)
+        return Cache(File(BaseApplication.getInstance().cacheDir, "http_cache"), cacheSize)
     }
 
     fun clearCache() {

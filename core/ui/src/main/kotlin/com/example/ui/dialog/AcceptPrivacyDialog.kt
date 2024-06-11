@@ -128,7 +128,7 @@ fun TermsAndConditions() {
         mapOf(
             "text" to stringResource(R.string.terms),
             "tag" to "terms",
-            "url" to AppConfig.TERMS_URL
+            "url" to AppConfig.USER_PROTOCOL_URL
         )
     )
 

@@ -35,7 +35,7 @@ object NetworkModule {
     @Singleton
     fun provideLoggingInterceptor(): HttpLoggingInterceptor {
         val logging = HttpLoggingInterceptor()
-        logging.level = if (AppConfig.DEBUG) {
+        logging.level = if (AppConfig.IS_DEBUG) {
             HttpLoggingInterceptor.Level.BODY
         } else {
             HttpLoggingInterceptor.Level.NONE
@@ -47,7 +47,7 @@ object NetworkModule {
     @Singleton
     fun provideCache(): Cache {
         val cacheSize = 50L * 1024L * 1024L // 50 MB
-        return Cache(File(BaseApplication.getContext().cacheDir, "http_cache"), cacheSize)
+        return Cache(File(BaseApplication.getInstance().cacheDir, "http_cache"), cacheSize)
     }
 
     @Provides

@@ -1,10 +1,11 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.6.0-alpha04"
+agp = "8.6.0-alpha05"
 appcompat = "1.7.0"
-android-material = "1.13.0-alpha02"
+android-material = "1.13.0-alpha03"
 androidx-test-ext-junit = "1.1.5"
 activity-compose = "1.9.0"
+bcprov-jdk15on = "1.70"
 core-ktx = "1.13.1"
 constraintlayout = "2.1.4"
 constraintlayout-compose = "1.1.0-alpha13"
@@ -16,7 +17,7 @@ cameraX = "1.4.0-beta01"
 dagger-hilt-android = "2.51.1"
 devtools-ksp = "2.0.0-1.0.22"
 dataStore = "1.1.1"
-databinding-runtime = "8.4.1"
+databinding-runtime = "8.4.2"
 desugar-jdk-libs = "2.0.4"
 espresso-core = "3.5.1"
 gridlayout = "1.1.0-beta01"
@@ -60,7 +61,11 @@ zip4j = "2.11.5"
 calendar-compose = "2.5.1"
 composereorderable = "0.9.6"
 utilcodex = "1.31.1"
+toaster = "12.6"
 luban = "1.1.8"
+
+# Third-party platform
+jiguang-jverification = "3.2.4"
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [plugins]
@@ -154,6 +159,8 @@ androidx-camera-video = { group = "androidx.camera", name = "camera-video", vers
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraX" }
 androidx-camera-mlkit-vision = { group = "androidx.camera", name = "camera-mlkit-vision", version.ref = "cameraX" }
 androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraX" }
+# https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk15on
+bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprov-jdk15on" }
 # https://central.sonatype.com/artifact/io.coil-kt/coil-bom
 coil-kt-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
 coil-kt-coil = { group = "io.coil-kt", name = "coil" }
@@ -223,7 +230,13 @@ zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 kizitonwose-calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
 # https://github.com/aclassen/ComposeReorderable
 composereorderable-reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composereorderable" }
+# https://github.com/getActivity/Toaster
+toaster = { module = "com.github.getActivity:Toaster", version.ref = "toaster" }
 # https://github.com/Blankj/AndroidUtilCode
-blankj-utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
+utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
 # https://github.com/Curzibn/Luban
 luban = { module = "top.zibin:Luban", version.ref = "luban" }
+
+# Third-party platform
+# https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification
+jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref = "jiguang-jverification" }

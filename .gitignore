@@ -16,6 +16,7 @@ local.properties
 captures/
 .externalNativeBuild/
 .cxx/
+release
 *.apk
 output-metadata.json
 output.json
@@ -29,6 +30,7 @@ render.experimental.xml
 
 # Keystore files
 # 密钥库文件
+key
 *.jks
 *.keystore
 

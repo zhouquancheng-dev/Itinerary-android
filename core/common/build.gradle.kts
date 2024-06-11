@@ -54,4 +54,12 @@ dependencies {
     api(libs.coil.kt.svg)
 
     api(libs.androidx.datastore.preferences)
+
+    // 极光认证
+    api(libs.jiguang.jverification)
+
+    api(libs.bcprov.jdk15on)
+
+    api(libs.utilcodex)
+    api(libs.toaster)
 }

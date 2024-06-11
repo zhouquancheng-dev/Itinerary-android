@@ -5,7 +5,9 @@ buildscript {
 
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots/") }
     }
+
     dependencies {
+        classpath(libs.kotlin.gradle.plugin)
         classpath(libs.kotlin.serialization)
     }
 }

@@ -1,5 +1,7 @@
 pluginManagement {
     repositories {
+        maven { url = uri("https://jitpack.io") }
+        
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -14,6 +16,8 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        maven { url = uri("https://jitpack.io") }
+
         google()
         mavenCentral()
     }
@@ -21,6 +25,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Itinerary-android"
 include(":app")
+
+include(":localAar")
 
 include(":core")
 include(":core:common")

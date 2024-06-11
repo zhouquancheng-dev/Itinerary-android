@@ -1,39 +1,31 @@
 package com.zqc.itinerary
 
 import com.example.common.BaseApplication
-import com.example.common.util.DataStoreUtils
+import com.example.common.config.AppConfig
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 @HiltAndroidApp
 class MyApplication : BaseApplication() {
 
-    private val applicationScope: CoroutineScope by lazy {
-        CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    }
-
     override fun onCreate() {
         super.onCreate()
-        initData()
         initAppConfig()
     }
 
-    /**
-     * 初始化各数据
-     */
-    private fun initData() {
-        applicationScope.launch {
-            DataStoreUtils.init(this@MyApplication)
-        }
+    override fun isDebug(): Boolean {
+        return true
     }
 
     /**
      * 初始化App的配置信息
      */
     private fun initAppConfig() {
-
+        AppConfig.IS_DEBUG = BuildConfig.IS_DEBUG
+        AppConfig.APPLICATION_ID = BuildConfig.APPLICATION_ID
+        AppConfig.PRIVACY_URL = BuildConfig.PRIVACY_URL
+        AppConfig.USER_PROTOCOL_URL = BuildConfig.USER_PROTOCOL_URL
+        AppConfig.FILING_NO = BuildConfig.FILING_NO
+        AppConfig.JIGUANG_APPKEY = BuildConfig.JIGUANG_APPKEY
     }
+
 }

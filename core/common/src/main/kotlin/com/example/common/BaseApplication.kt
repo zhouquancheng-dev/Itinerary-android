@@ -1,40 +1,87 @@
 package com.example.common
 
 import android.app.Application
-import android.content.Context
+import cn.jiguang.verifysdk.api.JVerificationInterface
+import com.blankj.utilcode.util.LogUtils
+import com.example.common.util.DataStoreUtils
+import com.hjq.toast.Toaster
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
-open class BaseApplication : Application() {
+abstract class BaseApplication : Application() {
+
+    private val applicationScope: CoroutineScope by lazy {
+        CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    }
+
+    abstract fun isDebug(): Boolean
 
     companion object {
         private var instance: BaseApplication? = null
 
-        fun getContext(): Context {
-            // 如果 instance 为 null，则同步初始化 instance
-            return instance ?: synchronized(this) {
-                // 双重检查锁定，确保 instance 在多线程环境下被正确初始化
-                instance ?: BaseApplication().also { instance = it }
-            }
+        /**
+         * 全局context
+         */
+        fun getInstance(): BaseApplication {
+            return instance ?: throw IllegalStateException("Application is not created yet!")
         }
     }
-
 
     override fun onCreate() {
         super.onCreate()
         instance = this
+
+        initData()
+        initNormalSdk()
+        initThirdSdk()
         initQbSdk()
         initBugLy()
-        initOtherComponent()
     }
 
-    private fun initOtherComponent() {
-        // 初始化其他的推送、图片或者三方的网络框架库
+    /**
+     * 初始化数据
+     */
+    private fun initData() {
+        applicationScope.launch {
+            DataStoreUtils.init(getInstance())
+            LogUtils.getConfig().setLogSwitch(isDebug())
+            Toaster.init(getInstance())
+        }
     }
 
+    /**
+     * 初始化不会调用隐私相关的sdk
+     */
+    private fun initNormalSdk() {
+
+    }
+
+    /**
+     * 初始化第三方sdk
+     */
+    private fun initThirdSdk() {
+        // 极光认证、一键登录sdk
+        JVerificationInterface.setDebugMode(isDebug())
+        JVerificationInterface.init(this) { code, result ->
+            // code 8000 代表初始化成功，其他为失败
+            LogUtils.d("极光认证SDK初始化：code: $code, msg: $result")
+        }
+    }
+
+    /**
+     * bug 上报
+     */
     private fun initBugLy() {
-        // bug 上报
+
     }
 
+    /**
+     * x5 内核初始化接口
+     */
     private fun initQbSdk() {
-        // x5 内核初始化接口
+
     }
+
 }

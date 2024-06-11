@@ -35,7 +35,7 @@ object ImageLoaderProvider {
 
     private fun createImageLoader(componentBuilder: ComponentRegistry.Builder.() -> Unit): ImageLoader {
         return ImageLoader
-            .Builder(BaseApplication.getContext())
+            .Builder(BaseApplication.getInstance())
             .components(componentBuilder)
             .build()
     }
