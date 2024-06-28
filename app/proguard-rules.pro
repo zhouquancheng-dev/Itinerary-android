@@ -41,8 +41,6 @@
 #-dontskipnonpubliclibraryclasses
 # 指定不去忽略包可见的库类的成员
 #-dontskipnonpubliclibraryclassmembers
-# 不进行预校验，Android不需要，可加快混淆速度，预校验是作用在Java平台上的，Android平台上不需要这项功能
--dontpreverify
 
 # 混淆时记录日志(打印混淆的详细信息)
 # 这句话能够使我们的项目混淆后产生映射文件
@@ -61,7 +59,7 @@
 #保持异常不被混淆
 -keepattributes Exceptions
 #保持内部类不被混淆
--keepattributes Exceptions,InnerClasses
+-keepattributes Exceptions, InnerClasses
 
 # 删除代码中Log相关的代码
 -assumenosideeffects class android.util.Log {
@@ -74,6 +72,9 @@
 }
 #---------------------基本配置结束---------------------#
 
-# 极验验证码
--dontwarn com.geetest.captcha.**
--keep class com.geetest.captcha.**{*;}
+-if public class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt {
+    public static *** getLocalLifecycleOwner();
+}
+-keep public class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt {
+    public static *** getLocalLifecycleOwner();
+}

@@ -6,12 +6,10 @@ import com.example.network.adapter.DateAdapter
 import com.example.network.interceptor.CacheInterceptor
 import com.example.network.interceptor.errorHandlingInterceptor
 import com.example.network.interceptor.loggingInterceptor
-import com.example.network.interceptor.networkInterceptor
-import com.example.network.provider.AuthTokenProvider
+import com.example.network.okhttp.OkHttpDns
 import com.example.network.url.MY_REMOTE_URL
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
 import okhttp3.MediaType.Companion.toMediaType
@@ -25,25 +23,23 @@ import java.util.concurrent.TimeUnit
 
 object ServiceCreator {
 
-    private const val CONNECT_TIMEOUT = 30L
+    private const val CONNECT_TIMEOUT = 15L
     private const val READ_TIMEOUT = 10L
 
-    private val authTokenProvider by lazy { AuthTokenProvider() }
     private val networkMonitor by lazy { ConnectivityManagerNetworkMonitor() }
 
     private val okHttpClient: OkHttpClient by lazy {
         OkHttpClient.Builder()
             .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
             .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .dns(OkHttpDns(BaseApplication.getInstance()))
             .addInterceptor(loggingInterceptor())
-            .addNetworkInterceptor(networkInterceptor(authTokenProvider))
             .addInterceptor(errorHandlingInterceptor())
             .addNetworkInterceptor(CacheInterceptor(networkMonitor))
             .cache(cache())
             .build()
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private val json = Json {
         prettyPrint = true
         isLenient = true
@@ -61,6 +57,7 @@ object ServiceCreator {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
+            .baseUrl(MY_REMOTE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .addConverterFactory(MoshiConverterFactory.create(moshi))

@@ -1,57 +1,59 @@
 package com.example.network.service
 
-import com.example.model.UserResponse
+import com.example.model.sms.TokenVerifyRequest
+import com.example.model.sms.TokenVerifyResponse
+import com.example.model.BaseResponse
+import com.example.model.sms.CheckSmsResponse
+import com.example.model.sms.SendSmsResponse
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Header
-import retrofit2.http.Headers
 import retrofit2.http.POST
 
 interface UserService {
 
     /**
-     * 用户登录请求
-     * @param token 令牌
-     * @param username 用户名
-     * @param password 密码
+     * 极光一键登录验证
+     *
+     * @param request
+     * {
+     *    "loginToken": "",
+     *    "exID": null
+     * }
      */
-    @POST("/user/login")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("/login/tokenVerify")
+    suspend fun loginTokenVerify(
+        @Body request: TokenVerifyRequest
+    ): BaseResponse<TokenVerifyResponse>
+
+    /**
+     * 发送验证码
+     *
+     * @param phoneNumber 手机号
+     * @param codeLength 验证码长度，支持4-8位，默认值：6位
+     * @param validTime 验证码有效时长，默认值：300s
+     * @param sendInterval 发送时间间隔，默认值：60s
+     */
+    @POST("/login/sendSmsCode")
     @FormUrlEncoded
-    suspend fun login(
-        @Header("Authorization") token: String,
-        @Field("username") username: String,
-        @Field("password") password: String
-    ): UserResponse<String?>
+    suspend fun sendSmsCode(
+        @Field("phoneNumber") phoneNumber: String,
+        @Field("codeLength") codeLength: Long = 6L,
+        @Field("validTime") validTime: Long = 300L,
+        @Field("sendInterval") sendInterval: Long = 60L,
+    ): BaseResponse<SendSmsResponse>
 
     /**
-     * 用户注册请求
-     * @param username 用户名
-     * @param password 密码
+     * 验证码核验
+     *
+     * @param phoneNumber 手机号
+     * @param verifyCode 验证码
      */
-    @POST("/user/register")
-    @Headers("Content-Type: application/x-www-form-urlencoded")
+    @POST("/login/verifyCode")
     @FormUrlEncoded
-    suspend fun register(
-        @Field("username") username: String,
-        @Field("password") password: String
-    ): UserResponse<Any?>
-
-    /**
-     * 用户登出请求
-     * @param token 令牌
-     */
-    @POST("/user/logout")
-    suspend fun logout(
-        @Header("Authorization") token: String,
-    ): UserResponse<Any?>
-
-    /**
-     * 自动登录请求
-     */
-    @POST("/user/auto-login")
-    suspend fun autoLogin(
-        @Header("Authorization") token: String
-    ): UserResponse<String?>
+    suspend fun verifySmsCode(
+        @Field("phoneNumber") phoneNumber: String,
+        @Field("verifyCode") verifyCode: String
+    ): BaseResponse<CheckSmsResponse>
 
 }

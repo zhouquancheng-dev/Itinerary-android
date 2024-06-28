@@ -1,6 +1,5 @@
 package com.example.splash
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,17 +20,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
-import com.example.common.util.DataStoreUtils
+import com.example.common.BaseApplication
 import com.example.common.util.startAcWithIntent
 import com.example.common.util.startDeepLink
-import com.example.splash.ds.DsKey.IS_FIRST_TIME_LAUNCH
-import com.example.splash.ds.DsKey.IS_PRIVACY_AGREE
+import com.example.common.data.DsKey.IS_FIRST_TIME_LAUNCH
+import com.example.common.data.DsKey.IS_LOGIN_STATUS
+import com.example.common.data.DsKey.IS_PRIVACY_AGREE
+import com.example.common.util.DataStoreUtils.getBooleanFlow
+import com.example.common.util.DataStoreUtils.putBoolean
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
 import kotlinx.coroutines.delay
@@ -39,6 +40,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class SplashActivity : ComponentActivity() {
+
+    private val bApplication by lazy { BaseApplication.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,70 +51,54 @@ class SplashActivity : ComponentActivity() {
                 var showDialog by remember { mutableStateOf(false) }
 
                 LaunchedEffect(Unit) {
-                    val privacyAgreed = isPrivacyAgree()
-                    if (privacyAgreed) {
-                        delay(300)
-                        navigateToActivity()
-                    } else {
+                    if (!isPrivacyAgree()) {
                         showDialog = true
+                    } else {
+                        navigateToActivity()
                     }
                 }
 
                 SplashScreen(
                     showDialog = showDialog,
                     onAcceptRequest = {
-                        updatePrivacyAgreeState()
                         showDialog = false
                         navigateToActivity()
                     },
                     onRejectRequest = {
                         showDialog = false
-                        lifecycleScope.launch {
-                            delay(100)
-                            finish()
-                        }
+                        finish()
                     }
                 )
             }
         }
     }
 
-    private suspend fun isPrivacyAgree(): Boolean {
-        return DataStoreUtils.getBooleanFlow(IS_PRIVACY_AGREE).first()
-    }
+    private suspend fun isFirstTimeLaunch() =
+        getBooleanFlow(IS_FIRST_TIME_LAUNCH, true).first()
 
-    private fun updatePrivacyAgreeState() {
-        lifecycleScope.launch {
-            DataStoreUtils.putBoolean(IS_PRIVACY_AGREE, true)
-        }
-    }
+    private suspend fun isPrivacyAgree() = getBooleanFlow(IS_PRIVACY_AGREE).first()
 
-    private suspend fun isFirstTimeLaunch(): Boolean {
-        return DataStoreUtils.getBooleanFlow(IS_FIRST_TIME_LAUNCH, true).first()
-    }
-
-    private suspend fun isLogin(): Boolean {
-        return DataStoreUtils.getBooleanFlow("IS_LOGIN").first()
-    }
+    private suspend fun isLoginStatus() = getBooleanFlow(IS_LOGIN_STATUS).first()
 
     private fun navigateToActivity() {
-        val flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         lifecycleScope.launch {
+            putBoolean(IS_PRIVACY_AGREE, true)
             if (isFirstTimeLaunch()) {
-                startAcWithIntent<WelcomeActivity> {
-                    it.flags = flags
-                }
+                bApplication.initPrivacyRequiredSDKs()
+                startAcWithIntent<WelcomeActivity>()
+                finish()
             } else {
-                if (!isLogin()) {
-                    startDeepLink("login://main")
-                } else {
+                delay(500)
+                if (isLoginStatus()) {
                     startDeepLink("app://main")
+                    finish()
+                } else {
+                    startDeepLink("login://main")
+                    finish()
                 }
             }
-            finish()
         }
     }
-
 }
 
 @Composable
@@ -120,7 +107,11 @@ private fun SplashScreen(
     onAcceptRequest: () -> Unit,
     onRejectRequest: () -> Unit
 ) {
-    Surface(color = colorResource(R.color.splash_bg)) {
+    if (showDialog) {
+        AcceptPrivacyDialog(onAcceptRequest, onRejectRequest)
+    }
+
+    Surface(color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
@@ -137,19 +128,12 @@ private fun SplashScreen(
             )
         }
     }
-    if (showDialog) {
-        AcceptPrivacyDialog(onAcceptRequest, onRejectRequest)
+}
+
+@PreviewLightDark
+@Composable
+private fun SplashScreenPreview() {
+    JetItineraryTheme {
+        SplashScreen(showDialog = false, onAcceptRequest = {}, onRejectRequest = {})
     }
-}
-
-@Preview(device = "id:pixel_6_pro", showBackground = true)
-@Composable
-fun SplashScreenPreview() {
-    SplashScreen(showDialog = false, onAcceptRequest = {}, onRejectRequest = {})
-}
-
-@Preview(device = "id:pixel_6_pro", showBackground = true)
-@Composable
-fun AcceptPrivacyDialogPreview() {
-    AcceptPrivacyDialog(onAcceptRequest = {}, onRejectRequest = {})
 }

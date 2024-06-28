@@ -7,13 +7,13 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class MyApplication : BaseApplication() {
 
-    override fun onCreate() {
-        super.onCreate()
-        initAppConfig()
+    override fun isDebug(): Boolean {
+        return BuildConfig.IS_DEBUG
     }
 
-    override fun isDebug(): Boolean {
-        return true
+    override fun initData() {
+        super.initData()
+        initAppConfig()
     }
 
     /**

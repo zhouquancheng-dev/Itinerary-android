@@ -1,7 +1,7 @@
 pluginManagement {
     repositories {
-        maven { url = uri("https://jitpack.io") }
-        
+        apply("maven.gradle.kts")
+
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -16,7 +16,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        maven { url = uri("https://jitpack.io") }
+        apply("maven.gradle.kts")
 
         google()
         mavenCentral()

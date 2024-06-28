@@ -8,7 +8,7 @@ val autoConfig = mapOf(
     "VERSION_NAME" to "1.0.0",
     "PRIVACY_URL" to "https://composables.com/privacy", // 隐私政策
     "USER_PROTOCOL_URL" to "https://composables.com/terms", // 用户协议
-    "FILING_NO" to "", // 备案号
+    "FILING_NO" to "", // app备案号
     "JIGUANG_APPKEY" to "9a6a8d9363893aeafbff867e", // 极光Key
 )
 

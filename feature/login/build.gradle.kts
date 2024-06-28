@@ -6,12 +6,15 @@ plugins {
     kotlin("kapt")
 }
 
+apply(rootProject.file("buildConfig.gradle.kts"))
+val autoConfig: Map<String, Any> by extra
+
 android {
     namespace = "com.example.login"
-    compileSdk = 34
+    compileSdk = autoConfig["COMPILE_SDK"] as Int
 
     defaultConfig {
-        minSdk = 24
+        minSdk = autoConfig["MIN_SDK"] as Int
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -60,5 +63,6 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 }

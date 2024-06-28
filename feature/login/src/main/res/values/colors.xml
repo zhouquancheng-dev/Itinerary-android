@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black_translucency">#CC000000</color>
+    <color name="text_field_bg">#FFF4F6FF</color>
+    <color name="text_field_border">#FFF4F6FF</color>
+    <color name="placeholder_text">#FF8C95B1</color>
+    <color name="resend_color">#FF5D88BD</color>
+</resources>

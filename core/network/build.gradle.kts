@@ -1,3 +1,5 @@
+import com.android.utils.osArchitecture
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -7,12 +9,15 @@ plugins {
     kotlin("kapt")
 }
 
+apply(rootProject.file("buildConfig.gradle.kts"))
+val autoConfig: Map<String, Any> by extra
+
 android {
     namespace = "com.example.network"
-    compileSdk = 34
+    compileSdk = autoConfig["COMPILE_SDK"] as Int
 
     defaultConfig {
-        minSdk = 24
+        minSdk = autoConfig["MIN_SDK"] as Int
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -34,7 +39,6 @@ android {
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
-    implementation(project(":localAar"))
     implementation(project(":core:common"))
     implementation(project(":core:model"))
 
@@ -58,4 +62,6 @@ dependencies {
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.aliyun.captcha.android)
 }

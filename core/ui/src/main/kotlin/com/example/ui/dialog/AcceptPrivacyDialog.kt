@@ -12,8 +12,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -32,18 +30,24 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.common.config.AppConfig
 import com.example.ui.R
 import com.example.ui.components.VerticalSpacer
+import com.example.ui.components.rememberLock
+import com.example.ui.theme.JetItineraryTheme
 
 @Composable
 fun AcceptPrivacyDialog(
     onAcceptRequest: () -> Unit,
     onRejectRequest: () -> Unit
 ) {
+    val fullText = stringResource(R.string.terms_and_conditions)
+    val firstTag = stringResource(R.string.privacy)
+    val secondTag = stringResource(R.string.terms)
+
     Dialog(onDismissRequest = {}) {
         Surface(
             modifier = Modifier.padding(vertical = 24.dp),
@@ -74,7 +78,7 @@ fun AcceptPrivacyDialog(
                     PrivacyDescription()
                     VerticalSpacer(24.dp)
 
-                    TermsAndConditions()
+                    TermsAndConditions(fullText, firstTag, secondTag)
                     VerticalSpacer(48.dp)
 
                     ButtonBar(onAcceptRequest, onRejectRequest)
@@ -89,10 +93,11 @@ fun PrivacyIcon() {
     Surface(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.size(80.dp)
     ) {
         Icon(
-            imageVector = Icons.Rounded.Lock,
+            imageVector = rememberLock(),
             contentDescription = "Icon",
             modifier = Modifier.padding(12.dp),
             tint = MaterialTheme.colorScheme.onPrimary
@@ -117,16 +122,19 @@ fun PrivacyDescription() {
 }
 
 @Composable
-fun TermsAndConditions() {
-    val fullText = stringResource(R.string.terms_and_conditions)
+fun TermsAndConditions(
+    fullText: String,
+    firstTag: String,
+    secondTag: String
+) {
     val tags = listOf(
         mapOf(
-            "text" to stringResource(R.string.privacy),
+            "text" to firstTag,
             "tag" to "privacy",
             "url" to AppConfig.PRIVACY_URL
         ),
         mapOf(
-            "text" to stringResource(R.string.terms),
+            "text" to secondTag,
             "tag" to "terms",
             "url" to AppConfig.USER_PROTOCOL_URL
         )
@@ -186,6 +194,10 @@ fun ButtonBar(
         Button(
             onClick = { onAcceptRequest() },
             modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Text(stringResource(R.string.accept), style = MaterialTheme.typography.bodyLarge)
         }
@@ -193,7 +205,7 @@ fun ButtonBar(
             onClick = { onRejectRequest() },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.onSurface
+                contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
             Text(stringResource(R.string.reject), style = MaterialTheme.typography.bodyLarge)
@@ -201,8 +213,10 @@ fun ButtonBar(
     }
 }
 
-@Preview(device = "id:pixel_6_pro", showBackground = true)
+@PreviewLightDark
 @Composable
-fun AcceptPrivacyPreview() {
-    AcceptPrivacyDialog(onAcceptRequest = {}, onRejectRequest = {})
+private fun AcceptPrivacyPreview() {
+    JetItineraryTheme {
+        AcceptPrivacyDialog(onAcceptRequest = {}, onRejectRequest = {})
+    }
 }

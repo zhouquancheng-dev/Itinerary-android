@@ -1,25 +1,25 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.6.0-alpha05"
+agp = "8.6.0-alpha07"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha03"
-androidx-test-ext-junit = "1.1.5"
+androidx-test-ext-junit = "1.2.1"
 activity-compose = "1.9.0"
 bcprov-jdk15on = "1.70"
 core-ktx = "1.13.1"
 constraintlayout = "2.1.4"
 constraintlayout-compose = "1.1.0-alpha13"
-compose-bom = "2024.05.00"
+compose-bom = "2024.06.00"
 coroutines-android = "1.8.1"
 coroutines-test = "1.8.1"
 coil-bom = "2.6.0"
-cameraX = "1.4.0-beta01"
+cameraX = "1.4.0-beta02"
 dagger-hilt-android = "2.51.1"
 devtools-ksp = "2.0.0-1.0.22"
 dataStore = "1.1.1"
-databinding-runtime = "8.4.2"
+databinding-runtime = "8.5.0"
 desugar-jdk-libs = "2.0.4"
-espresso-core = "3.5.1"
+espresso-core = "3.6.1"
 gridlayout = "1.1.0-beta01"
 google-accompanist = "0.34.0"
 graphics-shapes = "1.0.0-beta01"
@@ -30,14 +30,15 @@ junit = "4.13.2"
 junit-jupiter-api = "5.10.2"
 kotlin = "2.0.0"
 kotlin-serialization = "2.0.0"
-kotlin-serialization-json = "1.7.0"
+kotlin-serialization-json = "1.7.1"
 kotlin-gradle-plugin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
 lottie = "6.4.1"
-lifecycle-runtime-ktx = "2.8.1"
-lifecycle-viewmodel-ktx = "2.8.1"
-lifecycle-runtime-compose = "2.8.1"
-lifecycle-viewmodel-compose = "2.8.1"
+lifecycle-runtime-ktx = "2.8.2"
+lifecycle-viewmodel-ktx = "2.8.2"
+lifecycle-runtime-compose = "2.8.2"
+lifecycle-viewmodel-compose = "2.8.2"
+lifecycle-process = "2.8.2"
 logging-interceptor = "4.12.0"
 moshi = "1.15.1"
 material3-android = "1.2.1"
@@ -58,14 +59,20 @@ aria-core = "3.8.16"
 aria-compiler = "3.8.16"
 itextCore = "8.0.4"
 zip4j = "2.11.5"
-calendar-compose = "2.5.1"
+calendar-compose = "2.5.2"
 composereorderable = "0.9.6"
 utilcodex = "1.31.1"
 toaster = "12.6"
 luban = "1.1.8"
 
 # Third-party platform
-jiguang-jverification = "3.2.4"
+jiguang-jverification = "3.2.5"
+bugly = "4.1.9.3"
+alicloud-httpdns = "2.4.0"
+
+# 阿里云私有仓库
+aliyun-captcha = "1.8.3.1_20240108"
+geetest-captcha = "1.8.3.1_20230927"
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [plugins]
@@ -135,6 +142,8 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-runtime-compose" }
 # https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-viewmodel-compose
 androidx-lifecycle-viewModel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose"}
+# https://mvnrepository.com/artifact/androidx.lifecycle/lifecycle-process
+androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "lifecycle-process" }
 # https://mvnrepository.com/artifact/androidx.navigation/navigation-compose
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigation-compose" }
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigation-testing" }
@@ -237,6 +246,14 @@ utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
 # https://github.com/Curzibn/Luban
 luban = { module = "top.zibin:Luban", version.ref = "luban" }
 
-# Third-party platform
+# 第三方平台服务
 # https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification
 jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref = "jiguang-jverification" }
+# https://mvnrepository.com/artifact/com.tencent.bugly/crashreport
+tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
+# https://mvnrepository.com/artifact/com.aliyun.ams/alicloud-android-httpdns
+alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
+
+# 阿里云私有仓库
+aliyun-captcha-android = { module = "com.zqc.dev:aliyun-captcha-android", version.ref = "aliyun-captcha" }
+geetest_captcha_android = { module = "com.zqc.dev:geetest_captcha_android", version.ref = "geetest-captcha" }

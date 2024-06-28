@@ -70,16 +70,10 @@ object DataStoreUtils {
      * @param default 默认值
      * @return T 读取到的数据
      */
-    private inline fun <reified T> readDataSync(key: Preferences.Key<T>, default: T): T {
-        var value: T? = null
+    private inline fun <reified T> readDataSync(key: Preferences.Key<T>, default: T): T =
         runBlocking {
-            dataStore.data.first {
-                value = it[key] ?: default
-                true
-            }
+            dataStore.data.first()[key] ?: default
         }
-        return value!!
-    }
 
     /**
      * 泛型方法：异步存储数据
@@ -87,8 +81,8 @@ object DataStoreUtils {
      * @param value 值
      */
     private suspend inline fun <reified T> writeData(key: Preferences.Key<T>, value: T) {
-        dataStore.edit { mutablePreferences ->
-            mutablePreferences[key] = value
+        dataStore.edit { preferences ->
+            preferences[key] = value
         }
     }
 
@@ -100,6 +94,8 @@ object DataStoreUtils {
     private inline fun <reified T> writeDataSync(key: Preferences.Key<T>, value: T) {
         runBlocking { writeData(key, value) }
     }
+
+    // Boolean 类型数据处理
 
     /**
      * 异步读取 Boolean 数据
@@ -137,6 +133,8 @@ object DataStoreUtils {
         writeDataSync(booleanPreferencesKey(key), value)
     }
 
+    // Int 类型数据处理
+
     /**
      * 异步读取 Int 数据
      * @param key 键名
@@ -172,6 +170,8 @@ object DataStoreUtils {
     fun putIntSync(key: String, value: Int) {
         writeDataSync(intPreferencesKey(key), value)
     }
+
+    // String 类型数据处理
 
     /**
      * 异步读取 String 数据
@@ -209,6 +209,8 @@ object DataStoreUtils {
         writeDataSync(stringPreferencesKey(key), value)
     }
 
+    // Float 类型数据处理
+
     /**
      * 异步读取 Float 数据
      * @param key 键名
@@ -244,6 +246,8 @@ object DataStoreUtils {
     fun putFloatSync(key: String, value: Float) {
         writeDataSync(floatPreferencesKey(key), value)
     }
+
+    // Long 类型数据处理
 
     /**
      * 异步读取 Long 数据

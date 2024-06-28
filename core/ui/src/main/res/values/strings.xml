@@ -8,4 +8,5 @@
     <string name="terms">《服务条款》</string>
     <string name="accept">阅读并接受</string>
     <string name="reject">拒绝并退出</string>
+    <string name="privacy_toast_error">请阅读并勾选相关协议</string>
 </resources>

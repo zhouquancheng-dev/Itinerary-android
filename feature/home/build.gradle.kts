@@ -6,25 +6,18 @@ plugins {
     kotlin("kapt")
 }
 
+apply(rootProject.file("buildConfig.gradle.kts"))
+val autoConfig: Map<String, Any> by extra
+
 android {
     namespace = "com.example.home"
-    compileSdk = 34
+    compileSdk = autoConfig["COMPILE_SDK"] as Int
 
     defaultConfig {
-        minSdk = 24
+        minSdk = autoConfig["MIN_SDK"] as Int
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.cli.jvm.main
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -24,12 +22,6 @@ android {
         versionCode = autoConfig["VERSION_CODE"] as Int
         versionName = autoConfig["VERSION_NAME"].toString()
 
-        buildConfigField("String", "APPLICATION_ID", "\"${autoConfig["APPLICATION_ID"]}\"")
-        buildConfigField("String", "PRIVACY_URL", "\"${autoConfig["PRIVACY_URL"]}\"")
-        buildConfigField("String", "USER_PROTOCOL_URL", "\"${autoConfig["USER_PROTOCOL_URL"]}\"")
-        buildConfigField("String", "FILING_NO", "\"${autoConfig["FILING_NO"]}\"")
-        buildConfigField("String", "JIGUANG_APPKEY", "\"${autoConfig["JIGUANG_APPKEY"]}\"")
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         vectorDrawables {
@@ -49,20 +41,34 @@ android {
                 "JPUSH_CHANNEL" to "developer-default"
             )
         )
+
+        buildConfigField("String", "APPLICATION_ID", "\"${autoConfig["APPLICATION_ID"]}\"")
+        buildConfigField("String", "PRIVACY_URL", "\"${autoConfig["PRIVACY_URL"]}\"")
+        buildConfigField("String", "USER_PROTOCOL_URL", "\"${autoConfig["USER_PROTOCOL_URL"]}\"")
+        buildConfigField("String", "FILING_NO", "\"${autoConfig["FILING_NO"]}\"")
+        buildConfigField("String", "JIGUANG_APPKEY", "\"${autoConfig["JIGUANG_APPKEY"]}\"")
     }
 
     buildTypes {
         getByName("debug") {
+            isMinifyEnabled = false
+            isShrinkResources = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
             buildConfigField("boolean", "IS_DEBUG", "true")
         }
         getByName("release") {
-            buildConfigField("boolean", "IS_DEBUG", "false")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField("boolean", "IS_DEBUG", "false")
         }
     }
 

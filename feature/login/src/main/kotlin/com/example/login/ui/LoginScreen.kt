@@ -1,0 +1,223 @@
+package com.example.login.ui
+
+import android.app.Activity
+import android.view.Gravity
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.common.util.ClickUtils.isFastClick
+import com.example.common.util.startDeepLink
+import com.example.login.R
+import com.example.login.components.LoginButton
+import com.example.login.components.PhoneNumberTextField
+import com.example.login.components.PrivacyContent
+import com.example.login.state.DialogType
+import com.example.login.state.PhoneNumberVisualTransformation
+import com.example.login.theme.dividerBrush
+import com.example.login.vm.LoginViewModel
+import com.example.network.captcha.AliYunCaptchaClient
+import com.example.ui.components.VerticalSpacer
+import com.example.ui.components.click
+import com.example.ui.dialog.ProgressIndicatorDialog
+import com.hjq.toast.ToastParams
+import com.hjq.toast.Toaster
+import com.hjq.toast.style.CustomToastStyle
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun LoginScreen(
+    loginViewModel: LoginViewModel,
+    onNavigate: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val imeVisible = WindowInsets.isImeVisible
+    val dividerBrush = remember { Brush.horizontalGradient(dividerBrush) }
+    var phoneNumberValue by remember { mutableStateOf("") }
+    val phoneNumberVisualTransformation = remember(phoneNumberValue) {
+        PhoneNumberVisualTransformation(phoneNumberValue)
+    }
+    var privacyChecked by remember { mutableStateOf(false) }
+    val dialogState by loginViewModel.dialogState.collectAsStateWithLifecycle()
+    val getting by loginViewModel.gettingCode.collectAsStateWithLifecycle()
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    loginViewModel.preLogin(context)
+                    AliYunCaptchaClient.initCaptcha(context)
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    AliYunCaptchaClient.destroyCaptcha()
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    val login: () -> Unit = {
+        if (!isFastClick()) {
+            if (imeVisible) keyboardController?.hide()
+
+            if (!privacyChecked) {
+                val params = ToastParams()
+                params.text = context.getString(R.string.login_error2)
+                params.style = CustomToastStyle(R.layout.toast_custom_view_warn, Gravity.CENTER)
+                Toaster.show(params)
+            } else {
+                // 发送验证码
+                loginViewModel.launchWithCaptcha(context) {
+                    loginViewModel.sendSmsCode(phoneNumberValue) {
+                        onNavigate(phoneNumberValue)
+                    }
+                }
+            }
+        }
+    }
+    val loginClick by rememberUpdatedState(login)
+
+    Scaffold { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(top = 50.dp, start = 40.dp, end = 40.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(com.example.common.R.mipmap.ic_app_logo),
+                contentDescription = null,
+                modifier = Modifier.size(75.dp)
+            )
+
+            VerticalSpacer(30.dp)
+            Text(
+                text = stringResource(R.string.login_title),
+                fontFamily = FontFamily(Font(com.example.ui.R.font.mashanzheng_regular)),
+                fontSize = 28.sp
+            )
+
+            VerticalSpacer(50.dp)
+            PhoneNumberTextField(
+                value = phoneNumberValue,
+                onValueChange = { newValue ->
+                    if (newValue.isDigitsOnly() && newValue.length <= 11) {
+                        phoneNumberValue = newValue
+                    }
+                },
+                visualTransformation = phoneNumberVisualTransformation,
+                onClearValue = { phoneNumberValue = "" }
+            )
+
+            VerticalSpacer(35.dp)
+            PrivacyContent(
+                checked = privacyChecked,
+                onCheckedChange = { privacyChecked = it }
+            )
+
+            VerticalSpacer(70.dp)
+            LoginButton(phoneNumberValue, getting) {
+                loginClick()
+            }
+
+            VerticalSpacer(65.dp)
+            Spacer(
+                modifier = Modifier
+                    .width(75.dp)
+                    .height(1.dp)
+                    .background(brush = dividerBrush)
+            )
+
+            VerticalSpacer(45.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.one_click_login),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(55.dp)
+                        .clip(CircleShape)
+                        .click(enableClickDebounce = true) {
+                            loginViewModel.launchWithCaptcha(context) {
+                                loginViewModel.loginAuth(context) {
+                                    startDeepLink(context, "app://main")
+                                    (context as? Activity)?.finish()
+                                }
+                            }
+                        }
+                )
+
+                Image(
+                    painter = painterResource(R.drawable.wechat_login),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(55.dp)
+                        .clip(CircleShape)
+                        .click(enableClickDebounce = true) {
+                            val params = ToastParams()
+                            params.text = "暂未接入"
+                            params.style =
+                                CustomToastStyle(R.layout.toast_custom_view_warn, Gravity.CENTER)
+                            Toaster.show(params)
+                        }
+                )
+            }
+        }
+    }
+
+    ProgressIndicatorDialog(
+        showDialog = dialogState != DialogType.NONE,
+        dialogText = dialogState.dialogText
+    )
+}

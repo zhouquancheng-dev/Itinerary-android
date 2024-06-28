@@ -15,9 +15,7 @@ fun networkInterceptor(authTokenProvider: AuthTokenProvider): Interceptor {
             .addHeader("Content-Type", "application/json")
             .method(originalRequest.method, originalRequest.body)
 
-        if (authToken != null) {
-            requestBuilder.addHeader("Authorization", "$authToken")
-        }
+        requestBuilder.addHeader("Authorization", authToken)
 
         val request = requestBuilder.build()
         chain.proceed(request)

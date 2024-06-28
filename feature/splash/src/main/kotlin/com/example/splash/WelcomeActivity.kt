@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -39,20 +41,16 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.util.ClickUtils.isFastClick
-import com.example.common.util.DataStoreUtils
 import com.example.common.util.startDeepLink
-import com.example.splash.ds.DsKey.IS_FIRST_TIME_LAUNCH
+import com.example.common.data.DsKey.IS_FIRST_TIME_LAUNCH
+import com.example.common.util.DataStoreUtils.putBoolean
 import com.example.ui.components.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.theme.JetItineraryTheme
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class WelcomeActivity : ComponentActivity() {
 
@@ -65,7 +63,6 @@ class WelcomeActivity : ComponentActivity() {
             }
         }
     }
-
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -73,12 +70,11 @@ class WelcomeActivity : ComponentActivity() {
 private fun WelcomeScreen() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-
-    val dispatcherOwner = LocalOnBackPressedDispatcherOwner.current
-    val backPressedDispatcher = dispatcherOwner?.onBackPressedDispatcher
+    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
     var snapshotCurrentPage by remember { mutableIntStateOf(0) }
     val pagerState = rememberPagerState { 3 }
+
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect { page ->
             snapshotCurrentPage = page
@@ -87,44 +83,20 @@ private fun WelcomeScreen() {
 
     val navigateToMain: () -> Unit = {
         scope.launch {
-            DataStoreUtils.putBoolean(IS_FIRST_TIME_LAUNCH, false)
-            val isLogin = withContext(Dispatchers.IO) {
-                DataStoreUtils.getBooleanFlow("IS_LOGIN").first()
-            }
-            if (!isLogin) {
-                startDeepLink(context, "login://main")
-            } else {
-                startDeepLink(context, "app://main")
-            }
+            putBoolean(IS_FIRST_TIME_LAUNCH, false)
+            startDeepLink(context, "login://main")
             (context as? Activity)?.finish()
         }
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
     ) {
-        HorizontalPager(state = pagerState) { page ->
-            when (page) {
-                0 -> {
-                    FirstPage()
-                }
-                1 -> {
-                    SecondPage()
-                }
-                2 -> {
-                    ThirdPage()
-                }
-            }
-        }
-
-        VerticalSpacer(15.dp)
-        HorizontalPagerIndicator(
-            pagerState,
-            pagerState.pageCount,
-            activeColor = colorResource(R.color.welcome_color)
-        )
+        WelcomePager(pagerState)
 
         Button(
             onClick = {
@@ -163,17 +135,36 @@ private fun WelcomeScreen() {
     }
 }
 
-@Preview(device = "id:pixel_6_pro", showBackground = true)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun FirstPage() {
+private fun WelcomePager(pagerState: PagerState) {
+    val defaultStyle = SpanStyle(color = MaterialTheme.colorScheme.onBackground)
     val textStyle = SpanStyle(color = colorResource(R.color.welcome_color))
+
+    HorizontalPager(state = pagerState) { page ->
+        when (page) {
+            0 -> FirstPage(defaultStyle, textStyle)
+            1 -> SecondPage(defaultStyle, textStyle)
+            2 -> ThirdPage(defaultStyle, textStyle)
+        }
+    }
+    VerticalSpacer(15.dp)
+    HorizontalPagerIndicator(
+        pagerState,
+        pagerState.pageCount,
+        activeColor = colorResource(R.color.welcome_color)
+    )
+}
+
+@Composable
+private fun FirstPage(defaultStyle: SpanStyle, textStyle: SpanStyle) {
     val theTextAbove = buildAnnotatedString {
-            append("发布")
+            append("发布", defaultStyle)
             append("结伴同游", textStyle)
-            append("消息")
+            append("消息", defaultStyle)
         }
     val theTextBelow = buildAnnotatedString {
-        append("邀请")
+        append("邀请", defaultStyle)
         append("游伴一起旅行", textStyle)
     }
 
@@ -202,17 +193,15 @@ private fun FirstPage() {
     }
 }
 
-@Preview(device = "id:pixel_6_pro", showBackground = true)
 @Composable
-private fun SecondPage() {
-    val textStyle = SpanStyle(color = colorResource(R.color.welcome_color))
+private fun SecondPage(defaultStyle: SpanStyle, textStyle: SpanStyle) {
     val theTextAbove = buildAnnotatedString {
-        append("定位")
+        append("定位", defaultStyle)
         append("附近", textStyle)
-        append("好友")
+        append("好友", defaultStyle)
     }
     val theTextBelow = buildAnnotatedString {
-        append("一起")
+        append("一起", defaultStyle)
         append("聊天交流", textStyle)
     }
 
@@ -241,16 +230,14 @@ private fun SecondPage() {
     }
 }
 
-@Preview(device = "id:pixel_6_pro", showBackground = true)
 @Composable
-private fun ThirdPage() {
-    val textStyle = SpanStyle(color = colorResource(R.color.welcome_color))
+private fun ThirdPage(defaultStyle: SpanStyle, textStyle: SpanStyle) {
     val theTextAbove = buildAnnotatedString {
-        append("加入兴趣")
+        append("加入兴趣", defaultStyle)
         append("社区", textStyle)
     }
     val theTextBelow = buildAnnotatedString {
-        append("一起")
+        append("一起", defaultStyle)
         append("谈天说地", textStyle)
     }
 

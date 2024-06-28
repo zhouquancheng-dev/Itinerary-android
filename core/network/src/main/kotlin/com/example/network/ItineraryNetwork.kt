@@ -1,88 +1,36 @@
 package com.example.network
 
-import com.example.network.service.UserService
-import com.example.network.service.SmsService
+import com.example.model.captcha.AliCaptchaRequest
+import com.example.model.sms.TokenVerifyRequest
 import com.example.network.service.CaptchaService
+import com.example.network.service.UserService
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ItineraryNetwork @Inject constructor() {
     private val userService = ServiceCreator.createRequestApi<UserService>()
-    private val smsService = ServiceCreator.createRequestApi<SmsService>()
     private val captchaService = ServiceCreator.createRequestApi<CaptchaService>()
 
     /**
-     * 用户登录
-     * @param token 令牌
-     * @param username 用户名
-     * @param password 密码
+     * 极光一键登录验证
      */
-    suspend fun login(token: String, username: String, password: String) =
-        userService.login(token, username, password)
+    suspend fun loginTokenVerify(request: TokenVerifyRequest) =
+        userService.loginTokenVerify(request)
 
     /**
-     * 用户注册
-     * @param username 用户名
-     * @param password 密码
+     * 发送验证码
      */
-    suspend fun register(username: String, password: String) =
-        userService.register(username, password)
+    suspend fun sendSmsCode(phoneNumber: String) = userService.sendSmsCode(phoneNumber)
 
     /**
-     * 用户登出
-     * @param token 令牌
+     * 验证码核验
      */
-    suspend fun logout(token: String) = userService.logout(token)
+    suspend fun verifySmsCode(phoneNumber: String, verifyCode: String) =
+        userService.verifySmsCode(phoneNumber, verifyCode)
 
     /**
-     * 自动登录
-     * @param token 令牌
+     * 阿里云行为验证码二次核验
      */
-    suspend fun autoLogin(token: String) = userService.autoLogin(token)
-
-    /**
-     * 存储验证码信息
-     * @param phoneNumber 手机号码
-     * @param smsCode 验证码
-     * @param bizId 发送回执id
-     * @param sendTime 发送时间
-     */
-    suspend fun saveSmsData(phoneNumber: String, smsCode: String, bizId: String, sendTime: String) =
-        smsService.saveSmsData(phoneNumber, smsCode, bizId, sendTime)
-
-    /**
-     * 校验短信验证码
-     * @param phoneNumber 手机号码
-     * @param smsCode 验证码
-     * @param bizId 发送回执id
-     */
-    suspend fun checkSms(phoneNumber: String, smsCode: String, bizId: String) =
-        smsService.checkSms(phoneNumber, smsCode, bizId)
-
-    /**
-     * 极验验证码二次校验
-     * @param captchaId 验证 id
-     * @param lotNumber 验证流水号
-     * @param captchaOutput 验证输出信息
-     * @param passToken 验证通过标识
-     * @param genTime 验证通过时间戳
-     * @param action 客户端验证行为，如: login
-     * @return Boolean 校验成功 true 否则 false
-     */
-    suspend fun verifyCaptcha(
-        captchaId: String,
-        lotNumber: String,
-        captchaOutput: String,
-        passToken: String,
-        genTime: String,
-        action: String
-    ) = captchaService.verifyCaptcha(
-        captchaId,
-        lotNumber,
-        captchaOutput,
-        passToken,
-        genTime,
-        action
-    )
+    suspend fun verifyCaptcha(request: AliCaptchaRequest) = captchaService.verifyCaptcha(request)
 }
