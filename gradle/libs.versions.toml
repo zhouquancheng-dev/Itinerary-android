@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.6.0-alpha07"
+agp = "8.6.0-alpha08"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha03"
 androidx-test-ext-junit = "1.2.1"
@@ -12,7 +12,7 @@ constraintlayout-compose = "1.1.0-alpha13"
 compose-bom = "2024.06.00"
 coroutines-android = "1.8.1"
 coroutines-test = "1.8.1"
-coil-bom = "2.6.0"
+coil-bom = "3.0.0-alpha06"
 cameraX = "1.4.0-beta02"
 dagger-hilt-android = "2.51.1"
 devtools-ksp = "2.0.0-1.0.22"
@@ -39,12 +39,11 @@ lifecycle-viewmodel-ktx = "2.8.2"
 lifecycle-runtime-compose = "2.8.2"
 lifecycle-viewmodel-compose = "2.8.2"
 lifecycle-process = "2.8.2"
-logging-interceptor = "4.12.0"
 moshi = "1.15.1"
 material3-android = "1.2.1"
 navigation-compose = "2.7.7"
 navigation-testing = "2.7.7"
-okhttp3 = "4.12.0"
+okhttp3 = "5.0.0-alpha.14"
 room = "2.6.1"
 retrofit = "2.11.0"
 splashscreen = "1.2.0-alpha01"
@@ -170,14 +169,17 @@ androidx-camera-mlkit-vision = { group = "androidx.camera", name = "camera-mlkit
 androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraX" }
 # https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk15on
 bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprov-jdk15on" }
-# https://central.sonatype.com/artifact/io.coil-kt/coil-bom
-coil-kt-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
-coil-kt-coil = { group = "io.coil-kt", name = "coil" }
-coil-kt-compose = { group = "io.coil-kt", name = "coil-compose" }
-coil-kt-gif = { group = "io.coil-kt", name = "coil-gif" }
-coil-kt-svg = { group = "io.coil-kt", name = "coil-svg" }
-coil-kt-video = { group = "io.coil-kt", name = "coil-video" }
-coil-kt-test = { group = "io.coil-kt", name = "coil-test" }
+# https://central.sonatype.com/artifact/io.coil-kt.coil3/coil-bom
+coil-bom = { group = "io.coil-kt.coil3", name = "coil-bom", version.ref = "coil-bom" }
+coil = { group = "io.coil-kt.coil3", name = "coil" }
+coil-core = { group = "io.coil-kt.coil3", name = "coil-core" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose" }
+coil-compose-core = { group = "io.coil-kt.coil3", name = "coil-compose-core" }
+coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif" }
+coil-video = { group = "io.coil-kt.coil3", name = "coil-video" }
+coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp" }
+coil-test = { group = "io.coil-kt.coil3", name = "coil-test" }
 # https://mvnrepository.com/artifact/com.android.tools/desugar_jdk_libs
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 # https://central.sonatype.com/artifact/com.google.dagger/hilt-android
@@ -205,7 +207,7 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 # https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
 squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 # https://central.sonatype.com/artifact/com.squareup.okhttp3/logging-interceptor
-squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "logging-interceptor" }
+squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
 # https://central.sonatype.com/artifact/com.squareup.retrofit2/retrofit
 squareup-retrofit2-retrofit = { group ="com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 # https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-kotlinx-serialization
