@@ -1,6 +1,5 @@
 package com.example.login.components
 
-import android.view.Gravity
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,14 +25,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ui.view.ToasterUtil.ToastStatus.ERROR
+import com.example.ui.view.ToasterUtil.showCustomToaster
 import com.example.login.R
 import com.example.login.state.isValidPhoneNumber
 import com.example.ui.components.rememberClose
 import com.example.ui.theme.JetItineraryTheme
 import com.example.ui.theme.errorLight
-import com.hjq.toast.ToastParams
-import com.hjq.toast.Toaster
-import com.hjq.toast.style.CustomToastStyle
 
 @Composable
 fun PhoneNumberTextField(
@@ -42,12 +40,9 @@ fun PhoneNumberTextField(
     visualTransformation: VisualTransformation,
     onClearValue: () -> Unit
 ) {
-    val params = ToastParams()
-    params.text = stringResource(R.string.login_error1)
-    params.style = CustomToastStyle(R.layout.toast_custom_view_error, Gravity.CENTER)
     val isError = remember(value) { !isValidPhoneNumber(value) && value.length == 11 }
     if (isError) {
-        Toaster.show(params)
+        showCustomToaster(stringResource(R.string.phoneNumber_error), ERROR)
     }
 
     OutlinedTextField(

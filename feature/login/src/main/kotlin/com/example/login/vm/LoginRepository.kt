@@ -1,62 +1,38 @@
 package com.example.login.vm
 
-import com.blankj.utilcode.util.LogUtils
-import com.example.model.captcha.AliCaptchaRequest
-import com.example.model.sms.TokenVerifyRequest
-import com.example.network.ItineraryNetwork
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import android.content.Context
+import com.example.common.data.DatastoreKey.TIM_USER_ID
+import com.example.common.data.DatastoreKey.TIM_USER_SIG
+import com.example.common.di.AppDispatchers.*
+import com.example.common.di.Dispatcher
+import com.example.common.util.DataStoreUtils.getStringSync
+import com.example.common.util.DataStoreUtils.putStringSync
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
-    private val network: ItineraryNetwork
+    @Dispatcher(IO) val ioDispatcher: CoroutineDispatcher
 ) {
 
-    /**
-     * 发送验证码
-     */
-    fun sendSmsCode(phoneNumber: String) = flow {
-        val response = network.sendSmsCode(phoneNumber)
-        emit(Result.success(response))
-    }.catch { e ->
-        LogUtils.e("发送验证码异常; Exception: $e")
-        emit(Result.failure(e))
-    }.flowOn(Dispatchers.IO)
+    fun getCachedUserSig() = getStringSync(TIM_USER_SIG)
 
-    /**
-     * 验证码校验
-     */
-    fun verifySmsCode(phoneNumber: String, verifyCode: String) = flow {
-        val response = network.verifySmsCode(phoneNumber, verifyCode)
-        emit(Result.success(response))
-    }.catch { e ->
-        LogUtils.e("验证码校验异常; Exception: $e")
-        emit(Result.failure(e))
-    }.flowOn(Dispatchers.IO)
+    fun cacheUserSig(userSig: String?) {
+        if (userSig != null) {
+            putStringSync(TIM_USER_SIG, userSig)
+        }
+    }
 
-    /**
-     * 极光一键登录验证
-     */
-    fun loginTokenVerify(request: TokenVerifyRequest) = flow {
-        val response = network.loginTokenVerify(request)
-        emit(Result.success(response))
-    }.catch { e ->
-        LogUtils.e("一键登录验证异常; Exception: $e")
-        emit(Result.failure(e))
-    }.flowOn(Dispatchers.IO)
+    fun putIMUserId(userId: String) = putStringSync(TIM_USER_ID, userId)
 
-
-    /**
-     * 阿里云行为验证码二次核验
-     */
-    fun verifyCaptcha(request: AliCaptchaRequest) = flow {
-        val response = network.verifyCaptcha(request)
-        emit(Result.success(response))
-    }.catch { e ->
-        LogUtils.e("行为验证码核验异常; Exception: $e")
-        emit(Result.failure(e))
-    }.flowOn(Dispatchers.IO)
+    suspend fun readAssetFile(context: Context, fileName: String): String {
+        return withContext(ioDispatcher) {
+            context.assets.open(fileName)
+                .bufferedReader()
+                .use { bfr ->
+                    bfr.readText()
+                }
+        }
+    }
 
 }

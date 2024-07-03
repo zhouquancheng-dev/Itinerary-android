@@ -13,6 +13,7 @@ import cn.jiguang.verifysdk.api.JVerificationInterface
 import cn.jiguang.verifysdk.api.JVerifyUIConfig
 import cn.jiguang.verifysdk.api.LoginSettings
 import com.blankj.utilcode.util.LogUtils
+import com.example.common.data.Constants.JG_TAG
 import com.example.login.R
 import java.util.Locale
 import javax.inject.Inject
@@ -20,6 +21,12 @@ import javax.inject.Singleton
 
 @Singleton
 class JiGuangClient @Inject constructor() {
+
+    companion object {
+        const val PRE_LOGIN_CODE = 7000
+        const val AUTH_CODE_SUCCESS = 6000
+        const val AUTH_CODE_FAILURE = 6001
+    }
 
     interface AuthListener {
         fun onAuthEvent(event: Int, msg: String?)
@@ -32,13 +39,13 @@ class JiGuangClient @Inject constructor() {
     fun preLogin(context: Context) {
         // 判断网络环境是否支持一键登录
         if (!JVerificationInterface.checkVerifyEnable(context)) {
-            LogUtils.i("当前网络环境不支持认证，请开启数据网络")
+            LogUtils.iTag(JG_TAG,"当前网络环境不支持认证，请开启数据网络")
             return
         }
 
         if (JVerificationInterface.isInitSuccess()) {
             JVerificationInterface.preLogin(context, 5000) { code, content, _ ->
-                LogUtils.d(if (code == 7000) "预取号成功" else "返回码: $code, message: $content")
+                LogUtils.dTag(JG_TAG, if (code == PRE_LOGIN_CODE) "预取号成功" else "返回码: $code, message: $content")
             }
         }
     }
@@ -55,17 +62,18 @@ class JiGuangClient @Inject constructor() {
         settings.authPageEventListener = object : AuthPageEventListener() {
             override fun onEvent(event: Int, msg: String?) {
                 // 设置授权页事件监听
-                LogUtils.d("onEvent: $event message: $msg")
+//                LogUtils.d("onEvent: $event message: $msg")
                 authListener.onAuthEvent(event, msg)
             }
         }
 
         // 拉起授权页面
         JVerificationInterface.loginAuth(context, settings) { code, content, operator, operatorReturn ->
-            LogUtils.d(
+            LogUtils.dTag(
+                JG_TAG,
                 when (code) {
-                    6000 -> "获取loginToken成功，token: $content"
-                    6001 -> "获取loginToken失败"
+                    AUTH_CODE_SUCCESS -> "获取loginToken成功"
+                    AUTH_CODE_FAILURE -> "获取loginToken失败"
                     else -> "返回码: $code, token: $content, 对应运营商: $operator, 运营商结果信息: $operatorReturn"
                 }
             )
@@ -166,7 +174,7 @@ class JiGuangClient @Inject constructor() {
             activity.findViewById(com.example.ui.R.id.custom_toast_container)
         )
         val text: TextView = layout.findViewById(com.example.ui.R.id.custom_toast_message)
-        text.text = String.format(Locale.getDefault(), activity.getString(R.string.login_error2))
+        text.text = String.format(Locale.getDefault(), activity.getString(R.string.tick_protocol))
 
         val toast = Toast(activity)
         toast.duration = Toast.LENGTH_SHORT

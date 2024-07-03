@@ -2,6 +2,7 @@ package com.example.network.service
 
 import com.example.model.captcha.AliCaptchaRequest
 import com.example.model.captcha.AliCaptchaResponse
+import com.example.network.url.ALI_CAPTCHA
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -18,7 +19,7 @@ interface CaptchaService {
      *     "captcha_id": ""
      * }
      */
-    @POST("/validate/aliCaptcha")
+    @POST(ALI_CAPTCHA)
     suspend fun verifyCaptcha(
         @Body request: AliCaptchaRequest
     ): AliCaptchaResponse

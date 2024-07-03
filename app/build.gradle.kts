@@ -31,7 +31,7 @@ android {
         resourceConfigurations.addAll(listOf("en", "zh-rCN"))
 
         ndk {
-            abiFilters.addAll(listOf("armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
+            abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
 
         manifestPlaceholders.putAll(
@@ -47,6 +47,7 @@ android {
         buildConfigField("String", "USER_PROTOCOL_URL", "\"${autoConfig["USER_PROTOCOL_URL"]}\"")
         buildConfigField("String", "FILING_NO", "\"${autoConfig["FILING_NO"]}\"")
         buildConfigField("String", "JIGUANG_APPKEY", "\"${autoConfig["JIGUANG_APPKEY"]}\"")
+        buildConfigField("String", "TENCENT_IM_APP_ID", "\"${autoConfig["TENCENT_IM_APP_ID"]}\"")
     }
 
     buildTypes {
@@ -117,6 +118,8 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:login"))
+    implementation(project(":feature:im"))
+    implementation(project(":feature:mine"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

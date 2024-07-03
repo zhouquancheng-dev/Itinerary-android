@@ -4,7 +4,7 @@ import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import java.util.regex.Pattern
 
-class MyNotificationListenerService : NotificationListenerService() {
+class NotificationListenerService : NotificationListenerService() {
 
     private var listener: ((String) -> Unit)? = null
 

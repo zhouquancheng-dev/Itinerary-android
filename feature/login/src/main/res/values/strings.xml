@@ -5,13 +5,13 @@
     <string name="first_terms">《用户协议》</string>
     <string name="second_terms">《法律声明及隐私政策》</string>
     <string name="send_sms_code">获取短信验证码</string>
-    <string name="login_error">自定义的Toast文本</string>
-    <string name="login_error1">输入的手机号格式错误</string>
-    <string name="login_error2">请阅读并勾选相关协议</string>
-    <string name="login_error3">验证码错误</string>
+    <string name="phoneNumber_error">输入的手机号格式错误</string>
+    <string name="tick_protocol">请阅读并勾选相关协议</string>
+    <string name="sms_error">验证码错误</string>
     <string name="login_auth_failure">拉起一键登录失败</string>
     <string name="login_success">登录成功</string>
     <string name="login_failure">登录失败</string>
+    <string name="login_exception">登录异常</string>
     <string name="verify_code_login">验证码登录</string>
     <string name="enter_sms_code">请输入验证码</string>
     <string name="country_code">已发送至+86" "</string>

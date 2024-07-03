@@ -7,7 +7,7 @@ import com.example.network.interceptor.CacheInterceptor
 import com.example.network.interceptor.errorHandlingInterceptor
 import com.example.network.interceptor.loggingInterceptor
 import com.example.network.okhttp.OkHttpDns
-import com.example.network.url.MY_REMOTE_URL
+import com.example.network.url.APP_BASE_URL
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.serialization.json.Json
@@ -57,7 +57,7 @@ object ServiceCreator {
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(MY_REMOTE_URL)
+            .baseUrl(APP_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .addConverterFactory(MoshiConverterFactory.create(moshi))
@@ -67,7 +67,7 @@ object ServiceCreator {
     fun <T> createRequest(serviceClass: Class<T>, baseUrl: String): T =
         retrofit.newBuilder().baseUrl(baseUrl).build().create(serviceClass)
 
-    inline fun <reified T> createRequestApi(baseUrl: String = MY_REMOTE_URL): T =
+    inline fun <reified T> createRequestApi(baseUrl: String = APP_BASE_URL): T =
         createRequest(T::class.java, baseUrl)
 
     private fun cache(): Cache {

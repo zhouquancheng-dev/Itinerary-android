@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.util.ClickUtils.isFastClick
 import com.example.common.util.startDeepLink
-import com.example.common.data.DsKey.IS_FIRST_TIME_LAUNCH
+import com.example.common.data.DatastoreKey.IS_FIRST_TIME_LAUNCH
 import com.example.common.util.DataStoreUtils.putBoolean
 import com.example.ui.components.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
@@ -119,7 +120,10 @@ private fun WelcomeScreen() {
                 contentColor = Color.White
             )
         ) {
-            Text(if (snapshotCurrentPage != 2) "下一步" else "进入应用", fontSize = 17.sp)
+            Text(
+                if (snapshotCurrentPage != 2) stringResource(R.string.next) else stringResource(R.string.enter_app),
+                fontSize = 17.sp
+            )
         }
 
         TextButton(
@@ -130,7 +134,7 @@ private fun WelcomeScreen() {
                 contentColor = colorResource(R.color.welcome_color)
             )
         ) {
-            Text("取消", fontSize = 17.sp)
+            Text(stringResource(R.string.cancel), fontSize = 17.sp)
         }
     }
 }

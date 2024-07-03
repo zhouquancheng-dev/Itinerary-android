@@ -9,16 +9,23 @@ import cn.jiguang.verifysdk.api.JVerificationInterface
 import com.alibaba.sdk.android.httpdns.InitConfig
 import com.alibaba.sdk.android.httpdns.ranking.IPRankingBean
 import com.blankj.utilcode.util.LogUtils
-import com.example.common.data.DsKey.IS_PRIVACY_AGREE
+import com.example.common.config.AppConfig
+import com.example.common.data.Constants.JG_TAG
+import com.example.common.data.DatastoreKey.IS_PRIVACY_AGREE
+import com.example.common.listener.TIMSDKListener
 import com.example.common.util.DataStoreUtils
-import com.example.common.util.DataStoreUtils.getBooleanFlow
+import com.example.common.util.DataStoreUtils.getBooleanSync
 import com.hjq.toast.Toaster
 import com.tencent.bugly.crashreport.CrashReport
+import com.tencent.imsdk.v2.V2TIMLogListener
+import com.tencent.imsdk.v2.V2TIMManager
+import com.tencent.imsdk.v2.V2TIMSDKConfig
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 abstract class BaseApplication : Application() {
@@ -47,15 +54,25 @@ abstract class BaseApplication : Application() {
         // 监听整个应用程序过程的生命周期
         ProcessLifecycleOwner.get().lifecycle.addObserver(ApplicationLifecycleObserver())
 
+        // 并行初始化各个方法
         applicationScope.launch {
             initData()
-            initNormalSdks()
-            initQbSdk()
-            if (getBooleanFlow(IS_PRIVACY_AGREE).first()) {
-                initPrivacyRequiredSDKs()
+
+            val initJobs = mutableListOf(
+                async { initNormalSdks() },
+                async(Dispatchers.Main) { initBugLy() }
+            )
+
+            // 如果用户已经同意隐私政策，则初始化需要隐私协议的SDK
+            if (getBooleanSync(IS_PRIVACY_AGREE)) {
+                initJobs += async {
+                    initPrivacyRequiredSDKs()
+                }
             }
+
+            // 等待所有初始化任务完成
+            initJobs.awaitAll()
         }
-        initBugLy()
     }
 
     inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
@@ -78,7 +95,64 @@ abstract class BaseApplication : Application() {
      * 初始化不会调用隐私相关的sdk
      */
     open fun initNormalSdks() {
-        //初始化配置，调用即可，不必处理返回值。
+        initAliHttpDNS()
+    }
+
+    /**
+     * 初始化第三方sdk
+     */
+    open fun initPrivacyRequiredSDKs() {
+        // 极光 SDK
+        JVerificationInterface.setDebugMode(isDebug())
+        JVerificationInterface.init(this) { code, result ->
+            LogUtils.dTag(
+                JG_TAG,
+                if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result"
+            )
+        }
+
+        /*
+        // NIM SDK
+        val options = SDKOptions().apply {
+            appKey = "ab7eafbf0e77f2a5a2db87ffd591b80f"
+            asyncInitSDK = true
+            enableBackOffReconnectStrategy = true
+        }
+        // 初始化SDK
+        NIMClient.initV2(this, options)
+        // 监听初始化状态
+        NIMClient.getService(SdkLifecycleObserver::class.java)
+            .observeMainProcessInitCompleteResult({ aBoolean ->
+                if (aBoolean != null && aBoolean) {
+                    LogUtils.dTag("NIM", "NIM SDK 初始化完成")
+                }
+            }, true)
+         */
+
+        // Tencent IM SDK
+        val config = V2TIMSDKConfig().apply {
+            logLevel = V2TIMSDKConfig.V2TIM_LOG_DEBUG
+            logListener = object : V2TIMLogListener() {
+                override fun onLog(logLevel: Int, logContent: String?) {
+                    super.onLog(logLevel, logContent)
+                }
+            }
+        }
+        // 监听IM连接状态
+        V2TIMManager.getInstance().addIMSDKListener(TIMSDKListener())
+        // 初始化SDK
+        V2TIMManager.getInstance().initSDK(this, AppConfig.TENCENT_IM_APP_ID.toInt(), config)
+    }
+
+    /**
+     * bug 上报
+     */
+    open fun initBugLy() {
+        CrashReport.initCrashReport(getInstance(), "1e43689b76", false)
+    }
+
+    private fun initAliHttpDNS() {
+        //初始化配置，调用即可，不必处理返回值
         InitConfig.Builder()
             // 配置是否启用https，默认http
             .setEnableHttps(true)
@@ -98,30 +172,5 @@ abstract class BaseApplication : Application() {
             .setIPRankingList(arrayListOf(IPRankingBean("api.zyuxr.top", 9090)))
             // 针对哪一个account配置
             .buildFor("113753")
-    }
-
-    /**
-     * 初始化第三方sdk
-     */
-    open fun initPrivacyRequiredSDKs() {
-        // 极光认证一键登录sdk
-        JVerificationInterface.setDebugMode(false)
-        JVerificationInterface.init(this) { code, result ->
-            LogUtils.d(if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result")
-        }
-    }
-
-    /**
-     * bug 上报
-     */
-    open fun initBugLy() {
-        CrashReport.initCrashReport(getInstance(), "1e43689b76", false)
-    }
-
-    /**
-     * x5 内核初始化接口
-     */
-    open fun initQbSdk() {
-
     }
 }

@@ -1,6 +1,6 @@
 package com.example.network.factory
 
-import com.example.model.BaseResponse
+import com.example.model.Response
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
@@ -23,7 +23,7 @@ class KotlinxSerializationConverterFactory(
             ?: return null
 
         val rawType = parameterizedType.rawType
-        if (rawType != BaseResponse::class.java) {
+        if (rawType != Response::class.java) {
             return null
         }
 

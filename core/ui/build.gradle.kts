@@ -93,4 +93,14 @@ dependencies {
 
     api(libs.google.accompanist.permissions)
     api(libs.google.accompanist.webview)
+
+    implementation(platform(libs.coil.bom))
+    implementation(libs.coil.android)
+    implementation(libs.coil.core.android)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.compose.core.android)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.coil.gif)
+    implementation(libs.coil.video)
+    implementation(libs.coil.svg)
 }

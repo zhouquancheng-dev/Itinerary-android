@@ -2,13 +2,19 @@ package com.zqc.itinerary.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.im.MessageScreen
+import com.example.mine.MineScreen
+import com.example.ui.coil.LoadAsyncImage
+import com.zqc.itinerary.R
 import com.zqc.itinerary.nav.AppDestinations
 
 @Composable
@@ -26,7 +32,10 @@ fun AppNavGraph(
             route = AppDestinations.HomePage.route,
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("HomePage")
+                LoadAsyncImage(
+                    model = R.drawable.iconmonstr_cat,
+                    modifier = Modifier.size(50.dp)
+                )
             }
         }
 
@@ -34,24 +43,20 @@ fun AppNavGraph(
             route = AppDestinations.DestinationPage.route,
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("DestinationPage")
+                Text("Second Page")
             }
         }
 
         composable(
             route = AppDestinations.MessagePage.route,
         ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("MessagePage")
-            }
+            MessageScreen()
         }
 
         composable(
             route = AppDestinations.MinePage.route,
         ) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("MinePage")
-            }
+            MineScreen()
         }
     }
 }

@@ -71,10 +71,3 @@
     public static int e(...);
 }
 #---------------------基本配置结束---------------------#
-
--if public class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt {
-    public static *** getLocalLifecycleOwner();
-}
--keep public class androidx.compose.ui.platform.AndroidCompositionLocals_androidKt {
-    public static *** getLocalLifecycleOwner();
-}

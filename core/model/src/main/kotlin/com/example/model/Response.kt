@@ -8,8 +8,16 @@ import kotlinx.serialization.Serializable
  * @param data Data
  */
 @Serializable
-data class BaseResponse<T>(
+data class Response<T>(
     val status: Int,
     val msg: String,
     val data: T?
 )
+
+const val SUCCESS_STRING = "success"
+
+const val SUCCESS = 200
+
+const val FAILURE = 401
+
+const val SERVER_ERROR = 500

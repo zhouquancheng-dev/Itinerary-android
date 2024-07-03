@@ -15,90 +15,61 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
-import com.example.common.BaseApplication
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.common.util.startAcWithIntent
 import com.example.common.util.startDeepLink
-import com.example.common.data.DsKey.IS_FIRST_TIME_LAUNCH
-import com.example.common.data.DsKey.IS_LOGIN_STATUS
-import com.example.common.data.DsKey.IS_PRIVACY_AGREE
-import com.example.common.util.DataStoreUtils.getBooleanFlow
-import com.example.common.util.DataStoreUtils.putBoolean
+import com.example.splash.vm.Event
+import com.example.splash.vm.SplashViewModel
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 class SplashActivity : ComponentActivity() {
-
-    private val bApplication by lazy { BaseApplication.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             JetItineraryTheme {
-                var showDialog by remember { mutableStateOf(false) }
+                val vm: SplashViewModel = viewModel()
+                val showDialog by vm.showDialog.collectAsStateWithLifecycle()
 
                 LaunchedEffect(Unit) {
-                    if (!isPrivacyAgree()) {
-                        showDialog = true
-                    } else {
-                        navigateToActivity()
+                    vm.initPrivacyState()
+                    vm.eventFlow.collect { event ->
+                        when (event) {
+                            is Event.FinishAc -> finish()
+                            is Event.StartWelcome -> {
+                                startAcWithIntent<WelcomeActivity>()
+                                finish()
+                            }
+                            is Event.StartMain -> {
+                                startDeepLink("app://main")
+                                finish()
+                            }
+                            is Event.StartLogin -> {
+                                startDeepLink("login://main")
+                                finish()
+                            }
+                        }
                     }
                 }
 
                 SplashScreen(
                     showDialog = showDialog,
-                    onAcceptRequest = {
-                        showDialog = false
-                        navigateToActivity()
-                    },
-                    onRejectRequest = {
-                        showDialog = false
-                        finish()
-                    }
+                    onAcceptRequest = vm::acceptPrivacy,
+                    onRejectRequest = vm::rejectPrivacy
                 )
             }
         }
     }
 
-    private suspend fun isFirstTimeLaunch() =
-        getBooleanFlow(IS_FIRST_TIME_LAUNCH, true).first()
-
-    private suspend fun isPrivacyAgree() = getBooleanFlow(IS_PRIVACY_AGREE).first()
-
-    private suspend fun isLoginStatus() = getBooleanFlow(IS_LOGIN_STATUS).first()
-
-    private fun navigateToActivity() {
-        lifecycleScope.launch {
-            putBoolean(IS_PRIVACY_AGREE, true)
-            if (isFirstTimeLaunch()) {
-                bApplication.initPrivacyRequiredSDKs()
-                startAcWithIntent<WelcomeActivity>()
-                finish()
-            } else {
-                delay(500)
-                if (isLoginStatus()) {
-                    startDeepLink("app://main")
-                    finish()
-                } else {
-                    startDeepLink("login://main")
-                    finish()
-                }
-            }
-        }
-    }
 }
 
 @Composable

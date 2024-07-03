@@ -6,10 +6,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -26,7 +26,7 @@ fun LoadAsyncImage(
     placeholder: Painter = painterResource(R.drawable.module_ic_coil_placeholder),
     errorImage: Painter = painterResource(R.drawable.module_ic_coil_error)
 ) {
-    val context = LocalPlatformContext.current
+    val context = LocalContext.current
 
     val imageRequest = remember(model) {
         ImageRequest.Builder(context)

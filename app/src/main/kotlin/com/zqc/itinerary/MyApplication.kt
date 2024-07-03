@@ -26,6 +26,7 @@ class MyApplication : BaseApplication() {
         AppConfig.USER_PROTOCOL_URL = BuildConfig.USER_PROTOCOL_URL
         AppConfig.FILING_NO = BuildConfig.FILING_NO
         AppConfig.JIGUANG_APPKEY = BuildConfig.JIGUANG_APPKEY
+        AppConfig.TENCENT_IM_APP_ID = BuildConfig.TENCENT_IM_APP_ID
     }
 
 }

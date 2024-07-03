@@ -90,7 +90,7 @@ object NetworkModule {
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl("https://your.api.base.url")
+            .baseUrl("https://api.zyuxr.top")
             .build()
     }
 }

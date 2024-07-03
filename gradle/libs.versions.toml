@@ -34,11 +34,11 @@ kotlin-serialization-json = "1.7.1"
 kotlin-gradle-plugin = "2.0.0"
 kotlinx-collections-immutable = "0.3.7"
 lottie = "6.4.1"
-lifecycle-runtime-ktx = "2.8.2"
-lifecycle-viewmodel-ktx = "2.8.2"
-lifecycle-runtime-compose = "2.8.2"
-lifecycle-viewmodel-compose = "2.8.2"
-lifecycle-process = "2.8.2"
+lifecycle-runtime-ktx = "2.8.3"
+lifecycle-viewmodel-ktx = "2.8.3"
+lifecycle-runtime-compose = "2.8.3"
+lifecycle-viewmodel-compose = "2.8.3"
+lifecycle-process = "2.8.3"
 moshi = "1.15.1"
 material3-android = "1.2.1"
 navigation-compose = "2.7.7"
@@ -68,10 +68,11 @@ luban = "1.1.8"
 jiguang-jverification = "3.2.5"
 bugly = "4.1.9.3"
 alicloud-httpdns = "2.4.0"
+netease-basesdk = "10.2.6-beta"
+tencent-imsdk-plus = "8.0.5895"
 
 # 阿里云私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
-geetest-captcha = "1.8.3.1_20230927"
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [plugins]
@@ -171,15 +172,14 @@ androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensi
 bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprov-jdk15on" }
 # https://central.sonatype.com/artifact/io.coil-kt.coil3/coil-bom
 coil-bom = { group = "io.coil-kt.coil3", name = "coil-bom", version.ref = "coil-bom" }
-coil = { group = "io.coil-kt.coil3", name = "coil" }
-coil-core = { group = "io.coil-kt.coil3", name = "coil-core" }
+coil-android = { group = "io.coil-kt.coil3", name = "coil-android" }
+coil-core-android = { group = "io.coil-kt.coil3", name = "coil-core-android" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose" }
-coil-compose-core = { group = "io.coil-kt.coil3", name = "coil-compose-core" }
+coil-compose-core-android = { group = "io.coil-kt.coil3", name = "coil-compose-core-android" }
+coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp" }
 coil-gif = { group = "io.coil-kt.coil3", name = "coil-gif" }
 coil-video = { group = "io.coil-kt.coil3", name = "coil-video" }
 coil-svg = { group = "io.coil-kt.coil3", name = "coil-svg" }
-coil-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp" }
-coil-test = { group = "io.coil-kt.coil3", name = "coil-test" }
 # https://mvnrepository.com/artifact/com.android.tools/desugar_jdk_libs
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 # https://central.sonatype.com/artifact/com.google.dagger/hilt-android
@@ -255,7 +255,10 @@ jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref =
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 # https://mvnrepository.com/artifact/com.aliyun.ams/alicloud-android-httpdns
 alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
+# https://central.sonatype.com/artifact/com.netease.nimlib/basesdk
+netease-nimlib-basesdk = { module = "com.netease.nimlib:basesdk", version.ref = "netease-basesdk" }
+# https://mvnrepository.com/artifact/com.tencent.imsdk/imsdk-plus
+tencent-imsdk-plus = { module = "com.tencent.imsdk:imsdk-plus", version.ref = "tencent-imsdk-plus" }
 
 # 阿里云私有仓库
 aliyun-captcha-android = { module = "com.zqc.dev:aliyun-captcha-android", version.ref = "aliyun-captcha" }
-geetest_captcha_android = { module = "com.zqc.dev:geetest_captcha_android", version.ref = "geetest-captcha" }

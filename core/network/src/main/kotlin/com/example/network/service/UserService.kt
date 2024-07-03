@@ -2,9 +2,12 @@ package com.example.network.service
 
 import com.example.model.sms.TokenVerifyRequest
 import com.example.model.sms.TokenVerifyResponse
-import com.example.model.BaseResponse
+import com.example.model.Response
 import com.example.model.sms.CheckSmsResponse
 import com.example.model.sms.SendSmsResponse
+import com.example.network.url.ALI_SEND_CODE
+import com.example.network.url.ALI_VERIFY_CODE
+import com.example.network.url.JG_AUTH_LOGIN
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
@@ -21,10 +24,10 @@ interface UserService {
      *    "exID": null
      * }
      */
-    @POST("/login/tokenVerify")
+    @POST(JG_AUTH_LOGIN)
     suspend fun loginTokenVerify(
         @Body request: TokenVerifyRequest
-    ): BaseResponse<TokenVerifyResponse>
+    ): Response<TokenVerifyResponse>
 
     /**
      * 发送验证码
@@ -34,14 +37,14 @@ interface UserService {
      * @param validTime 验证码有效时长，默认值：300s
      * @param sendInterval 发送时间间隔，默认值：60s
      */
-    @POST("/login/sendSmsCode")
+    @POST(ALI_SEND_CODE)
     @FormUrlEncoded
     suspend fun sendSmsCode(
         @Field("phoneNumber") phoneNumber: String,
         @Field("codeLength") codeLength: Long = 6L,
         @Field("validTime") validTime: Long = 300L,
         @Field("sendInterval") sendInterval: Long = 60L,
-    ): BaseResponse<SendSmsResponse>
+    ): Response<SendSmsResponse>
 
     /**
      * 验证码核验
@@ -49,11 +52,11 @@ interface UserService {
      * @param phoneNumber 手机号
      * @param verifyCode 验证码
      */
-    @POST("/login/verifyCode")
+    @POST(ALI_VERIFY_CODE)
     @FormUrlEncoded
     suspend fun verifySmsCode(
         @Field("phoneNumber") phoneNumber: String,
         @Field("verifyCode") verifyCode: String
-    ): BaseResponse<CheckSmsResponse>
+    ): Response<CheckSmsResponse>
 
 }

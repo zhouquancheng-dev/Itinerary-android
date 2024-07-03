@@ -23,7 +23,7 @@
         android:id="@android:id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/login_error"
+        android:text="@string/custom_message"
         android:textColor="#FFFFFFFF"
         app:layout_constraintBottom_toBottomOf="@+id/icon"
         app:layout_constraintEnd_toEndOf="parent"

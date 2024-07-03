@@ -1,7 +1,6 @@
 package com.example.login.ui
 
 import android.app.Activity
-import android.view.Gravity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +35,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.view.ToasterUtil.ToastStatus.*
+import com.example.ui.view.ToasterUtil.showCustomToaster
 import com.example.common.util.startDeepLink
 import com.example.login.R
 import com.example.login.components.CustomNumericKeypad
@@ -45,9 +46,6 @@ import com.example.login.vm.LoginViewModel
 import com.example.ui.components.StandardCenterTopAppBar
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.dialog.ProgressIndicatorDialog
-import com.hjq.toast.ToastParams
-import com.hjq.toast.Toaster
-import com.hjq.toast.style.CustomToastStyle
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ticker
 
@@ -163,10 +161,7 @@ fun VerifyCodeScreen(
                     onClick = {
                         timerTotalSeconds = 60
                         loginViewModel.sendSmsCode(phoneNumber) {
-                            val params = ToastParams()
-                            params.text = context.getString(R.string.resend_success)
-                            params.style = CustomToastStyle(R.layout.toast_custom_view_success, Gravity.CENTER)
-                            Toaster.show(params)
+                            showCustomToaster(context.getString(R.string.resend_success), SUCCESS)
                         }
                     },
                     enabled = timerTotalSeconds == 0,

@@ -1,7 +1,6 @@
 package com.example.login.ui
 
 import android.app.Activity
-import android.view.Gravity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +46,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.ClickUtils.isFastClick
+import com.example.ui.view.ToasterUtil.ToastStatus.WARN
+import com.example.ui.view.ToasterUtil.showCustomToaster
 import com.example.common.util.startDeepLink
 import com.example.login.R
 import com.example.login.components.LoginButton
@@ -60,9 +61,6 @@ import com.example.network.captcha.AliYunCaptchaClient
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.components.click
 import com.example.ui.dialog.ProgressIndicatorDialog
-import com.hjq.toast.ToastParams
-import com.hjq.toast.Toaster
-import com.hjq.toast.style.CustomToastStyle
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -80,8 +78,8 @@ fun LoginScreen(
         PhoneNumberVisualTransformation(phoneNumberValue)
     }
     var privacyChecked by remember { mutableStateOf(false) }
-    val dialogState by loginViewModel.dialogState.collectAsStateWithLifecycle()
-    val getting by loginViewModel.gettingCode.collectAsStateWithLifecycle()
+    val loginAuthState by loginViewModel.loginAuthState.collectAsStateWithLifecycle()
+    val sendingVerifyCode by loginViewModel.sendingVerifyCode.collectAsStateWithLifecycle()
 
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -107,10 +105,7 @@ fun LoginScreen(
             if (imeVisible) keyboardController?.hide()
 
             if (!privacyChecked) {
-                val params = ToastParams()
-                params.text = context.getString(R.string.login_error2)
-                params.style = CustomToastStyle(R.layout.toast_custom_view_warn, Gravity.CENTER)
-                Toaster.show(params)
+                showCustomToaster(context.getString(R.string.tick_protocol), WARN)
             } else {
                 // 发送验证码
                 loginViewModel.launchWithCaptcha(context) {
@@ -164,7 +159,7 @@ fun LoginScreen(
             )
 
             VerticalSpacer(70.dp)
-            LoginButton(phoneNumberValue, getting) {
+            LoginButton(phoneNumberValue, sendingVerifyCode) {
                 loginClick()
             }
 
@@ -189,11 +184,9 @@ fun LoginScreen(
                         .size(55.dp)
                         .clip(CircleShape)
                         .click(enableClickDebounce = true) {
-                            loginViewModel.launchWithCaptcha(context) {
-                                loginViewModel.loginAuth(context) {
-                                    startDeepLink(context, "app://main")
-                                    (context as? Activity)?.finish()
-                                }
+                            loginViewModel.loginAuth(context) {
+                                startDeepLink(context, "app://main")
+                                (context as? Activity)?.finish()
                             }
                         }
                 )
@@ -205,11 +198,7 @@ fun LoginScreen(
                         .size(55.dp)
                         .clip(CircleShape)
                         .click(enableClickDebounce = true) {
-                            val params = ToastParams()
-                            params.text = "暂未接入"
-                            params.style =
-                                CustomToastStyle(R.layout.toast_custom_view_warn, Gravity.CENTER)
-                            Toaster.show(params)
+                            showCustomToaster("暂未接入", WARN)
                         }
                 )
             }
@@ -217,7 +206,7 @@ fun LoginScreen(
     }
 
     ProgressIndicatorDialog(
-        showDialog = dialogState != DialogType.NONE,
-        dialogText = dialogState.dialogText
+        showDialog = loginAuthState != DialogType.NONE,
+        dialogText = loginAuthState.dialogText
     )
 }

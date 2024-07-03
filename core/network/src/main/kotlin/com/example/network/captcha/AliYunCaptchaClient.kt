@@ -49,7 +49,7 @@ object AliYunCaptchaClient {
             }
         }?.addOnFailureListener { error: String ->
             val errorResponse = Json.decodeFromString<ErrorResponse>(error)
-            LogUtils.json("验证码加载失败", errorResponse)
+            LogUtils.json(errorResponse)
 
             captchaListener.onError(error)
         }

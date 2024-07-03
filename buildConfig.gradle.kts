@@ -10,6 +10,7 @@ val autoConfig = mapOf(
     "USER_PROTOCOL_URL" to "https://composables.com/terms", // 用户协议
     "FILING_NO" to "", // app备案号
     "JIGUANG_APPKEY" to "9a6a8d9363893aeafbff867e", // 极光Key
+    "TENCENT_IM_APP_ID" to "1600042812" // 腾讯IM AppId
 )
 
 // 将配置项添加到 ext

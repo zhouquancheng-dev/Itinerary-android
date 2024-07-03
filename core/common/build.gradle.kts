@@ -52,22 +52,23 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 
-    api(platform(libs.coil.kt.bom))
-    api(libs.coil.kt.compose)
-    api(libs.coil.kt.gif)
-    api(libs.coil.kt.video)
-    api(libs.coil.kt.svg)
-
     api(libs.androidx.datastore.preferences)
-
-    // 极光认证
-    api(libs.jiguang.jverification)
 
     api(libs.bcprov.jdk15on)
 
     api(libs.utilcodex)
     api(libs.toaster)
 
+    // 极光
+    api(libs.jiguang.jverification)
+
     implementation(libs.tencent.bugly)
+
     api(libs.alicloud.httpdns)
+
+    // 网易云信IM
+    api(libs.netease.nimlib.basesdk)
+
+    // Tencent Im
+    api(libs.tencent.imsdk.plus)
 }
