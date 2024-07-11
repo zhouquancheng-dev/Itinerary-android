@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.hilt.android)
     kotlin("kapt")
 }
 
@@ -21,11 +21,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_19
+        targetCompatibility = JavaVersion.VERSION_19
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "19"
+    }
+    viewBinding {
+        enable = true
     }
     buildFeatures {
         compose = true
@@ -53,6 +56,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    api(libs.androidx.databinding.runtime)
+
     api(libs.androidx.constraintlayout.compose)
 
     api(libs.androidx.activity.compose)
@@ -60,9 +65,6 @@ dependencies {
     androidTestApi(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.animation)
     api(libs.androidx.compose.foundation)
-    api(libs.androidx.compose.material)
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material3.window)
     api(libs.androidx.compose.runtime)
     api(libs.androidx.compose.runtime.livedata)
     api(libs.androidx.compose.ui)
@@ -71,11 +73,20 @@ dependencies {
     api(libs.androidx.compose.ui.graphics.shapes)
     api(libs.androidx.compose.ui.viewbinding)
     api(libs.androidx.compose.ui.tooling.preview)
+    api(libs.androidx.compose.material)
     api(libs.androidx.compose.material.icons.core)
     api(libs.androidx.compose.material.icons.extended)
+    api(libs.androidx.compose.material3)
+    api(libs.androidx.compose.material3.window)
+    api(libs.androidx.compose.material3.android)
     androidTestApi(libs.androidx.compose.ui.test.junit4)
     debugApi(libs.androidx.compose.ui.tooling)
     debugApi(libs.androidx.compose.ui.test.manifest)
+
+    api(libs.androidx.compose.material3.adaptive.navigation.suite)
+    api(libs.androidx.compose.material3.adaptive)
+    api(libs.androidx.compose.material3.adaptive.layout)
+    api(libs.androidx.compose.material3.adaptive.navigation)
 
     api(libs.androidx.lifecycle.runtime.ktx)
     api(libs.androidx.lifecycle.runtime.compose)
@@ -94,13 +105,15 @@ dependencies {
     api(libs.google.accompanist.permissions)
     api(libs.google.accompanist.webview)
 
-    implementation(platform(libs.coil.bom))
-    implementation(libs.coil.android)
-    implementation(libs.coil.core.android)
-    implementation(libs.coil.compose)
-    implementation(libs.coil.compose.core.android)
-    implementation(libs.coil.network.okhttp)
-    implementation(libs.coil.gif)
-    implementation(libs.coil.video)
-    implementation(libs.coil.svg)
+    implementation(platform(libs.coil3.bom))
+    implementation(libs.coil3)
+    implementation(libs.coil3.core)
+    implementation(libs.coil3.compose)
+    implementation(libs.coil3.compose.core)
+    implementation(libs.coil3.network.okhttp)
+    implementation(libs.coil3.gif)
+    implementation(libs.coil3.video)
+    implementation(libs.coil3.svg)
+
+    api(libs.glide.compose)
 }

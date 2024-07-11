@@ -18,7 +18,7 @@ import com.example.ui.R
 @Composable
 fun EmptyContent(
     modifier: Modifier = Modifier,
-    noContent: NoContent = NoContent("无内容")
+    noContent: NoContent = NoContent("")
 ) {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.ui_empty)
@@ -35,7 +35,7 @@ fun EmptyContent(
         LottieAnimation(
             composition = composition,
             progress = { progress },
-            modifier = Modifier.size(300.dp)
+            modifier = Modifier.size(200.dp)
         )
         Text(text = noContent.reason, modifier = Modifier.padding(8.dp))
     }
@@ -50,5 +50,5 @@ fun EmptyContent(
 )
 @Composable
 fun NoContentPreview() {
-    EmptyContent()
+    EmptyContent(noContent = NoContent("无内容"))
 }

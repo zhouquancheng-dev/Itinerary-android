@@ -17,7 +17,7 @@ fun <T> LcePage(
     onRetryClick: () -> Unit = {},
     loadingContent: @Composable (() -> Unit) = { LoadingContent() },
     errorContent: @Composable ((Throwable?) -> Unit) = { ErrorContent(onErrorClick = onRetryClick) },
-    noContent: @Composable ((String) -> Unit) = { EmptyContent() },
+    noContent: @Composable ((String) -> Unit) = { EmptyContent(noContent = NoContent(it)) },
     content: @Composable (result: T) -> Unit
 ) {
     when (uiState) {
