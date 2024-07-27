@@ -3,10 +3,15 @@ package com.tencent.qcloud.tuikit.tuichat.util;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.text.TextUtils;
+
 import androidx.annotation.IntDef;
+
 import com.tencent.qcloud.tuicore.util.PermissionRequester;
 import com.tencent.qcloud.tuikit.tuichat.R;
 import com.tencent.qcloud.tuikit.tuichat.TUIChatService;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 public class PermissionHelper {
     public static final int PERMISSION_MICROPHONE = 1;
@@ -14,6 +19,7 @@ public class PermissionHelper {
     public static final int PERMISSION_STORAGE = 3;
 
     @IntDef({PERMISSION_MICROPHONE, PERMISSION_CAMERA, PERMISSION_STORAGE})
+    @Retention(RetentionPolicy.SOURCE)
     public @interface PermissionType {}
 
     public static void requestPermission(@PermissionType int type, PermissionCallback callback) {

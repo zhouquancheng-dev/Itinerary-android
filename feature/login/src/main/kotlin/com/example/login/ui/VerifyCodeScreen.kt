@@ -3,9 +3,11 @@ package com.example.login.ui
 import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -100,23 +102,25 @@ fun VerifyCodeScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Image(
-                painter = painterResource(R.drawable.sms_verify_img),
-                contentDescription = null
-            )
-
             Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .align(Alignment.TopCenter),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top)
             ) {
+                Image(
+                    painter = painterResource(R.drawable.sms_verify_img),
+                    contentDescription = null,
+                    modifier = Modifier.size(100.dp)
+                )
+
                 VerticalSpacer(20.dp)
                 Text(
                     text = stringResource(R.string.enter_sms_code),
@@ -177,7 +181,9 @@ fun VerifyCodeScreen(
                 }
             }
 
-            CustomNumericKeypad(modifier = Modifier.weight(1f)) { action ->
+            CustomNumericKeypad(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) { action ->
                 when (action) {
                     KeypadAction.Delete -> if (codeValue.isNotEmpty()) codeValue = codeValue.dropLast(1)
                     else -> if (codeValue.length < maxLength && action.value.isNotEmpty()) {
