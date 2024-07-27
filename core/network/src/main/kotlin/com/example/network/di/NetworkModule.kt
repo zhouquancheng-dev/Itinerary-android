@@ -1,22 +1,22 @@
 package com.example.network.di
 
-import com.example.common.BaseApplication
+import android.content.Context
 import com.example.common.config.AppConfig
-import com.example.common.connect.NetworkMonitor
 import com.example.network.adapter.DateAdapter
 import com.example.network.interceptor.CacheInterceptor
-import com.example.network.interceptor.errorHandlingInterceptor
-import com.example.network.interceptor.networkInterceptor
-import com.example.network.provider.AuthTokenProvider
+import com.example.network.interceptor.handleHttpError
+import com.example.network.okhttp.OkHttpDns
+import com.example.network.url.APP_BASE_URL
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.Cache
+import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,15 +25,29 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.io.File
 import java.util.concurrent.TimeUnit
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
+    private const val CONNECT_TIMEOUT = 15L
+    private const val READ_TIMEOUT = 10L
+
     @Provides
     @Singleton
-    fun provideLoggingInterceptor(): HttpLoggingInterceptor {
+    fun provideCache(
+        @ApplicationContext context: Context
+    ): Cache {
+        val cacheSize = 50L * 1024L * 1024L
+        return Cache(File(context.cacheDir, "http_cache"), cacheSize)
+    }
+
+    @Provides
+    @Singleton
+    @Named("logging")
+    fun provideLoggingInterceptor(): Interceptor {
         val logging = HttpLoggingInterceptor()
         logging.level = if (AppConfig.IS_DEBUG) {
             HttpLoggingInterceptor.Level.BODY
@@ -45,52 +59,71 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideCache(): Cache {
-        val cacheSize = 50L * 1024L * 1024L // 50 MB
-        return Cache(File(BaseApplication.getInstance().cacheDir, "http_cache"), cacheSize)
+    @Named("errorHandling")
+    fun provideErrorHandlingInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val response = chain.proceed(chain.request())
+            if (!response.isSuccessful) {
+                handleHttpError(response)
+            }
+            response
+        }
     }
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        loggingInterceptor: HttpLoggingInterceptor,
-        networkMonitor: NetworkMonitor,
-        authTokenProvider: AuthTokenProvider,
-        cache: Cache
+        cacheInterceptor: CacheInterceptor,
+        okHttpDns: OkHttpDns,
+        cache: Cache,
+        @Named("logging") loggingInterceptor: Interceptor,
+        @Named("errorHandling") errorHandlingInterceptor: Interceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(10, TimeUnit.SECONDS)
+            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.SECONDS)
+            .readTimeout(READ_TIMEOUT, TimeUnit.SECONDS)
+            .dns(okHttpDns)
             .addInterceptor(loggingInterceptor)
-            .addNetworkInterceptor(CacheInterceptor(networkMonitor))
-            .addNetworkInterceptor(networkInterceptor(authTokenProvider))
-            .addInterceptor(errorHandlingInterceptor())
+            .addInterceptor(errorHandlingInterceptor)
+            .addNetworkInterceptor(cacheInterceptor)
             .cache(cache)
             .build()
     }
 
-    @ExperimentalSerializationApi
     @Provides
     @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        val contentType = "application/json".toMediaType()
-        val json = Json {
+    fun provideJson(): Json {
+        return Json {
             prettyPrint = true
             isLenient = true
-            explicitNulls = false
-            ignoreUnknownKeys = true
+            explicitNulls = false // 为 false 时代表序列化时忽略null
+            ignoreUnknownKeys = true // 忽略未知键
         }
+    }
 
-        val moshi = Moshi.Builder()
+    @Provides
+    @Singleton
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder()
             .add(KotlinJsonAdapterFactory())
             .add(DateAdapter())
             .build()
+    }
 
+    @Provides
+    @Singleton
+    fun provideRetrofit(
+        okHttpClient: OkHttpClient,
+        json: Json,
+        moshi: Moshi
+    ): Retrofit {
+        val contentType = "application/json".toMediaType()
         return Retrofit.Builder()
+            .baseUrl(APP_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .baseUrl("https://api.zyuxr.top")
             .build()
     }
+
 }

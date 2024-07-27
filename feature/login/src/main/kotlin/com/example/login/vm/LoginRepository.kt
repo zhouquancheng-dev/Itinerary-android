@@ -10,7 +10,9 @@ import com.example.common.util.DataStoreUtils.putStringSync
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class LoginRepository @Inject constructor(
     @Dispatcher(IO) val ioDispatcher: CoroutineDispatcher
 ) {

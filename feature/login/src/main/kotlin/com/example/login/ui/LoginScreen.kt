@@ -20,9 +20,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration.Indefinite
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +37,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,11 +47,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navArrival
+import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.common.util.ClickUtils.isFastClick
 import com.example.ui.view.ToasterUtil.ToastStatus.WARN
 import com.example.ui.view.ToasterUtil.showCustomToaster
-import com.example.common.util.startDeepLink
 import com.example.login.R
 import com.example.login.components.LoginButton
 import com.example.login.components.PhoneNumberTextField
@@ -81,6 +87,17 @@ fun LoginScreen(
     val loginAuthState by loginViewModel.loginAuthState.collectAsStateWithLifecycle()
     val sendingVerifyCode by loginViewModel.sendingVerifyCode.collectAsStateWithLifecycle()
 
+    val isOffline by loginViewModel.isOffline.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(isOffline) {
+        if (isOffline) {
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.not_connected),
+                duration = Indefinite,
+            )
+        }
+    }
+
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
@@ -103,7 +120,6 @@ fun LoginScreen(
     val login: () -> Unit = {
         if (!isFastClick()) {
             if (imeVisible) keyboardController?.hide()
-
             if (!privacyChecked) {
                 showCustomToaster(context.getString(R.string.tick_protocol), WARN)
             } else {
@@ -118,7 +134,11 @@ fun LoginScreen(
     }
     val loginClick by rememberUpdatedState(login)
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(snackbarHostState)
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -183,10 +203,11 @@ fun LoginScreen(
                     modifier = Modifier
                         .size(55.dp)
                         .clip(CircleShape)
-                        .click(enableClickDebounce = true) {
+                        .click(debounce = true) {
                             loginViewModel.loginAuth(context) {
-                                startDeepLink(context, "app://main")
-                                (context as? Activity)?.finish()
+                                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
+                                    (context as? Activity)?.finish()
+                                }
                             }
                         }
                 )
@@ -197,7 +218,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .size(55.dp)
                         .clip(CircleShape)
-                        .click(enableClickDebounce = true) {
+                        .click(debounce = true) {
                             showCustomToaster("暂未接入", WARN)
                         }
                 )

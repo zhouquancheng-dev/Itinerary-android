@@ -1,27 +1,49 @@
 package com.example.common.vm
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.blankj.utilcode.util.LogUtils
+import androidx.lifecycle.viewModelScope
+import com.example.common.di.AppDispatchers.IO
+import com.example.common.di.Dispatcher
 import com.hjq.toast.Toaster
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.net.ConnectException
-import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.concurrent.TimeoutException
+import javax.inject.Inject
 
-open class BaseViewModel : ViewModel() {
+@HiltViewModel
+open class BaseViewModel @Inject constructor(
+    @Dispatcher(IO) val ioDispatcher: CoroutineDispatcher
+) : ViewModel() {
 
-    protected fun <T> fetchData(fetch: suspend () -> T): Flow<T> = flow {
-        emit(fetch())
+    companion object {
+        private val TAG = BaseViewModel::class.java.simpleName
+    }
+
+    protected fun launch(block: suspend () -> Unit) {
+        viewModelScope.launch(ioDispatcher) {
+            runCatching {
+                block()
+            }.onFailure { e ->
+                Log.e(TAG, "launch onFailure: ", e)
+            }
+        }
+    }
+
+    protected fun <T> fetchData(block: suspend () -> T): Flow<T> = flow {
+        emit(block())
     }.catch { e ->
         handleError(e)
         throw Throwable(e)
-    }.flowOn(Dispatchers.IO)
+    }.flowOn(ioDispatcher)
 
     private fun handleError(e: Throwable) {
         when (e) {
@@ -31,9 +53,6 @@ open class BaseViewModel : ViewModel() {
             is TimeoutException -> {
                 Toaster.show("Request timed out, please try again.")
             }
-            is SocketTimeoutException -> {
-                Toaster.show("Connection timed out, please try again.")
-            }
             is UnknownHostException -> {
                 Toaster.show("Unable to resolve host, please check your network connection.")
             }
@@ -41,7 +60,7 @@ open class BaseViewModel : ViewModel() {
                 Toaster.show("Network error, please check your connection.")
             }
             else -> {
-                LogUtils.e("Network data request exception: $e")
+                Log.e(TAG, "Network data request exception: $e")
             }
         }
     }

@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.login.nav.LoginDestinations
+import androidx.navigation.toRoute
+import com.example.login.nav.LoginHome
+import com.example.login.nav.VerifyCode
 import com.example.login.ui.LoginScreen
 import com.example.login.ui.VerifyCodeScreen
 import com.example.login.vm.LoginViewModel
@@ -28,23 +28,19 @@ fun LoginNavGraph() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = LoginDestinations.LoginHome.route,
+        startDestination = LoginHome,
         modifier = Modifier.fillMaxSize(),
         enterTransition = { EnterTransition.None },
         exitTransition = { ExitTransition.None }
     ) {
-        composable(
-            route = LoginDestinations.LoginHome.route
-        ) { backStackEntry ->
+        composable<LoginHome> { backStackEntry ->
             val loginViewModel = hiltViewModel<LoginViewModel>(backStackEntry)
             LoginScreen(loginViewModel) { phoneNumber ->
-                navController.navigate(LoginDestinations.VerifyCode.onNavigateToRoute(phoneNumber))
+                navController.navigate(VerifyCode(phoneNumber))
             }
         }
 
-        composable(
-            route = LoginDestinations.VerifyCode.route,
-            arguments = listOf(navArgument("phoneNumber") { type = NavType.StringType }),
+        composable<VerifyCode>(
             enterTransition = {
                 fadeIn(
                     animationSpec = tween(300, easing = LinearEasing)
@@ -62,12 +58,11 @@ fun LoginNavGraph() {
                 )
             }
         ) { backStackEntry ->
-            val phoneNumber = backStackEntry.arguments?.getString("phoneNumber") ?: ""
             val loginViewModel = hiltViewModel<LoginViewModel>(backStackEntry)
-
+            val verify = backStackEntry.toRoute<VerifyCode>()
             VerifyCodeScreen(
                 loginViewModel = loginViewModel,
-                phoneNumber = phoneNumber,
+                phoneNumber = verify.phoneNumber,
                 onPress = { navController.navigateUp() }
             )
         }

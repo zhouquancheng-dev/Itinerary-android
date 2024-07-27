@@ -4,13 +4,15 @@ import android.content.Context
 import com.alibaba.sdk.android.httpdns.HTTPDNSResult
 import com.alibaba.sdk.android.httpdns.HttpDns
 import com.alibaba.sdk.android.httpdns.RequestIpType
-import com.alibaba.sdk.android.httpdns.log.HttpDnsLog
-import com.blankj.utilcode.util.LogUtils
+import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Dns
 import java.net.InetAddress
 import java.net.UnknownHostException
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class OkHttpDns(private val context: Context) : Dns {
+@Singleton
+class OkHttpDns @Inject constructor (@ApplicationContext private val context: Context) : Dns {
 
     override fun lookup(hostname: String): List<InetAddress> {
         val httpdnsResult: HTTPDNSResult = HttpDns.getService(context, "113753")

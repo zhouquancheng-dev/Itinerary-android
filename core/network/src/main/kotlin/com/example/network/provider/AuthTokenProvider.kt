@@ -1,7 +1,9 @@
 package com.example.network.provider
 
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.common.util.DataStoreUtils
+import com.example.common.util.DataStoreUtils.getStringFlow
+import com.example.common.util.DataStoreUtils.putString
+import com.example.common.util.DataStoreUtils.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -16,7 +18,7 @@ class AuthTokenProvider @Inject constructor() {
     // 获取当前的身份验证令牌
     suspend fun getAuthToken(): String {
         return cachedToken ?: withContext(Dispatchers.IO) {
-            val token = DataStoreUtils.getStringFlow("auth_token").first()
+            val token = getStringFlow("auth_token").first()
             cachedToken = token
             token
         }
@@ -25,7 +27,7 @@ class AuthTokenProvider @Inject constructor() {
     // 保存新的身份验证令牌
     private suspend fun setAuthToken(token: String) {
         withContext(Dispatchers.IO) {
-            DataStoreUtils.putString("auth_token", token)
+            putString("auth_token", token)
             cachedToken = token
         }
     }
@@ -33,7 +35,7 @@ class AuthTokenProvider @Inject constructor() {
     // 清除当前的身份验证令牌
     suspend fun clearAuthToken() {
         withContext(Dispatchers.IO) {
-            DataStoreUtils.remove(stringPreferencesKey("auth_token"))
+            remove(stringPreferencesKey("auth_token"))
             cachedToken = null
         }
     }

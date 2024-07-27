@@ -1,7 +1,14 @@
 package com.example.common
 
 import android.app.Application
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.res.Configuration
 import android.text.TextUtils
+import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -12,7 +19,6 @@ import com.blankj.utilcode.util.LogUtils
 import com.example.common.config.AppConfig
 import com.example.common.data.Constants.JG_TAG
 import com.example.common.data.DatastoreKey.IS_PRIVACY_AGREE
-import com.example.common.listener.TIMSDKListener
 import com.example.common.util.DataStoreUtils
 import com.example.common.util.DataStoreUtils.getBooleanSync
 import com.hjq.toast.Toaster
@@ -26,15 +32,34 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class BaseApplication : Application() {
 
-    private val applicationScope: CoroutineScope by lazy {
-        CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    }
+    private val applicationScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+
+    private val _isNightMode = MutableStateFlow(false)
+    val isNightMode = _isNightMode.asStateFlow()
+
+    private var configChangeReceiver: BroadcastReceiver? = null
 
     abstract fun isDebug(): Boolean
+
+    @AppCompatDelegate.NightMode
+    abstract fun getSystemNightMode(): Int
+
+    inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
+        override fun onStop(owner: LifecycleOwner) {
+            super.onStop(owner)
+            unregisterConfigChangeReceiver()
+        }
+        override fun onDestroy(owner: LifecycleOwner) {
+            super.onDestroy(owner)
+            applicationScope.cancel()
+        }
+    }
 
     companion object {
         private var instance: BaseApplication? = null
@@ -45,14 +70,25 @@ abstract class BaseApplication : Application() {
         fun getInstance(): BaseApplication {
             return instance ?: throw IllegalStateException("Application is not created yet!")
         }
+
+        /**
+         * 获取当前是否为夜间模式
+         */
+        fun isNightModeInternal(): Boolean {
+            val currentNightMode = getInstance().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            return currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        }
     }
 
     override fun onCreate() {
         super.onCreate()
         instance = this
 
-        // 监听整个应用程序过程的生命周期
-        ProcessLifecycleOwner.get().lifecycle.addObserver(ApplicationLifecycleObserver())
+        AppCompatDelegate.setDefaultNightMode(getSystemNightMode())
+        _isNightMode.value = isNightModeInternal()
+
+        observeLifecycle()
+        registerConfigChangeReceiver()
 
         // 并行初始化各个方法
         applicationScope.launch {
@@ -75,10 +111,26 @@ abstract class BaseApplication : Application() {
         }
     }
 
-    inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
-        override fun onStop(owner: LifecycleOwner) {
-            super.onStop(owner)
-            applicationScope.cancel()
+    private fun observeLifecycle() {
+        // 监听整个应用程序过程的生命周期
+        ProcessLifecycleOwner.get().lifecycle.addObserver(ApplicationLifecycleObserver())
+    }
+
+    private fun registerConfigChangeReceiver() {
+        // 监听配置变化
+        configChangeReceiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                _isNightMode.value = isNightModeInternal()
+            }
+        }
+        val filter = IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED)
+        registerReceiver(configChangeReceiver, filter)
+    }
+
+    private fun unregisterConfigChangeReceiver() {
+        configChangeReceiver?.let {
+            unregisterReceiver(it)
+            configChangeReceiver = null
         }
     }
 
@@ -92,65 +144,40 @@ abstract class BaseApplication : Application() {
     }
 
     /**
-     * 初始化不会调用隐私相关的sdk
+     * 初始化不会调用隐私相关的SDK
      */
-    open fun initNormalSdks() {
+    private fun initNormalSdks() {
         initAliHttpDNS()
     }
 
     /**
-     * 初始化第三方sdk
+     * 初始化需要用户同意隐私政策的第三方SDK
      */
     open fun initPrivacyRequiredSDKs() {
-        // 极光 SDK
-        JVerificationInterface.setDebugMode(isDebug())
-        JVerificationInterface.init(this) { code, result ->
-            LogUtils.dTag(
-                JG_TAG,
-                if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result"
-            )
-        }
-
-        /*
-        // NIM SDK
-        val options = SDKOptions().apply {
-            appKey = "ab7eafbf0e77f2a5a2db87ffd591b80f"
-            asyncInitSDK = true
-            enableBackOffReconnectStrategy = true
-        }
-        // 初始化SDK
-        NIMClient.initV2(this, options)
-        // 监听初始化状态
-        NIMClient.getService(SdkLifecycleObserver::class.java)
-            .observeMainProcessInitCompleteResult({ aBoolean ->
-                if (aBoolean != null && aBoolean) {
-                    LogUtils.dTag("NIM", "NIM SDK 初始化完成")
-                }
-            }, true)
-         */
-
-        // Tencent IM SDK
-        val config = V2TIMSDKConfig().apply {
-            logLevel = V2TIMSDKConfig.V2TIM_LOG_DEBUG
-            logListener = object : V2TIMLogListener() {
-                override fun onLog(logLevel: Int, logContent: String?) {
-                    super.onLog(logLevel, logContent)
-                }
-            }
-        }
-        // 监听IM连接状态
-        V2TIMManager.getInstance().addIMSDKListener(TIMSDKListener())
-        // 初始化SDK
-        V2TIMManager.getInstance().initSDK(this, AppConfig.TENCENT_IM_APP_ID.toInt(), config)
+        initJG()
+        initTIM()
     }
 
     /**
      * bug 上报
      */
-    open fun initBugLy() {
+    private fun initBugLy() {
         CrashReport.initCrashReport(getInstance(), "1e43689b76", false)
     }
 
+    /**
+     * 初始化极光SDK
+     */
+    private fun initJG() {
+        JVerificationInterface.setDebugMode(isDebug())
+        JVerificationInterface.init(getInstance()) { code, result ->
+            Log.i(JG_TAG, if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result")
+        }
+    }
+
+    /**
+     * 初始化阿里云 https dns 加速
+     */
     private fun initAliHttpDNS() {
         //初始化配置，调用即可，不必处理返回值
         InitConfig.Builder()
@@ -172,5 +199,22 @@ abstract class BaseApplication : Application() {
             .setIPRankingList(arrayListOf(IPRankingBean("api.zyuxr.top", 9090)))
             // 针对哪一个account配置
             .buildFor("113753")
+    }
+
+    /**
+     * Tencent IM SDK
+     * 使用无UI集成时需先初始化SDK
+     */
+    private fun initTIM() {
+        val config = V2TIMSDKConfig().apply {
+            logLevel = V2TIMSDKConfig.V2TIM_LOG_DEBUG
+            logListener = object : V2TIMLogListener() {
+                override fun onLog(logLevel: Int, logContent: String?) {
+                    super.onLog(logLevel, logContent)
+                }
+            }
+        }
+        // 初始化SDK
+        V2TIMManager.getInstance().initSDK(getInstance(), AppConfig.TENCENT_IM_APP_ID, config)
     }
 }

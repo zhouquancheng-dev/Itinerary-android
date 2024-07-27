@@ -1,13 +1,13 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.6.0-beta01"
+agp = "8.7.0-alpha03"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha04"
 androidx-test-ext-junit = "1.2.1"
-activity-compose = "1.9.0"
+activity-compose = "1.9.1"
 androidx-metrics = "1.0.0-beta01"
 androidx-profileinstaller = "1.4.0-alpha01"
-adaptive-navigation-suite = "1.3.0-beta04"
+adaptive-navigation-suite = "1.3.0-beta05"
 adaptive-common = "1.0.0-beta04"
 bcprov-jdk15on = "1.70"
 core-ktx = "1.13.1"
@@ -15,30 +15,30 @@ constraintlayout = "2.1.4"
 constraintlayout-compose = "1.1.0-alpha13"
 compose-bom = "2024.06.00"
 coroutines-android-common = "1.8.1"
-coil-bom = "2.6.0"
-coil3-bom = "3.0.0-alpha06"
+coil-bom = "2.7.0"
+coil3-bom = "3.0.0-alpha09"
 cameraX = "1.4.0-beta02"
 dataStore = "1.1.1"
-databinding-runtime = "8.5.0"
+databinding-runtime = "8.5.1"
 desugar-jdk-libs = "2.0.4"
 espresso-core = "3.6.1"
 glide = "5.0.0-rc01"
 glide-compose = "1.0.0-beta01"
 gridlayout = "1.1.0-beta01"
 google-accompanist = "0.34.0"
-graphics-shapes = "1.0.0-beta01"
+graphics-shapes = "1.0.0-rc01"
 hilt-navigation-compose = "1.2.0"
 hilt-android = "2.51.1"
 junit = "4.13.2"
-junit-jupiter-api = "5.10.2"
+junit-jupiter-api = "5.10.3"
 kotlin = "2.0.0"
-ksp = "2.0.0-1.0.22"
+ksp = "2.0.0-1.0.23"
 kotlin-serialization-json = "1.7.1"
 kotlin-collections-immutable = "0.3.7"
 lottie = "6.4.1"
-lifecycle-common = "2.8.3"
+lifecycle-common = "2.8.4"
 moshi = "1.15.1"
-navigation-compose-common = "2.8.0-beta05"
+navigation-compose-common = "2.8.0-beta06"
 okhttp3 = "5.0.0-alpha.14"
 room = "2.6.1"
 retrofit = "2.11.0"
@@ -51,24 +51,23 @@ capturable = "2.1.0"
 jiaozivideoplayer = "7.7.2.3300"
 aria-core = "3.8.16"
 aria-compiler = "3.8.16"
-itextCore = "8.0.4"
+itextCore = "8.0.5"
 zip4j = "2.11.5"
-calendar-compose = "2.5.2"
-compose-reorderable = "0.9.6"
+calendar-compose = "2.6.0-beta02"
+reorderable = "2.2.0"
 utilcodex = "1.31.1"
 toaster = "12.6"
-luban = "1.1.8"
+lrouter = "1.0.6"
+compose-placeholder = "1.0.7"
 
 # Third-party platform
 jiguang-jverification = "3.2.5"
 bugly = "4.1.9.3"
 alicloud-httpdns = "2.4.0"
-netease-basesdk = "10.2.6-beta"
 tencent-imsdk-plus = "8.0.5895"
 
 # 阿里云私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
-activity = "1.9.0"
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [plugins]
@@ -134,10 +133,10 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 androidx-compose-material3-android = { group = "androidx.compose.material3", name = "material3-android" }
 # https://maven.google.com/web/index.html?q=androidx.compose.material3#androidx.compose.material3
-androidx-compose-material3-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "adaptive-navigation-suite" }
-androidx-compose-material3-adaptive-layout = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout", version.ref = "adaptive-common" }
-androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive", version.ref = "adaptive-common" }
-androidx-compose-material3-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "adaptive-common" }
+androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "adaptive-navigation-suite" }
+androidx-compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive-common" }
+androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive-common" }
+androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive-common" }
 # https://mvnrepository.com/artifact/androidx.graphics/graphics-shapes
 androidx-compose-ui-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }
 
@@ -187,13 +186,13 @@ androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profi
 bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprov-jdk15on" }
 
 # https://mvnrepository.com/artifact/io.coil-kt/coil-bom
-coil-kt-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
-coil-kt-coil = { group = "io.coil-kt", name = "coil" }
-coil-kt-compose = { group = "io.coil-kt", name = "coil-compose" }
-coil-kt-gif = { group = "io.coil-kt", name = "coil-gif" }
-coil-kt-svg = { group = "io.coil-kt", name = "coil-svg" }
-coil-kt-video = { group = "io.coil-kt", name = "coil-video" }
-coil-kt-test = { group = "io.coil-kt", name = "coil-test" }
+coil-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
+coil = { group = "io.coil-kt", name = "coil" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose" }
+coil-gif = { group = "io.coil-kt", name = "coil-gif" }
+coil-svg = { group = "io.coil-kt", name = "coil-svg" }
+coil-video = { group = "io.coil-kt", name = "coil-video" }
+coil-test = { group = "io.coil-kt", name = "coil-test" }
 
 # https://central.sonatype.com/artifact/io.coil-kt.coil3/coil-bom
 coil3-bom = { group = "io.coil-kt.coil3", name = "coil-bom", version.ref = "coil3-bom" }
@@ -273,16 +272,18 @@ laoyuyu-aria-compiler = { module = "me.laoyuyu.aria:compiler", version.ref = "ar
 itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itextCore" }
 # https://github.com/srikanth-lingala/zip4j
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
-# https://github.com/Curzibn/Luban
-luban = { module = "top.zibin:Luban", version.ref = "luban" }
-# https://mvnrepository.com/artifact/com.kizitonwose.calendar/compose
-kizitonwose-calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
-# https://github.com/aclassen/ComposeReorderable
-composereorderable-reorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "compose-reorderable" }
+# https://github.com/kizitonwose/Calendar
+calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
+# https://github.com/Calvin-LL/Reorderable
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 # https://github.com/getActivity/Toaster
 toaster = { module = "com.github.getActivity:Toaster", version.ref = "toaster" }
 # https://github.com/Blankj/AndroidUtilCode
 utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
+# https://github.com/aleyn97/router?tab=readme-ov-file
+lrouter-plugin = { module = "com.github.aleyn97.router:plugin", version.ref = "lrouter" }
+# https://github.com/eygraber/compose-placeholder
+compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "compose-placeholder" }
 
 # 第三方平台服务
 # https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification
@@ -291,11 +292,8 @@ jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref =
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 # https://mvnrepository.com/artifact/com.aliyun.ams/alicloud-android-httpdns
 alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
-# https://central.sonatype.com/artifact/com.netease.nimlib/basesdk
-netease-nimlib-basesdk = { module = "com.netease.nimlib:basesdk", version.ref = "netease-basesdk" }
 # https://mvnrepository.com/artifact/com.tencent.imsdk/imsdk-plus
 tencent-imsdk-plus = { module = "com.tencent.imsdk:imsdk-plus", version.ref = "tencent-imsdk-plus" }
 
 # 阿里云私有仓库
 aliyun-captcha-android = { module = "com.zqc.dev:aliyun-captcha-android", version.ref = "aliyun-captcha" }
-androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }

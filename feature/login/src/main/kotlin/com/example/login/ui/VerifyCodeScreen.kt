@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -35,9 +37,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navArrival
+import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.ui.view.ToasterUtil.ToastStatus.*
 import com.example.ui.view.ToasterUtil.showCustomToaster
-import com.example.common.util.startDeepLink
 import com.example.login.R
 import com.example.login.components.CustomNumericKeypad
 import com.example.login.components.KeypadAction
@@ -77,8 +81,9 @@ fun VerifyCodeScreen(
             context, phoneNumber, codeValue,
             onFailure = { codeValue = "" },
             onSuccess = {
-                startDeepLink(context, "app://main")
-                (context as? Activity)?.finish()
+                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
+                    (context as? Activity)?.finish()
+                }
             }
         )
     }
@@ -98,7 +103,8 @@ fun VerifyCodeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
+                .padding(paddingValues)
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -148,7 +154,7 @@ fun VerifyCodeScreen(
                     buildAnnotatedString {
                         append("${timerTotalSeconds}秒", defaultStyle)
                         append(
-                            stringResource(R.string.resend_text1),
+                            stringResource(R.string.resend_text),
                             SpanStyle(color = MaterialTheme.colorScheme.onSurface, fontSize = 18.sp)
                         )
                     }
@@ -171,7 +177,7 @@ fun VerifyCodeScreen(
                 }
             }
 
-            CustomNumericKeypad { action ->
+            CustomNumericKeypad(modifier = Modifier.weight(1f)) { action ->
                 when (action) {
                     KeypadAction.Delete -> if (codeValue.isNotEmpty()) codeValue = codeValue.dropLast(1)
                     else -> if (codeValue.length < maxLength && action.value.isNotEmpty()) {

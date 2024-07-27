@@ -1,9 +1,11 @@
 <resources>
-    <string name="app_name">Itinerary</string>
+    <string name="app_name">驴游</string>
 
-    <string name="bottomBar_home_label">Home</string>
-    <string name="bottomBar_destination_label">Where to go</string>
-    <string name="bottomBar_message_label">Message</string>
-    <string name="bottomBar_mine_label">Mine</string>
+    <string name="bottomBar_home_label">首页</string>
+    <string name="bottomBar_destination_label">去哪儿</string>
+    <string name="bottomBar_message_label">消息</string>
+    <string name="bottomBar_mine_label">我的</string>
+
+    <string name="not_connected">⚠️ You aren’t connected to the internet</string>
 
 </resources>

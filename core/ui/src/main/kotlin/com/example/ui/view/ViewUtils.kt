@@ -9,19 +9,10 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.findViewTreeLifecycleOwner
-
-/**
- * 获取当前是否为深色模式
- * 深色模式的值为: 0x21
- * 浅色模式的值为: 0x11
- * @return true 为深色模式   false 浅色模式
- */
-fun Context.isDarkMode(): Boolean {
-    return resources.configuration.uiMode == 0x21
-}
 
 fun View.makeVisible() {
     visibility = View.VISIBLE
@@ -62,6 +53,15 @@ fun Fragment.addStatusBarColorUpdate(@ColorRes colorRes: Int) {
         StatusBarColorLifecycleObserver(
             requireActivity(),
             requireContext().getColorCompat(colorRes),
+        )
+    )
+}
+
+fun AppCompatActivity.addStatusBarColorUpdate(@ColorRes colorRes: Int) {
+    lifecycle.addObserver(
+        StatusBarColorLifecycleObserver(
+            this,
+            getColor(colorRes),
         )
     )
 }

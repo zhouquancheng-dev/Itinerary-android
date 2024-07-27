@@ -1,5 +1,6 @@
 package com.zqc.itinerary
 
+import androidx.appcompat.app.AppCompatDelegate
 import com.example.common.BaseApplication
 import com.example.common.config.AppConfig
 import dagger.hilt.android.HiltAndroidApp
@@ -9,6 +10,11 @@ class MyApplication : BaseApplication() {
 
     override fun isDebug(): Boolean {
         return BuildConfig.IS_DEBUG
+    }
+
+    @AppCompatDelegate.NightMode
+    override fun getSystemNightMode(): Int {
+        return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
     }
 
     override fun initData() {
@@ -26,7 +32,7 @@ class MyApplication : BaseApplication() {
         AppConfig.USER_PROTOCOL_URL = BuildConfig.USER_PROTOCOL_URL
         AppConfig.FILING_NO = BuildConfig.FILING_NO
         AppConfig.JIGUANG_APPKEY = BuildConfig.JIGUANG_APPKEY
-        AppConfig.TENCENT_IM_APP_ID = BuildConfig.TENCENT_IM_APP_ID
+        AppConfig.TENCENT_IM_APP_ID = BuildConfig.TENCENT_IM_APP_ID.toInt()
     }
 
 }

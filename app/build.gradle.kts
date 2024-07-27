@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.dagger.hilt.android)
-    alias(libs.plugins.devtools.ksp)
-    id("kotlinx-serialization")
+    alias(libs.plugins.hilt.android)
+    alias(libs.plugins.ksp)
     kotlin("kapt")
+    id("kotlinx-serialization")
+    id("aleyn-router")
 }
 
 apply(rootProject.file("buildConfig.gradle.kts"))
@@ -118,6 +119,7 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:login"))
+    implementation(project(":feature:home"))
     implementation(project(":feature:im"))
     implementation(project(":feature:mine"))
 
@@ -131,4 +133,8 @@ dependencies {
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.androidx.profileinstaller)
+
+    implementation(libs.kotlinx.serialization.json)
 }

@@ -15,3 +15,26 @@
 # 阿里云认证服务 图形验证码
 -dontwarn com.geetest.gtcaptcha4.alicom.**
 -keep class com.geetest.gtcaptcha4.alicom.**{*;}
+
+# 阿里云Captcha
+-dontwarn com.geetest.gtcaptcha4.alicom.**
+-keep class com.geetest.gtcaptcha4.alicom.** { *; }
+-keep class com.alicom.gtcaptcha4.**$Companion { *; }
+
+# 资源混淆白名单配置
+-keepclassmembers class **.R$styleable { *; }
+-keepclassmembers class **.R$string { *; }
+-keepclassmembers class **.R$style { *; }
+
+-dontwarn com.oracle.svm.core.annotate.Delete
+-dontwarn com.oracle.svm.core.annotate.Substitute
+-dontwarn com.oracle.svm.core.annotate.TargetClass
+-dontwarn java.lang.Module
+-dontwarn java.lang.reflect.AnnotatedType
+-dontwarn javax.lang.model.element.Modifier
+-dontwarn org.ahocorasick.trie.Emit
+-dontwarn org.ahocorasick.trie.Trie$TrieBuilder
+-dontwarn org.ahocorasick.trie.Trie
+-dontwarn org.graalvm.nativeimage.hosted.Feature$BeforeAnalysisAccess
+-dontwarn org.graalvm.nativeimage.hosted.Feature
+-dontwarn org.graalvm.nativeimage.hosted.RuntimeResourceAccess

@@ -19,8 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.example.login.R
-import com.example.ui.components.rememberCheckCircle
-import com.example.ui.components.rememberRadioButtonUnchecked
+import com.example.ui.components.symbols.rememberCheckCircle
+import com.example.ui.components.symbols.rememberRadioButtonUnchecked
 import com.example.ui.dialog.TermsAndConditions
 
 @Composable

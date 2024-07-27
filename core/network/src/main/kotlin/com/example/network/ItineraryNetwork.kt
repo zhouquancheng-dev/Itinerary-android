@@ -9,10 +9,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ItineraryNetwork @Inject constructor() {
-    private val userService = ServiceCreator.createRequestApi<UserService>()
-    private val captchaService = ServiceCreator.createRequestApi<CaptchaService>()
-    private val imService = ServiceCreator.createRequestApi<IMService>()
+class ItineraryNetwork @Inject constructor(serviceCreator: ServiceCreator) {
+    private val userService = serviceCreator.createRequestApi(UserService::class.java)
+    private val captchaService = serviceCreator.createRequestApi(CaptchaService::class.java)
+    private val imService = serviceCreator.createRequestApi(IMService::class.java)
 
     /**
      * 极光一键登录验证

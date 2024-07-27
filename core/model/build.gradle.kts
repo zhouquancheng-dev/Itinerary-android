@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.devtools.ksp)
-    id("kotlinx-serialization")
+    alias(libs.plugins.ksp)
     kotlin("kapt")
+    id("kotlinx-serialization")
 }
 
 apply(rootProject.file("buildConfig.gradle.kts"))

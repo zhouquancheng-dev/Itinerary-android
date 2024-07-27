@@ -41,3 +41,5 @@ google-services.json
 # Android Profiling
 # Android 分析
 *.hprof
+
+.kotlin

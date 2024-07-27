@@ -2,7 +2,6 @@ package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// 页面背景Brush
 val BackgroundColorsBrush =
     listOf(
         Color(0xFFC0D3FF),

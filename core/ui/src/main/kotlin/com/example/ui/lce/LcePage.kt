@@ -3,13 +3,13 @@ package com.example.ui.lce
 import androidx.compose.runtime.Composable
 
 /**
- * 根据 State 的页面封装
+ * State 的页面封装
  * @param uiState 数据状态
  * @param onRetryClick 重试请求
  * @param loadingContent 正在加载
  * @param errorContent 失败
  * @param noContent 空页
- * @param content 显示数据加载成功的 @Composable
+ * @param content 显示数据加载成功的 Composable
  */
 @Composable
 fun <T> LcePage(

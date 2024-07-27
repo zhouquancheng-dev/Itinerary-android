@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -44,11 +46,13 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navArrival
 import com.example.common.util.ClickUtils.isFastClick
-import com.example.common.util.startDeepLink
 import com.example.common.data.DatastoreKey.IS_FIRST_TIME_LAUNCH
+import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 import com.example.common.util.DataStoreUtils.putBoolean
-import com.example.ui.components.HorizontalPagerIndicator
+import com.example.ui.components.indicator.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.theme.JetItineraryTheme
 import kotlinx.coroutines.launch
@@ -66,7 +70,6 @@ class WelcomeActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WelcomeScreen() {
     val context = LocalContext.current
@@ -85,15 +88,18 @@ private fun WelcomeScreen() {
     val navigateToMain: () -> Unit = {
         scope.launch {
             putBoolean(IS_FIRST_TIME_LAUNCH, false)
-            startDeepLink(context, "login://main")
-            (context as? Activity)?.finish()
+            LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
+                // 导航执行成功
+                (context as? Activity)?.finish()
+            }
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterVertically)
     ) {

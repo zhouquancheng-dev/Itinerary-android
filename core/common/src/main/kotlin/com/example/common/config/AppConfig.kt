@@ -16,5 +16,5 @@ object AppConfig {
     var USER_PROTOCOL_URL: String = ""
     var FILING_NO: String = ""
     var JIGUANG_APPKEY: String = ""
-    var TENCENT_IM_APP_ID: String = ""
+    var TENCENT_IM_APP_ID: Int = 0
 }

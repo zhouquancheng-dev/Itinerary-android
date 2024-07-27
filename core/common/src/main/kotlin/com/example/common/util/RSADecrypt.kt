@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException
 import java.security.PrivateKey
 import java.security.spec.InvalidKeySpecException
 import java.security.spec.PKCS8EncodedKeySpec
+import java.util.Base64
 import javax.crypto.BadPaddingException
 import javax.crypto.Cipher
 import javax.crypto.IllegalBlockSizeException
@@ -48,10 +49,6 @@ object RSADecrypt {
     }
 
     private fun decodeBase64(input: String): ByteArray {
-        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            java.util.Base64.getDecoder().decode(input)
-        } else {
-            android.util.Base64.decode(input, android.util.Base64.DEFAULT)
-        }
+        return Base64.getDecoder().decode(input)
     }
 }

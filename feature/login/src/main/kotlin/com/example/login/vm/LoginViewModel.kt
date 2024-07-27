@@ -1,16 +1,17 @@
 package com.example.login.vm
 
 import android.content.Context
+import android.util.Log
 import android.view.Gravity
 import androidx.lifecycle.viewModelScope
 import cn.jiguang.verifysdk.api.JVerificationInterface
 import com.blankj.utilcode.util.LogUtils
+import com.example.common.BaseApplication
 import com.example.common.data.Constants.TIM_TAG
-import com.example.common.data.DatastoreKey.IS_LOGIN_STATUS
-import com.example.common.data.DatastoreKey.TIM_USER_ID
-import com.example.common.util.DataStoreUtils.putBooleanSync
-import com.example.common.util.DataStoreUtils.putString
-import com.example.common.util.DataStoreUtils.putStringSync
+import com.example.common.data.LoginState
+import com.example.common.di.AppDispatchers.IO
+import com.example.common.di.Dispatcher
+import com.example.common.di.network.NetworkMonitor
 import com.example.common.util.RSADecrypt.decrypt
 import com.example.common.vm.BaseViewModel
 import com.example.login.R
@@ -25,7 +26,7 @@ import com.example.model.sms.TokenVerifyRequest
 import com.example.network.ItineraryNetwork
 import com.example.network.captcha.AliYunCaptchaClient
 import com.example.network.captcha.CAPTCHA_ID
-import com.example.network.listener.CaptchaListener
+import com.example.network.captcha.CaptchaListener
 import com.hjq.toast.ToastParams
 import com.hjq.toast.Toaster
 import com.hjq.toast.style.CustomToastStyle
@@ -34,8 +35,10 @@ import com.tencent.imsdk.BaseConstants.ERR_USER_SIG_EXPIRED
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
@@ -46,14 +49,17 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val network: ItineraryNetwork,
+    @Dispatcher(IO) ioDispatcher: CoroutineDispatcher,
+    private val networkApi: ItineraryNetwork,
     private val jiGuangClient: JiGuangClient,
-    private val loginRepository: LoginRepository
-) : BaseViewModel() {
+    private val loginRepository: LoginRepository,
+    networkMonitor: NetworkMonitor
+) : BaseViewModel(ioDispatcher) {
 
     private val _loginAuthState = MutableStateFlow(DialogType.NONE)
     val loginAuthState = _loginAuthState.asStateFlow()
@@ -64,9 +70,17 @@ class LoginViewModel @Inject constructor(
     private val _verifying = MutableStateFlow(false)
     val verifying = _verifying.asStateFlow()
 
+    val isOffline = networkMonitor.isOnline
+        .map(Boolean::not)
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false,
+        )
+
     // 发送验证码
     fun sendSmsCode(phoneNumber: String, onSuccess: () -> Unit) {
-        fetchData { network.sendSmsCode(phoneNumber) }
+        fetchData { networkApi.sendSmsCode(phoneNumber) }
             .onStart { _sendingVerifyCode.value = true }
             .onEach { response ->
                 _sendingVerifyCode.value = false
@@ -80,7 +94,7 @@ class LoginViewModel @Inject constructor(
     // 验证码核验
     @OptIn(ExperimentalCoroutinesApi::class)
     fun verifySmsCode(context: Context, phoneNumber: String, verifyCode: String, onFailure: () -> Unit, onSuccess: () -> Unit) {
-        fetchData { network.verifySmsCode(phoneNumber, verifyCode) }
+        fetchData { networkApi.verifySmsCode(phoneNumber, verifyCode) }
             .onStart { _verifying.value = true }
             .flatMapMerge { response ->
                 if (response.status == SUCCESS) {
@@ -88,7 +102,7 @@ class LoginViewModel @Inject constructor(
                     if (cachedUserSig.isNotEmpty()) {
                         flowOf(cachedUserSig)
                     } else {
-                        fetchData { network.getUserSig(phoneNumber) }
+                        fetchData { networkApi.getUserSig(phoneNumber) }
                             .map { userResp ->
                                 if (userResp.status == SUCCESS) {
                                     userResp.data
@@ -112,7 +126,7 @@ class LoginViewModel @Inject constructor(
                     context, phoneNumber, userSig,
                     onSuccess = {
                         _verifying.value = false
-                        putBooleanSync(IS_LOGIN_STATUS, true)
+                        LoginState.isLoggedIn = true
                         showNotify(context.getString(R.string.login_success), true)
                         onSuccess()
                     },
@@ -152,7 +166,7 @@ class LoginViewModel @Inject constructor(
             override fun onLoginAuthResult(code: Int, content: String?, operator: String?, operatorReturn: Any?) {
                 if (code == AUTH_CODE_SUCCESS) {
                     val request = TokenVerifyRequest(content!!, null)
-                    fetchData { network.loginTokenVerify(request) }
+                    fetchData { networkApi.loginTokenVerify(request) }
                         .onStart { _loginAuthState.value = DialogType.LOGIN }
                         .flatMapMerge { response ->
                             if (response.status == SUCCESS) {
@@ -166,7 +180,7 @@ class LoginViewModel @Inject constructor(
                                 if (cachedUserSig.isNotEmpty()) {
                                     flowOf(Pair(decryptPhoneNumber, cachedUserSig))
                                 } else {
-                                    fetchData { network.getUserSig(decryptPhoneNumber) }
+                                    fetchData { networkApi.getUserSig(decryptPhoneNumber) }
                                         .map { userSigResp ->
                                             if (userSigResp.status == SUCCESS) {
                                                 Pair(decryptPhoneNumber, userSigResp.data)
@@ -190,7 +204,7 @@ class LoginViewModel @Inject constructor(
                                 context, pairData.first, pairData.second ?: "",
                                 onSuccess = {
                                     _loginAuthState.value = DialogType.NONE
-                                    putBooleanSync(IS_LOGIN_STATUS, true)
+                                    LoginState.isLoggedIn = true
                                     showNotify(context.getString(R.string.login_success), true)
 
                                     onSuccess()
@@ -214,11 +228,11 @@ class LoginViewModel @Inject constructor(
         })
     }
 
-    // 登录TIM
+    // 登录TIM (无UI集成)
     private fun loginTIM(context: Context, userId: String, userSig: String, onSuccess: () -> Unit, onError: () -> Unit) {
         V2TIMManager.getInstance().login(userId, userSig, object : V2TIMCallback {
             override fun onSuccess() {
-                LogUtils.iTag(TIM_TAG, "IM登录成功")
+                Log.i(TIM_TAG, "IM登录成功")
 
                 val loginUserId = V2TIMManager.getInstance().loginUser
                 loginRepository.putIMUserId(loginUserId)
@@ -235,7 +249,7 @@ class LoginViewModel @Inject constructor(
                 LogUtils.iTag(TIM_TAG, "IM登录失败 code: $code, desc: $desc")
                 if (code == ERR_USER_SIG_EXPIRED || code == ERR_SVR_ACCOUNT_USERSIG_EXPIRED) {
                     // 重新生成 userSig 并重新登录
-                    fetchData { network.getUserSig(userId) }
+                    fetchData { networkApi.getUserSig(userId) }
                         .onEach { userResp ->
                             if (userResp.status == SUCCESS) {
                                 userResp.data?.let { newUserSig ->
@@ -268,7 +282,7 @@ class LoginViewModel @Inject constructor(
                     CAPTCHA_ID
                 )
 
-                fetchData { network.verifyCaptcha(request) }
+                fetchData { networkApi.verifyCaptcha(request) }
                     .onEach { vResponse ->
                         if (vResponse.result == SUCCESS_STRING) {
                             onSuccess()
@@ -283,12 +297,15 @@ class LoginViewModel @Inject constructor(
     }
 
     fun showNotify(message: String, isSuccess: Boolean) {
+        val isNightMode = BaseApplication.getInstance().isNightMode.value
+        val successLayoutId = if (isNightMode) com.example.ui.R.layout.toast_custom_view_success_white else com.example.ui.R.layout.toast_custom_view_success_black
+        val errorLayoutId = if (isNightMode) com.example.ui.R.layout.toast_custom_view_error_white else com.example.ui.R.layout.toast_custom_view_error_black
         val params = ToastParams().apply {
             text = message
             style = if (isSuccess) {
-                CustomToastStyle(com.example.ui.R.layout.toast_custom_view_success, Gravity.CENTER)
+                CustomToastStyle(successLayoutId, Gravity.CENTER)
             } else {
-                CustomToastStyle(com.example.ui.R.layout.toast_custom_view_error, Gravity.CENTER)
+                CustomToastStyle(errorLayoutId, Gravity.CENTER)
             }
         }
         Toaster.show(params)

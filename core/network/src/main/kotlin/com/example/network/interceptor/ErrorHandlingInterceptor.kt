@@ -14,7 +14,7 @@ fun errorHandlingInterceptor(): Interceptor {
     }
 }
 
-private fun handleHttpError(response: Response) {
+fun handleHttpError(response: Response) {
     when (response.code) {
         400 -> Log.e("HTTP Error", "Bad Request: ${response.message}")
         401 -> Log.e("HTTP Error", "Unauthorized: ${response.message}")

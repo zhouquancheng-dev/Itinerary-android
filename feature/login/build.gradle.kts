@@ -2,8 +2,10 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.hilt.android)
     kotlin("kapt")
+    id("kotlinx-serialization")
+    id("aleyn-router")
 }
 
 apply(rootProject.file("buildConfig.gradle.kts"))
@@ -18,6 +20,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        resourceConfigurations.addAll(listOf("en", "zh-rCN"))
     }
 
     compileOptions {
@@ -65,4 +69,6 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
+
+    implementation(libs.kotlinx.serialization.json)
 }

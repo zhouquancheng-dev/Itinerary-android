@@ -1,8 +1,9 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.hilt.android)
     kotlin("kapt")
+    id("kotlinx-serialization")
 }
 
 apply(rootProject.file("buildConfig.gradle.kts"))
@@ -29,12 +30,21 @@ android {
         jvmTarget = "17"
     }
 
+    viewBinding {
+        enable = true
+    }
+
     kapt {
         correctErrorTypes = true
     }
 }
 
 dependencies {
+    api(project(":tuiconversation"))
+    api(project(":tuichat"))
+    api(project(":tuicontact"))
+    api(project(":tuigroup"))
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.android.material)
@@ -45,8 +55,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
 
     api(libs.kotlinx.coroutines.android)
-
+    api(libs.kotlinx.coroutines.guava)
     api(libs.kotlinx.collections.immutable)
+    api(libs.kotlin.reflect)
+
+    api(libs.androidx.metrics)
 
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
@@ -54,21 +67,18 @@ dependencies {
 
     api(libs.androidx.datastore.preferences)
 
-    api(libs.bcprov.jdk15on)
+    implementation(libs.kotlinx.serialization.json)
 
     api(libs.utilcodex)
     api(libs.toaster)
+
+    api(libs.alicloud.httpdns)
 
     // 极光
     api(libs.jiguang.jverification)
 
     implementation(libs.tencent.bugly)
 
-    api(libs.alicloud.httpdns)
-
-    // 网易云信IM
-    api(libs.netease.nimlib.basesdk)
-
-    // Tencent Im
+    // Tencent IM
     api(libs.tencent.imsdk.plus)
 }

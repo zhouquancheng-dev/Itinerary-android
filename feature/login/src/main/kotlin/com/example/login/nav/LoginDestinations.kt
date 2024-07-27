@@ -1,11 +1,8 @@
 package com.example.login.nav
 
-sealed class LoginDestinations(val route: String) {
+import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
 
-    data object LoginHome : LoginDestinations("LoginHome")
+@Immutable @Serializable data object LoginHome
 
-    data object VerifyCode : LoginDestinations("VerifyCode/{phoneNumber}") {
-        fun onNavigateToRoute(phoneNumber: String) = "VerifyCode/$phoneNumber"
-    }
-
-}
+@Immutable @Serializable data class VerifyCode(val phoneNumber: String)

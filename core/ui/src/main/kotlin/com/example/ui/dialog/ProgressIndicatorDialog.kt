@@ -31,8 +31,8 @@ fun ProgressIndicatorDialog(
 ) {
     val context = LocalContext.current
     val dialogBgColor =
-        if (context.isDarkMode()) colorResource(R.color.white_translucency)
-        else colorResource(R.color.black_translucency)
+        if (context.isDarkMode()) colorResource(R.color.white)
+        else colorResource(R.color.black_transparent)
 
     if (showDialog) {
         Dialog(onDismissRequest = {}) {
@@ -47,7 +47,7 @@ fun ProgressIndicatorDialog(
                     verticalArrangement = Arrangement.spacedBy(15.dp, Alignment.CenterVertically)
                 ) {
                     CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.surface,
+                        color = MaterialTheme.colorScheme.background,
                         trackColor = MaterialTheme.colorScheme.onSurface,
                         strokeCap = StrokeCap.Round
                     )

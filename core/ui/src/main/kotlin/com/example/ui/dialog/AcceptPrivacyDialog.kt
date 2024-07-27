@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -22,10 +22,11 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,7 +37,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.common.config.AppConfig
 import com.example.ui.R
 import com.example.ui.components.VerticalSpacer
-import com.example.ui.components.rememberLock
+import com.example.ui.components.symbols.rememberLock
 import com.example.ui.theme.JetItineraryTheme
 
 @Composable
@@ -127,55 +128,43 @@ fun TermsAndConditions(
     firstTag: String,
     secondTag: String
 ) {
-    val tags = listOf(
-        mapOf(
-            "text" to firstTag,
-            "tag" to "privacy",
-            "url" to AppConfig.PRIVACY_URL
-        ),
-        mapOf(
-            "text" to secondTag,
-            "tag" to "terms",
-            "url" to AppConfig.USER_PROTOCOL_URL
-        )
+    val linkStyle = TextLinkStyles(
+        style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold),
+        focusedStyle = null,
+        hoveredStyle = null,
+        pressedStyle = SpanStyle(color = MaterialTheme.colorScheme.tertiary)
     )
 
     val annotatedString = buildAnnotatedString {
         val defaultStyle = SpanStyle(color = MaterialTheme.colorScheme.onSurface)
-
         append(fullText, defaultStyle)
 
-        tags.forEach { tag ->
-            val text = tag["text"] ?: return@forEach
-            val url = tag["url"] ?: return@forEach
-            val tagText = tag["tag"] ?: return@forEach
-            val start = fullText.indexOf(text)
-            val end = start + text.length
+        val firstTagStart = fullText.indexOf(firstTag)
+        val firstTagEnd = firstTagStart + firstTag.length
+        addLink(
+            LinkAnnotation.Url(
+                url = AppConfig.PRIVACY_URL,
+                styles = linkStyle
+            ),
+            start = firstTagStart,
+            end = firstTagEnd
+        )
 
-            addStyle(
-                style = SpanStyle(
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                ),
-                start = start,
-                end = end
-            )
-            addStringAnnotation(tag = tagText, annotation = url, start = start, end = end)
-        }
+        val secondTagStart = fullText.indexOf(secondTag)
+        val secondTagEnd = secondTagStart + secondTag.length
+        addLink(
+            LinkAnnotation.Url(
+                url = AppConfig.USER_PROTOCOL_URL,
+                styles = linkStyle
+            ),
+            start = secondTagStart,
+            end = secondTagEnd
+        )
     }
 
-    val uriHandler = LocalUriHandler.current
-    ClickableText(
-        style = MaterialTheme.typography.bodyLarge,
+    BasicText(
         text = annotatedString,
-        onClick = { offset ->
-            tags.firstNotNullOfOrNull {
-                val tag = it["tag"] ?: return@firstNotNullOfOrNull null
-                annotatedString.getStringAnnotations(tag, offset, offset).firstOrNull()
-            }?.let { string ->
-                uriHandler.openUri(string.item)
-            }
-        }
+        style = MaterialTheme.typography.bodyLarge,
     )
 }
 
@@ -199,7 +188,7 @@ fun ButtonBar(
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(stringResource(R.string.accept), style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.app_accept), style = MaterialTheme.typography.bodyLarge)
         }
         TextButton(
             onClick = { onRejectRequest() },
@@ -208,7 +197,7 @@ fun ButtonBar(
                 contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            Text(stringResource(R.string.reject), style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.app_reject), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }

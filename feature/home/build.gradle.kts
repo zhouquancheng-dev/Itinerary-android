@@ -2,8 +2,9 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.dagger.hilt.android)
+    alias(libs.plugins.hilt.android)
     kotlin("kapt")
+    id("kotlinx-serialization")
 }
 
 apply(rootProject.file("buildConfig.gradle.kts"))
@@ -46,6 +47,7 @@ composeCompiler {
 }
 
 dependencies {
+    implementation(project(":core:common"))
     implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
@@ -58,4 +60,6 @@ dependencies {
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation(libs.kotlinx.serialization.json)
 }

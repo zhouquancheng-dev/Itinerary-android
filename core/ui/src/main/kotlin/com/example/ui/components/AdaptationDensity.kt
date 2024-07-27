@@ -6,6 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
+import androidx.window.core.layout.WindowHeightSizeClass
+import androidx.window.core.layout.WindowSizeClass
+import androidx.window.core.layout.WindowWidthSizeClass
 
 /**
  * ```
@@ -80,24 +83,32 @@ fun AdaptationPixelWidth(
 fun AdaptationDensity(
     baseWidthDp: Float = 411f,
     baseHeightDp: Float = 859f,
+    windowSizeClass: WindowSizeClass,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     val displayMetrics = remember { context.resources.displayMetrics }
     val fontScale = LocalDensity.current.fontScale
 
-    val density = remember {
-        val widthDensity = displayMetrics.widthPixels / baseWidthDp
-        val heightDensity = displayMetrics.heightPixels / baseHeightDp
-        (widthDensity + heightDensity) / 2f
-    }
+    // 判断是否为竖屏手机设备
+    val isPortraitPhone = windowSizeClass.windowWidthSizeClass == WindowWidthSizeClass.COMPACT
 
-    CompositionLocalProvider(
-        LocalDensity provides Density(
-            density = density,
-            fontScale = fontScale
-        )
-    ) {
+    if (isPortraitPhone) {
+        val density = remember {
+            val widthDensity = displayMetrics.widthPixels / baseWidthDp
+            val heightDensity = displayMetrics.heightPixels / baseHeightDp
+            (widthDensity + heightDensity) / 2f
+        }
+
+        CompositionLocalProvider(
+            LocalDensity provides Density(
+                density = density,
+                fontScale = fontScale
+            )
+        ) {
+            content()
+        }
+    } else {
         content()
     }
 }

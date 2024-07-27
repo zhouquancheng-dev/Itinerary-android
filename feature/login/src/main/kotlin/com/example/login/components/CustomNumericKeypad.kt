@@ -20,7 +20,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
-import com.example.ui.components.rememberKeyboardBackspace
+import com.example.ui.components.symbols.rememberKeyboardBackspace
 
 @Composable
 fun CustomNumericKeypad(
@@ -32,7 +32,7 @@ fun CustomNumericKeypad(
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
         modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(start = 12.dp, end = 12.dp, bottom = 18.dp),
+        contentPadding = PaddingValues(12.dp),
         horizontalArrangement = Arrangement.spacedBy(3.dp),
         verticalArrangement = Arrangement.spacedBy(3.dp)
     ) {

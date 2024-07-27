@@ -1,13 +1,13 @@
 <resources>
-    <string name="lce_reload_text">重新加载</string>
+    <string name="lce_reload_text" translatable="false">重新加载</string>
 
-    <string name="privacy_title">我们尊重您的隐私</string>
-    <string name="privacy_description">我们非常重视您的个人信息，并致力于保证其安全。我们只收集必要的数据，为您提供最好的服务，未经您的明确同意，绝不会与第三方分享或出售您的信息。</string>
-    <string name="terms_and_conditions">点击“阅读并接受”，即表示您同意我们的《隐私政策》和《服务条款》。</string>
-    <string name="privacy">《隐私政策》</string>
-    <string name="terms">《服务条款》</string>
-    <string name="accept">阅读并接受</string>
-    <string name="reject">拒绝并退出</string>
-    <string name="privacy_toast_error">请阅读并勾选相关协议</string>
-    <string name="custom_message">自定义Toaster消息</string>
+    <string name="privacy_title" translatable="false">我们尊重您的隐私</string>
+    <string name="privacy_description" translatable="false">我们非常重视您的个人信息，并致力于保证其安全。我们只收集必要的数据，为您提供最好的服务，未经您的明确同意，绝不会与第三方分享或出售您的信息。</string>
+    <string name="terms_and_conditions" translatable="false">点击“阅读并接受”，即表示您同意我们的《隐私政策》和《服务条款》。</string>
+    <string name="privacy" translatable="false">《隐私政策》</string>
+    <string name="terms" translatable="false">《服务条款》</string>
+    <string name="app_accept" translatable="false">阅读并接受</string>
+    <string name="app_reject" translatable="false">拒绝并退出</string>
+    <string name="privacy_toast_error" translatable="false">请阅读并勾选相关协议</string>
+    <string name="custom_message" translatable="false">自定义Toaster消息</string>
 </resources>

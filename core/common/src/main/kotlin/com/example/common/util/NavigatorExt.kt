@@ -79,13 +79,13 @@ inline fun <reified T : Activity> Activity.startAcWithIntent(
 
 // Fragment
 inline fun <reified T : Activity> Fragment.startActivity() {
-    activity?.startActivity<T>()
+    requireActivity().startActivity<T>()
 }
 
 inline fun <reified T : Activity> Fragment.startAcWithBundle(
     extras: Bundle? = null
 ) {
-    activity?.startAcWithBundle<T>(extras)
+    requireActivity().startAcWithBundle<T>(extras)
 }
 
 inline fun <reified T : Activity> Fragment.startAcWithIntent(

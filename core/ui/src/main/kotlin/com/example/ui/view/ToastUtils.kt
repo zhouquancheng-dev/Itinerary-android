@@ -20,7 +20,7 @@ object ToastUtils {
     fun showCustomToast(context: Context, message: String) {
         val inflater: LayoutInflater = LayoutInflater.from(context)
         val parent: ViewGroup = (context as Activity).findViewById(android.R.id.content)
-        val layout: View = inflater.inflate(R.layout.custom_toast_layout, parent, false)
+        val layout: View = inflater.inflate(R.layout.toast_custom_layout, parent, false)
         val text: TextView = layout.findViewById(R.id.custom_toast_message)
         text.text = message
 

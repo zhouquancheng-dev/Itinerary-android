@@ -3,6 +3,7 @@ package com.example.login.client
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,6 @@ import cn.jiguang.verifysdk.api.AuthPageEventListener
 import cn.jiguang.verifysdk.api.JVerificationInterface
 import cn.jiguang.verifysdk.api.JVerifyUIConfig
 import cn.jiguang.verifysdk.api.LoginSettings
-import com.blankj.utilcode.util.LogUtils
 import com.example.common.data.Constants.JG_TAG
 import com.example.login.R
 import java.util.Locale
@@ -39,13 +39,13 @@ class JiGuangClient @Inject constructor() {
     fun preLogin(context: Context) {
         // 判断网络环境是否支持一键登录
         if (!JVerificationInterface.checkVerifyEnable(context)) {
-            LogUtils.iTag(JG_TAG,"当前网络环境不支持认证，请开启数据网络")
+            Log.i(JG_TAG,"当前网络环境不支持认证，请开启数据网络")
             return
         }
 
         if (JVerificationInterface.isInitSuccess()) {
             JVerificationInterface.preLogin(context, 5000) { code, content, _ ->
-                LogUtils.dTag(JG_TAG, if (code == PRE_LOGIN_CODE) "预取号成功" else "返回码: $code, message: $content")
+                Log.i(JG_TAG, if (code == PRE_LOGIN_CODE) "预取号成功" else "返回码: $code, message: $content")
             }
         }
     }
@@ -69,7 +69,7 @@ class JiGuangClient @Inject constructor() {
 
         // 拉起授权页面
         JVerificationInterface.loginAuth(context, settings) { code, content, operator, operatorReturn ->
-            LogUtils.dTag(
+            Log.i(
                 JG_TAG,
                 when (code) {
                     AUTH_CODE_SUCCESS -> "获取loginToken成功"
@@ -170,7 +170,7 @@ class JiGuangClient @Inject constructor() {
     private fun customToast(activity: Activity): Toast {
         val inflater = LayoutInflater.from(activity)
         val layout: View = inflater.inflate(
-            com.example.ui.R.layout.custom_toast_layout,
+            com.example.ui.R.layout.toast_custom_layout,
             activity.findViewById(com.example.ui.R.id.custom_toast_container)
         )
         val text: TextView = layout.findViewById(com.example.ui.R.id.custom_toast_message)

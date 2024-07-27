@@ -21,11 +21,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "19"
+        jvmTarget = "17"
     }
     viewBinding {
         enable = true
@@ -102,18 +102,24 @@ dependencies {
 
     api(libs.airbnb.android.lottie.compose)
 
-    api(libs.google.accompanist.permissions)
-    api(libs.google.accompanist.webview)
+    implementation(platform(libs.coil.bom))
+    implementation(libs.coil)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.gif)
+    implementation(libs.coil.video)
+    implementation(libs.coil.svg)
 
-    implementation(platform(libs.coil3.bom))
-    implementation(libs.coil3)
-    implementation(libs.coil3.core)
-    implementation(libs.coil3.compose)
-    implementation(libs.coil3.compose.core)
-    implementation(libs.coil3.network.okhttp)
-    implementation(libs.coil3.gif)
-    implementation(libs.coil3.video)
-    implementation(libs.coil3.svg)
+//    implementation(platform(libs.coil3.bom))
+//    implementation(libs.coil3)
+//    implementation(libs.coil3.core)
+//    implementation(libs.coil3.compose)
+//    implementation(libs.coil3.compose.core)
+//    implementation(libs.coil3.network.okhttp)
+//    implementation(libs.coil3.gif)
+//    implementation(libs.coil3.video)
+//    implementation(libs.coil3.svg)
 
     api(libs.glide.compose)
+
+    api(libs.compose.placeholder.material3)
 }

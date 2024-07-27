@@ -16,8 +16,10 @@
     <string name="enter_sms_code">请输入验证码</string>
     <string name="country_code">已发送至+86" "</string>
     <string name="resend">重新发送</string>
-    <string name="resend_text1">后可重新获取验证码</string>
+    <string name="resend_text">后可重新发送验证码</string>
     <string name="resend_success">发送成功</string>
     <string name="captcha_verifying">正在二次验证</string>
     <string name="captcha_failure">验证失败</string>
+
+    <string name="not_connected">⚠️ 没有连接到互联网，请检查网络连接</string>
 </resources>

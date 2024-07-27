@@ -1,8 +1,10 @@
 package com.example.common.util
 
 import android.content.Context
+import android.view.LayoutInflater
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import java.lang.reflect.ParameterizedType
 
 object ReflectionUtil {
 
@@ -33,6 +35,49 @@ object ReflectionUtil {
         } catch (e: InvocationTargetException) {
             e.printStackTrace()
             null
+        }
+    }
+
+    /**
+     * 创建 View Binding 实例
+     *
+     * @param layoutInflater 用于膨胀布局的 LayoutInflater
+     * @param clazz 目标类
+     * @return View Binding 实例
+     * @throws RuntimeException 如果反射操作失败
+     */
+    @Suppress("UNCHECKED_CAST")
+    fun <VB> newViewBinding(layoutInflater: LayoutInflater, clazz: Class<*>): VB {
+        return try {
+            // 获取泛型参数对象
+            val type = getGenericType(clazz)
+
+            // 获取 ViewBinding 类
+            val clazzVB = type.actualTypeArguments[0] as Class<*>
+
+            // 获取 inflate 方法
+            val inflateMethod = clazzVB.getMethod("inflate", LayoutInflater::class.java)
+
+            // 调用 inflate 方法创建 ViewBinding 实例
+            inflateMethod.invoke(null, layoutInflater) as VB
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw RuntimeException("Failed to create ViewBinding instance", e)
+        }
+    }
+
+    /**
+     * 获取泛型类型
+     *
+     * @param clazz 目标类
+     * @return ParameterizedType 泛型类型
+     * @throws ClassCastException 如果类型转换失败
+     */
+    private fun getGenericType(clazz: Class<*>): ParameterizedType {
+        return try {
+            clazz.genericSuperclass as ParameterizedType
+        } catch (e: ClassCastException) {
+            clazz.superclass.genericSuperclass as ParameterizedType
         }
     }
 }

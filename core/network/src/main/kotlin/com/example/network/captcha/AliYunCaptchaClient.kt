@@ -7,7 +7,6 @@ import com.blankj.utilcode.util.LogUtils
 import com.example.model.captcha.ErrorResponse
 import com.example.model.captcha.FailureResponse
 import com.example.model.captcha.SuccessResponse
-import com.example.network.listener.CaptchaListener
 import kotlinx.serialization.json.Json
 
 object AliYunCaptchaClient {

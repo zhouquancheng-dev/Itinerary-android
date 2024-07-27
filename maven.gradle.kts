@@ -10,7 +10,7 @@ fun RepositoryHandler.addCommonMaven() {
         url = uri("https://jitpack.io")
     }
 
-    // 阿里云云效 制品仓库 私有仓库
+    // 阿里云效 制品私有仓库
     maven {
         credentials {
             username = "60d431933c458713dd87bbdf"

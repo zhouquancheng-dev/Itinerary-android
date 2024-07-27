@@ -1,0 +1,12 @@
+<resources>
+    <string name="text_elem">文本消息</string>
+    <string name="custom_elem">自定义消息</string>
+    <string name="image_elem">[图片消息]</string>
+    <string name="sound_elem">[语音消息]</string>
+    <string name="video_elem">[视频消息]</string>
+    <string name="file_elem">[文件消息]</string>
+    <string name="location_elem">[位置消息]</string>
+    <string name="face_elem">[表情消息]</string>
+    <string name="relay_elem">[转发消息]</string>
+    <string name="group_tips_elem">[群tips消息]</string>
+</resources>

@@ -14,4 +14,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+    <application>
+        <activity
+            android:name=".activity.ContactsActivity"
+            android:exported="false" />
+    </application>
+
 </manifest>

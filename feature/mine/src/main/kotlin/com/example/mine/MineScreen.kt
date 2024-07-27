@@ -10,12 +10,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.common.data.DatastoreKey.IS_LOGIN_STATUS
-import com.example.common.data.DatastoreKey.TIM_USER_SIG
-import com.example.common.util.DataStoreUtils.putBooleanSync
-import com.example.common.util.DataStoreUtils.removeSync
-import com.example.common.util.startDeepLink
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navArrival
+import com.example.common.data.LoginState
+import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 
 @Composable
 fun MineScreen() {
@@ -28,11 +26,10 @@ fun MineScreen() {
     ) {
         Button(
             onClick = {
-                putBooleanSync(IS_LOGIN_STATUS, false)
-                removeSync(stringPreferencesKey(TIM_USER_SIG))
-
-                startDeepLink(context, "login://main")
-                (context as? Activity)?.finish()
+                LoginState.isLoggedIn = false
+                LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
+                    (context as? Activity)?.finish()
+                }
             }
         ) {
             Text("退出登录")

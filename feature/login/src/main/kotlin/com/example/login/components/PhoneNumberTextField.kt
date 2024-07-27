@@ -29,9 +29,8 @@ import com.example.ui.view.ToasterUtil.ToastStatus.ERROR
 import com.example.ui.view.ToasterUtil.showCustomToaster
 import com.example.login.R
 import com.example.login.state.isValidPhoneNumber
-import com.example.ui.components.rememberClose
+import com.example.ui.components.symbols.rememberClose
 import com.example.ui.theme.JetItineraryTheme
-import com.example.ui.theme.errorLight
 
 @Composable
 fun PhoneNumberTextField(
@@ -83,7 +82,7 @@ fun PhoneNumberTextField(
             focusedPlaceholderColor = colorResource(R.color.placeholder_text),
             unfocusedPlaceholderColor = colorResource(R.color.placeholder_text),
             errorContainerColor = Color.Transparent,
-            errorTextColor = errorLight,
+            errorTextColor = MaterialTheme.colorScheme.error,
             errorPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
             errorTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
         )

@@ -5,12 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,13 +23,18 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navArrival
+import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
+import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.common.util.startAcWithIntent
-import com.example.common.util.startDeepLink
 import com.example.splash.vm.Event
 import com.example.splash.vm.SplashViewModel
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +42,7 @@ class SplashActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             JetItineraryTheme {
-                val vm: SplashViewModel = viewModel()
+                val vm = viewModel<SplashViewModel>()
                 val showDialog by vm.showDialog.collectAsStateWithLifecycle()
 
                 LaunchedEffect(Unit) {
@@ -50,12 +55,16 @@ class SplashActivity : ComponentActivity() {
                                 finish()
                             }
                             is Event.StartMain -> {
-                                startDeepLink("app://main")
-                                finish()
+                                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
+                                    // 导航执行成功
+                                    finish()
+                                }
                             }
                             is Event.StartLogin -> {
-                                startDeepLink("login://main")
-                                finish()
+                                LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
+                                    // 导航执行成功
+                                    finish()
+                                }
                             }
                         }
                     }
@@ -75,6 +84,7 @@ class SplashActivity : ComponentActivity() {
 @Composable
 private fun SplashScreen(
     showDialog: Boolean,
+    modifier: Modifier = Modifier,
     onAcceptRequest: () -> Unit,
     onRejectRequest: () -> Unit
 ) {
@@ -82,22 +92,23 @@ private fun SplashScreen(
         AcceptPrivacyDialog(onAcceptRequest, onRejectRequest)
     }
 
-    Surface(color = MaterialTheme.colorScheme.background) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                painter = painterResource(com.example.common.R.mipmap.ic_app_logo),
-                contentDescription = stringResource(R.string.app_name),
-                modifier = Modifier.size(80.dp)
-            )
-            Text(
-                text = stringResource(R.string.splash_desc),
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background),
+        verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(com.example.common.R.mipmap.ic_app_logo),
+            contentDescription = stringResource(R.string.app_name),
+            modifier = Modifier.size(80.dp)
+        )
+        Text(
+            text = stringResource(R.string.splash_desc),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
     }
 }
 
