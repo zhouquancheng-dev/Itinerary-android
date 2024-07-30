@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.ui.utils
 
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable

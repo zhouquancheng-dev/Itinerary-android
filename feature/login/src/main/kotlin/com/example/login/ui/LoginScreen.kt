@@ -53,8 +53,8 @@ import com.aleyn.router.LRouter
 import com.aleyn.router.util.navArrival
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.common.util.ClickUtils.isFastClick
-import com.example.ui.view.ToasterUtil.ToastStatus.WARN
-import com.example.ui.view.ToasterUtil.showCustomToaster
+import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
+import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.example.login.R
 import com.example.login.components.LoginButton
 import com.example.login.components.PhoneNumberTextField

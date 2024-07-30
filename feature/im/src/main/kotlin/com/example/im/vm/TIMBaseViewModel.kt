@@ -17,8 +17,8 @@ import com.example.im.listener.V2TIMListener
 import com.example.im.listener.ListenerManager
 import com.example.im.listener.sdk.KickedOffline
 import com.example.im.listener.sdk.UserSigExpired
-import com.example.ui.view.ToasterUtil.ToastStatus.WARN
-import com.example.ui.view.ToasterUtil.showCustomToaster
+import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
+import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMManager.V2TIM_STATUS_LOGINED

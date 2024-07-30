@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.common.util
 
 import android.app.Activity
 import android.content.Context
@@ -9,41 +9,11 @@ import android.view.View
 import android.view.Window
 import android.view.WindowInsetsController
 import androidx.annotation.ColorInt
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.core.graphics.ColorUtils
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.example.ui.R
+import com.example.common.R
 import java.lang.ref.WeakReference
-
-@Composable
-fun StatusBarColorUpdateEffect(color: Color) {
-    if (LocalInspectionMode.current) return // 在预览模式下无需操作
-
-    val activity = LocalContext.current.findActivity() // 获取当前 Activity
-    val lifecycleOwner = LocalLifecycleOwner.current // 获取当前 LifecycleOwner
-
-    if (lifecycleOwner.lifecycle.currentState == Lifecycle.State.DESTROYED) {
-        return
-    }
-
-    val observer = remember { StatusBarColorLifecycleObserver(activity, color.toArgb()) }
-
-    DisposableEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-}
 
 fun Context.findActivity(): Activity {
     var context = this

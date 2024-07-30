@@ -1,4 +1,4 @@
-package com.example.ui.view
+package com.example.common.util
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -26,26 +26,38 @@ fun View.makeGone() {
     visibility = View.GONE
 }
 
-fun dpToPx(dp: Int, context: Context): Int =
-    TypedValue.applyDimension(
-        TypedValue.COMPLEX_UNIT_DIP,
-        dp.toFloat(),
-        context.resources.displayMetrics,
-    ).toInt()
+/**
+ * 获取当前是否为深色模式
+ * 深色模式的值为: 0x21
+ * 浅色模式的值为: 0x11
+ * @return true 为深色模式   false 浅色模式
+ */
+fun Context.isDarkMode(): Boolean {
+    return resources.configuration.uiMode == 0x21
+}
 
-internal val Context.layoutInflater: LayoutInflater
+fun Context.dp2px(value: Int): Int = TypedValue.applyDimension(
+    TypedValue.COMPLEX_UNIT_DIP,
+    value.toFloat(),
+    resources.displayMetrics
+).toInt()
+
+fun Context.dp2px(value: Float) =
+    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value, resources.displayMetrics)
+
+val Context.layoutInflater: LayoutInflater
     get() = LayoutInflater.from(this)
 
-internal val Context.inputMethodManager
+val Context.inputMethodManager
     get() = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 
-internal fun Context.getDrawableCompat(@DrawableRes drawable: Int): Drawable =
+fun Context.getDrawableCompat(@DrawableRes drawable: Int): Drawable =
     requireNotNull(ContextCompat.getDrawable(this, drawable))
 
-internal fun Context.getColorCompat(@ColorRes color: Int) =
+fun Context.getColorCompat(@ColorRes color: Int) =
     ContextCompat.getColor(this, color)
 
-internal fun TextView.setTextColorRes(@ColorRes color: Int) =
+fun TextView.setTextColorRes(@ColorRes color: Int) =
     setTextColor(context.getColorCompat(color))
 
 fun Fragment.addStatusBarColorUpdate(@ColorRes colorRes: Int) {

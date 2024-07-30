@@ -20,7 +20,7 @@ import androidx.navigation.NavDestination
 import com.example.common.data.Constants.TIM_TAG
 import com.example.im.listener.conversation.TotalUnreadMessageCountChangedEvent
 import com.example.ui.theme.JetItineraryTheme
-import com.example.ui.view.subscribe
+import com.example.ui.utils.subscribe
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMValueCallback
 import com.zqc.itinerary.nav.Screen

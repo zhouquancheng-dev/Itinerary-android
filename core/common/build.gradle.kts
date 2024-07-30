@@ -69,6 +69,8 @@ dependencies {
 
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.permissionx)
+
     api(libs.utilcodex)
     api(libs.toaster)
 

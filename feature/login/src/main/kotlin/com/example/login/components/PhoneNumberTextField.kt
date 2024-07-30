@@ -25,8 +25,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.ui.view.ToasterUtil.ToastStatus.ERROR
-import com.example.ui.view.ToasterUtil.showCustomToaster
+import com.example.ui.utils.ToasterUtil.ToastStatus.ERROR
+import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.example.login.R
 import com.example.login.state.isValidPhoneNumber
 import com.example.ui.components.symbols.rememberClose

@@ -42,8 +42,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aleyn.router.LRouter
 import com.aleyn.router.util.navArrival
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
-import com.example.ui.view.ToasterUtil.ToastStatus.*
-import com.example.ui.view.ToasterUtil.showCustomToaster
+import com.example.ui.utils.ToasterUtil.ToastStatus.*
+import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.example.login.R
 import com.example.login.components.CustomNumericKeypad
 import com.example.login.components.KeypadAction

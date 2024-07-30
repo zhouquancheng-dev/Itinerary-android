@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.ui.R
 import com.example.ui.theme.JetItineraryTheme
-import com.example.ui.view.isDarkMode
+import com.example.ui.utils.isDarkMode
 
 @Composable
 fun ProgressIndicatorDialog(

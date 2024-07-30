@@ -1,0 +1,147 @@
+package com.example.common.util.permissionUtil.data
+
+import android.content.Context
+import android.os.Build
+import androidx.annotation.StringRes
+import com.example.common.BaseApplication
+import com.example.common.R
+import com.example.common.util.permissionUtil.dialog.PermissionPreviewDialog
+import com.example.common.util.permissionUtil.ext.Constant.ACCESS_COARSE_LOCATION
+import com.example.common.util.permissionUtil.ext.Constant.ACCESS_FINE_LOCATION
+import com.example.common.util.permissionUtil.ext.Constant.BODY_SENSORS
+import com.example.common.util.permissionUtil.ext.Constant.CAMERA
+import com.example.common.util.permissionUtil.ext.Constant.MANAGE_EXTERNAL_STORAGE
+import com.example.common.util.permissionUtil.ext.Constant.PERMISSION_BODY_SENSORS_BACKGROUND
+import com.example.common.util.permissionUtil.ext.Constant.POST_NOTIFICATIONS
+import com.example.common.util.permissionUtil.ext.Constant.READ_CALENDAR
+import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_AUDIO
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_VIDEO
+import com.example.common.util.permissionUtil.ext.Constant.READ_PHONE_STATE
+import com.example.common.util.permissionUtil.ext.Constant.RECORD_AUDIO
+import com.example.common.util.permissionUtil.ext.Constant.WRITE_EXTERNAL_STORAGE
+
+object PermissionCase {
+
+    private fun getString(@StringRes resId: Int): String {
+        return BaseApplication.getInstance().getString(resId)
+    }
+
+    private val pDetails: Map<String, PermissionDetails> = mutableListOf(
+        PermissionDetails(
+            getString(R.string.p_storage_title),
+            getString(R.string.p_storage_desc),
+            R.drawable.ic_store,
+            listOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+        ),
+        PermissionDetails(
+            getString(R.string.p_camera_title),
+            getString(R.string.p_camera_desc),
+            R.drawable.ic_camera,
+            listOf(CAMERA)
+        ),
+        PermissionDetails(
+            getString(R.string.p_microphone_title),
+            getString(R.string.p_microphone_desc),
+            R.drawable.ic_microphone,
+            listOf(RECORD_AUDIO)
+        ),
+        PermissionDetails(
+            getString(R.string.p_location_title),
+            getString(R.string.p_location_desc),
+            R.drawable.ic_orientation,
+            listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+        ),
+        PermissionDetails(
+            getString(R.string.p_phone_title),
+            getString(R.string.p_phone_desc),
+            R.drawable.ic_telephone,
+            listOf(READ_PHONE_STATE)
+        ),
+        PermissionDetails(
+            getString(R.string.p_calendar_title),
+            getString(R.string.p_calendar_desc),
+            R.drawable.ic_calendar,
+            listOf(READ_CALENDAR)
+        ),
+        PermissionDetails(
+            getString(R.string.p_sensors_title),
+            getString(R.string.p_sensors_desc),
+            R.drawable.ic_sensor,
+            listOf(BODY_SENSORS)
+        )
+    ).apply {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            add(
+                PermissionDetails(
+                    getString(R.string.p_storage_title),
+                    getString(R.string.p_storage_desc),
+                    R.drawable.ic_store,
+                    listOf(MANAGE_EXTERNAL_STORAGE)
+                )
+            )
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            add(
+                PermissionDetails(
+                    getString(R.string.p_media_title),
+                    getString(R.string.p_media_desc),
+                    R.drawable.ic_photoalbum,
+                    listOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO)
+                )
+            )
+            add(
+                PermissionDetails(
+                    getString(R.string.p_sensors_title),
+                    getString(R.string.p_sensors_desc),
+                    R.drawable.ic_sensor,
+                    listOf(PERMISSION_BODY_SENSORS_BACKGROUND)
+                )
+            )
+            add(
+                PermissionDetails(
+                    getString(R.string.p_notifications_title),
+                    getString(R.string.p_notifications_desc),
+                    R.drawable.ic_sensor,
+                    listOf(POST_NOTIFICATIONS)
+                )
+            )
+        }
+    }.flatMap { detail ->
+        detail.permissions.map { p ->
+            p to detail
+        }
+    }.toMap()
+
+    @JvmStatic
+    fun showPreviewDialog(context: Context, details: PermissionDetails, onConfirm: () -> Unit) {
+        val dialog = PermissionPreviewDialog(context, details)
+        dialog.show()
+        dialog.setConfirmListener {
+            onConfirm()
+        }
+    }
+
+    @JvmStatic
+    fun showPreviewDialog(context: Context, p: String, onResult: (Boolean) -> Unit) {
+        val details = getPermissionDetails(p)
+        if (details == null) {
+            onResult(true)
+        } else {
+            val dialog = PermissionPreviewDialog(context, details)
+            dialog.show()
+            dialog.setConfirmListener {
+                onResult(true)
+            }
+            dialog.setCancelListener {
+                onResult(false)
+            }
+        }
+    }
+
+    @JvmStatic
+    fun getPermissionDetails(permission: String): PermissionDetails? {
+        return pDetails[permission]
+    }
+}

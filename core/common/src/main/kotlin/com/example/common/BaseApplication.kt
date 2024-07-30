@@ -1,11 +1,11 @@
 package com.example.common
 
 import android.app.Application
+import android.app.UiModeManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.res.Configuration
 import android.text.TextUtils
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -74,9 +74,9 @@ abstract class BaseApplication : Application() {
         /**
          * 获取当前是否为夜间模式
          */
-        fun isNightModeInternal(): Boolean {
-            val currentNightMode = getInstance().resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-            return currentNightMode == Configuration.UI_MODE_NIGHT_YES
+        fun isModeNightYes(): Boolean {
+            val uiModeManager = getInstance().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+            return uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
         }
     }
 
@@ -85,7 +85,7 @@ abstract class BaseApplication : Application() {
         instance = this
 
         AppCompatDelegate.setDefaultNightMode(getSystemNightMode())
-        _isNightMode.value = isNightModeInternal()
+        _isNightMode.value = isModeNightYes()
 
         observeLifecycle()
         registerConfigChangeReceiver()
@@ -120,7 +120,7 @@ abstract class BaseApplication : Application() {
         // 监听配置变化
         configChangeReceiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
-                _isNightMode.value = isNightModeInternal()
+                _isNightMode.value = isModeNightYes()
             }
         }
         val filter = IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED)
