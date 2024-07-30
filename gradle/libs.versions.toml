@@ -32,7 +32,7 @@ hilt-android = "2.51.1"
 junit = "4.13.2"
 junit-jupiter-api = "5.10.3"
 kotlin = "2.0.0"
-ksp = "2.0.0-1.0.23"
+ksp = "2.0.0-1.0.24"
 kotlin-serialization-json = "1.7.1"
 kotlin-collections-immutable = "0.3.7"
 lottie = "6.4.1"
@@ -54,8 +54,8 @@ aria-core = "3.8.16"
 aria-compiler = "3.8.16"
 itextCore = "8.0.5"
 zip4j = "2.11.5"
-calendar-compose = "2.6.0-beta02"
-reorderable = "2.2.0"
+calendar-compose = "2.6.0-beta03"
+reorderable = "2.4.0-alpha01"
 utilcodex = "1.31.1"
 toaster = "12.6"
 lrouter = "1.0.6"
@@ -64,8 +64,8 @@ compose-placeholder = "1.0.7"
 # Third-party platform
 jiguang-jverification = "3.2.5"
 bugly = "4.1.9.3"
-alicloud-httpdns = "2.4.0"
-tencent-imsdk-plus = "8.0.5895"
+alicloud-httpdns = "2.4.2"
+tencent-imsdk-plus = "8.1.6103"
 
 # 阿里云私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
@@ -294,7 +294,7 @@ compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-mat
 jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref = "jiguang-jverification" }
 # https://mvnrepository.com/artifact/com.tencent.bugly/crashreport
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
-# https://mvnrepository.com/artifact/com.aliyun.ams/alicloud-android-httpdns
+# https://help.aliyun.com/document_detail/435251.html?spm=a2c4g.435250.0.0.5dbbf55bKi6qou
 alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
 # https://mvnrepository.com/artifact/com.tencent.imsdk/imsdk-plus
 tencent-imsdk-plus = { module = "com.tencent.imsdk:imsdk-plus", version.ref = "tencent-imsdk-plus" }
