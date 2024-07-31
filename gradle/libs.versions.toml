@@ -40,7 +40,6 @@ lifecycle-common = "2.8.4"
 moshi = "1.15.1"
 navigation-compose-common = "2.8.0-beta06"
 okhttp3 = "5.0.0-alpha.14"
-permissionx = "1.8.0"
 room = "2.6.1"
 retrofit = "2.11.0"
 splashscreen = "1.2.0-alpha01"
@@ -59,7 +58,8 @@ reorderable = "2.4.0-alpha01"
 utilcodex = "1.31.1"
 toaster = "12.6"
 lrouter = "1.0.6"
-compose-placeholder = "1.0.7"
+compose-placeholder = "1.0.8"
+permissionx = "1.8.0"
 
 # Third-party platform
 jiguang-jverification = "3.2.5"
@@ -242,9 +242,6 @@ kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serializ
 # https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
 
-# https://github.com/guolindev/PermissionX?tab=readme-ov-file
-permissionx = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
-
 # https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
 squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 # https://central.sonatype.com/artifact/com.squareup.okhttp3/logging-interceptor
@@ -288,6 +285,8 @@ utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
 lrouter-plugin = { module = "com.github.aleyn97.router:plugin", version.ref = "lrouter" }
 # https://github.com/eygraber/compose-placeholder
 compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "compose-placeholder" }
+# https://github.com/guolindev/PermissionX?tab=readme-ov-file
+permissionx = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
 
 # 第三方平台服务
 # https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification

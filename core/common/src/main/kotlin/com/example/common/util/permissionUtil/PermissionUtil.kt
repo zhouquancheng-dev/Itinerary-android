@@ -6,11 +6,15 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Environment
+import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.LogUtils
+import com.example.common.R
 import com.example.common.config.AppConfig
 import com.example.common.util.permissionUtil.ext.Constant.MANAGE_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
@@ -30,7 +34,7 @@ import kotlinx.coroutines.launch
 object AllowPermissionUseCase {
 
     private const val PERMISSION_REQUEST_TAG = "PERMISSION_REQUEST_TAG"
-    private const val DEFAULT_MESSAGE = "需要同意申请必要权限!"
+    private const val DEFAULT_MESSAGE = "请同意申请的必要权限"
 
     /**
      * 使用 [PermissionX] 权限请求库以及库提供的 Dialog UI 申请权限
@@ -61,7 +65,7 @@ object AllowPermissionUseCase {
                     grantedBlock = onPermissionGranted
                 )
             } else {
-                navigateToPermissionSettings(fragment.requireContext())
+                navigateToPermissionSettings(fragment.requireContext(), message)
             }
         }
     }
@@ -95,7 +99,7 @@ object AllowPermissionUseCase {
                     grantedBlock = onPermissionGranted
                 )
             } else {
-                navigateToPermissionSettings(activity)
+                navigateToPermissionSettings(activity, message)
             }
         }
     }
@@ -194,7 +198,7 @@ object AllowPermissionUseCase {
                     }
                 }
             } else {
-                navigateToPermissionSettings(fragment.requireContext())
+                navigateToPermissionSettings(fragment.requireContext(), message)
             }
         }
     }
@@ -239,7 +243,7 @@ object AllowPermissionUseCase {
                     }
                 }
             } else {
-                navigateToPermissionSettings(activity)
+                navigateToPermissionSettings(activity, message)
             }
         }
     }
@@ -285,7 +289,7 @@ object AllowPermissionUseCase {
             if (shouldShowPermissionRequest(activity, tag)) {
                 handleManageExternalStorage(activity, tag, message, onPermissionGranted)
             } else {
-                navigateToPermissionSettings(context = activity) {
+                navigateToPermissionSettings(activity, message) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                         handleManageExternalStorage(activity, tag, message, onPermissionGranted)
                     }
@@ -470,7 +474,7 @@ object AllowPermissionUseCase {
                     }
                 }
             } else {
-                navigateToPermissionSettings(fragment.requireContext())
+                navigateToPermissionSettings(fragment.requireContext(), message)
             }
         }
     }
@@ -504,36 +508,51 @@ object AllowPermissionUseCase {
                     }
                 }
             } else {
-                navigateToPermissionSettings(activity)
+                navigateToPermissionSettings(activity, message)
             }
         }
     }
 
     private fun showPermissionDeniedMessage(context: Context, tag: String, message: String) {
         savePermissionRequestTime(context, tag)
-        Toaster.show(message)
+        Toaster.show(if (message == DEFAULT_MESSAGE) message else "请同意我们申请${message}")
     }
 
     private fun navigateToPermissionSettings(
         context: Context,
-        message: String? = "",
+        message: String?,
         toSetting: (() -> Unit)? = null
     ) {
-        AlertDialog.Builder(context)
-            .apply {
-                setTitle("提示")
-                setMessage("请在设置-应用-权限管理中打开$message，否则无法正常使用该功能。")
-                setPositiveButton("去设置") { _, _ ->
-                    val pm = PermissionPageManagement()
-                    toSetting?.invoke() ?: pm.startSettingAppPermission(context)
-                }
-                setNegativeButton("知道了") { dialog, _ ->
-                    dialog.dismiss()
-                }
-                setCancelable(false)
-            }
+        val dialogView = LayoutInflater.from(context).inflate(R.layout.alert_dialog_permission, null)
+        val dialogTitle = dialogView.findViewById<TextView>(R.id.dialog_title)
+        val dialogMessage = dialogView.findViewById<TextView>(R.id.dialog_message)
+        val positiveButton = dialogView.findViewById<Button>(R.id.dialog_positive_button)
+        val negativeButton = dialogView.findViewById<Button>(R.id.dialog_negative_button)
+
+        dialogTitle.setText(R.string.hint)
+        dialogMessage.text = context.getString(
+            R.string.permission_settings_message, context.getString(R.string.app_name),
+            if (message == DEFAULT_MESSAGE) "" else message
+        )
+
+        val alertDialog = AlertDialog.Builder(context, R.style.BaseAlertDialogStyle)
+            .setView(dialogView)
+            .setCancelable(false)
             .create()
-            .show()
+
+        positiveButton.setText(R.string.go_to_settings)
+        positiveButton.setOnClickListener {
+            val pm = PermissionPageManagement()
+            toSetting?.invoke() ?: pm.startSettingAppPermission(context)
+            alertDialog.dismiss()
+        }
+
+        negativeButton.setText(R.string.cancel)
+        negativeButton.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        alertDialog.show()
     }
 
     private fun arePermissionsGranted(context: Context, permissions: List<String>): Boolean {

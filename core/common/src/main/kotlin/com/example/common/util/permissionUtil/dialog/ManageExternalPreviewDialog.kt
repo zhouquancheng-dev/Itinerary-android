@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import com.example.common.R
-import com.example.common.databinding.DialogPermissionPreviewBinding
+import com.example.common.databinding.DialogPermissionBinding
 import com.example.common.util.getColorCompat
 import com.example.common.util.permissionUtil.data.PermissionDetails
 import com.permissionx.guolindev.dialog.RationaleDialog
@@ -14,14 +14,14 @@ class ManageExternalPreviewDialog(
     context: Context,
     private val paris: PermissionDetails
 ) : RationaleDialog(context, R.style.StyleBaseDialog) {
-    private lateinit var binding: DialogPermissionPreviewBinding
+    private lateinit var binding: DialogPermissionBinding
 
     // 是否点击按钮时自动关闭对话框
     private val isAutoDismiss = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DialogPermissionPreviewBinding.inflate(layoutInflater)
+        binding = DialogPermissionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window?.let {
             val param = it.attributes

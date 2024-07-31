@@ -26,6 +26,11 @@
         <item name="android:backgroundDimAmount">0.0</item>
     </style>
 
+    <style name="BaseAlertDialogStyle" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <!-- 圆角图片 -->
     <style name="roundedCornerStyle">
         <item name="cornerFamily">rounded</item>

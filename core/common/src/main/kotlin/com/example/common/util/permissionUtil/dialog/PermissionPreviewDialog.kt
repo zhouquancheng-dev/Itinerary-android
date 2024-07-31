@@ -30,7 +30,7 @@ class PermissionPreviewDialog(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.dialog_permission_preview)
+        setContentView(R.layout.dialog_permission)
 
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         if (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES) {

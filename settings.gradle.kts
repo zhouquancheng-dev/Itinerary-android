@@ -1,7 +1,5 @@
 pluginManagement {
     repositories {
-        apply("maven.gradle.kts")
-
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -11,15 +9,17 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
+        apply("maven.gradle.kts")
     }
 }
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        apply("maven.gradle.kts")
-
         google()
         mavenCentral()
+
+        apply("maven.gradle.kts")
     }
 }
 

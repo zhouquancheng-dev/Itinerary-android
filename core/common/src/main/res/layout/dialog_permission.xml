@@ -58,7 +58,7 @@
             android:layout_marginStart="20dp"
             android:layout_toEndOf="@+id/ivIcon"
             android:gravity="start"
-            android:text="@string/camera_permission"
+            android:text="@string/permission_title"
             android:textColor="@color/dialog_title_color"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -71,7 +71,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/ivIcon"
-            android:text="@string/camera_permission_description"
+            android:text="@string/permission_description"
             android:textColor="#666666"
             android:textSize="12sp" />
     </RelativeLayout>

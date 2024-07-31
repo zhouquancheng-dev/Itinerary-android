@@ -1,8 +1,5 @@
 fun RepositoryHandler.addCommonMaven() {
     maven {
-        url = uri("https://maven.aliyun.com/repository/public")
-    }
-    maven {
         url = uri("http://maven.aliyun.com/nexus/content/repositories/releases/")
         isAllowInsecureProtocol = true
     }
