@@ -56,13 +56,11 @@ class SplashActivity : ComponentActivity() {
                             }
                             is Event.StartMain -> {
                                 LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
-                                    // 导航执行成功
                                     finish()
                                 }
                             }
                             is Event.StartLogin -> {
                                 LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                                    // 导航执行成功
                                     finish()
                                 }
                             }

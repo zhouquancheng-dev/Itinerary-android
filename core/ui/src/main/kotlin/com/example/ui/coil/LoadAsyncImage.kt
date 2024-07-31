@@ -7,34 +7,44 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
+import coil3.annotation.ExperimentalCoilApi
+import coil3.compose.AsyncImage
+import coil3.compose.setSingletonImageLoaderFactory
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.request.error
+import coil3.request.placeholder
+import coil3.size.Precision
 import com.example.ui.R
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun LoadAsyncImage(
     model: Any?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    loadType: LoadType = LoadType.DEFAULT,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
-    @DrawableRes placeholder: Int = R.drawable.module_ic_coil_placeholder,
-    @DrawableRes errorImage: Int = R.drawable.module_ic_coil_error
+    @DrawableRes placeholderResId: Int = R.drawable.module_ic_coil_placeholder,
+    @DrawableRes errorResId: Int = R.drawable.module_ic_coil_error
 ) {
     val context = LocalContext.current
-    val imageLoader = ImageLoaderProvider.getImageLoader(loadType)
 
-    val imageRequest = remember(model, loadType) {
+    setSingletonImageLoaderFactory {
+        getAsyncImageLoader(context)
+    }
+
+    val imageRequest = remember(model) {
         ImageRequest.Builder(context)
             .data(model)
             .memoryCachePolicy(CachePolicy.ENABLED)
             .diskCachePolicy(CachePolicy.ENABLED)
             .networkCachePolicy(CachePolicy.ENABLED)
-            .placeholder(placeholder)
-            .error(errorImage)
+            .placeholder(placeholderResId)
+            .error(errorResId)
             .crossfade(true)
+            .precision(Precision.INEXACT)
             .build()
     }
 
@@ -42,8 +52,7 @@ fun LoadAsyncImage(
         model = imageRequest,
         contentDescription = contentDescription,
         modifier = modifier,
-        contentScale = contentScale,
-        imageLoader = imageLoader,
-        alignment = alignment
+        alignment = alignment,
+        contentScale = contentScale
     )
 }

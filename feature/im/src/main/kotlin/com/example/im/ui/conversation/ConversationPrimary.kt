@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontFamily
@@ -97,8 +96,8 @@ fun ConversationPrimary(
                 modifier = Modifier
                     .size(65.dp)
                     .clip(RoundedCornerShape(8.dp)),
-                placeholder = R.drawable.ic_default_face,
-                errorImage = R.drawable.ic_default_face
+                placeholderResId = R.drawable.ic_default_face,
+                errorResId = R.drawable.ic_default_face
             )
 
             HorizontalSpacer(10.dp)
