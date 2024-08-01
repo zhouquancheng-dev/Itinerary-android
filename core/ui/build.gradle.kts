@@ -100,7 +100,7 @@ dependencies {
     api(libs.androidx.navigation.compose)
     androidTestApi(libs.androidx.navigation.testing)
 
-    api(libs.airbnb.android.lottie.compose)
+    api(libs.lottie.compose)
 
 //    implementation(platform(libs.coil.bom))
 //    implementation(libs.coil)

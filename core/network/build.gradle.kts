@@ -47,15 +47,15 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.squareup.okhttp3.okhttp)
-    implementation(libs.squareup.okhttp3.logging.interceptor)
-    implementation(libs.squareup.retrofit2.retrofit)
+    implementation(libs.okhttp3.okhttp)
+    implementation(libs.okhttp3.logging.interceptor)
+    implementation(libs.retrofit2.retrofit)
 
-    implementation(libs.squareup.retrofit2.converter.kotlinx.serialization)
+    implementation(libs.retrofit2.converter.kotlinx.serialization)
     implementation(libs.kotlinx.serialization.json)
 
-    implementation(libs.squareup.retrofit2.converter.moshi)
-    implementation(libs.squareup.moshi.kotlin)
+    implementation(libs.retrofit2.converter.moshi)
+    implementation(libs.moshi.kotlin)
 
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)

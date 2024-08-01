@@ -26,6 +26,7 @@ import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.imsdk.v2.V2TIMLogListener
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMSDKConfig
+import com.tencent.mmkv.MMKV
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -141,6 +142,7 @@ abstract class BaseApplication : Application() {
         DataStoreUtils.init(getInstance())
         LogUtils.getConfig().setLogSwitch(isDebug()).setLog2FileSwitch(false)
         Toaster.init(getInstance())
+        MMKV.initialize(getInstance())
     }
 
     /**

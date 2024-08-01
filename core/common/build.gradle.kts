@@ -83,4 +83,6 @@ dependencies {
 
     // Tencent IM
     api(libs.tencent.imsdk.plus)
+
+    implementation(libs.mmkv)
 }

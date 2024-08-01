@@ -39,8 +39,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.squareup.moshi)
-    ksp(libs.squareup.moshi.kotlin.codegen)
+    implementation(libs.moshi)
+    ksp(libs.moshi.kotlin.codegen)
 
-    implementation(libs.squareup.retrofit2.converter.kotlinx.serialization)
+    implementation(libs.retrofit2.converter.kotlinx.serialization)
 }

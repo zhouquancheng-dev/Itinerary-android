@@ -45,29 +45,29 @@ retrofit = "2.11.0"
 splashscreen = "1.2.0-alpha01"
 
 # github open source library
-zxing = "3.5.3"
-threetenabp = "1.4.7"
+aria = "3.8.16"
 capturable = "2.1.0"
-jiaozivideoplayer = "7.7.2.3300"
-aria-core = "3.8.16"
-aria-compiler = "3.8.16"
-itextCore = "8.0.5"
-zip4j = "2.11.5"
 calendar-compose = "2.6.0-beta03"
-reorderable = "2.4.0-alpha01"
-utilcodex = "1.31.1"
-toaster = "12.6"
-lrouter = "1.0.6"
 compose-placeholder = "1.0.8"
+itextCore = "8.0.5"
+jiaozivideoplayer = "7.7.2.3300"
+lrouter = "1.0.6"
+mmkv = "1.3.9"
 permissionx = "1.8.0"
+reorderable = "2.4.0-alpha01"
+threetenabp = "1.4.7"
+toaster = "12.6"
+utilcodex = "1.31.1"
+zxing = "3.5.3"
+zip4j = "2.11.5"
 
 # Third-party platform
-jiguang-jverification = "3.2.5"
-bugly = "4.1.9.3"
 alicloud-httpdns = "2.4.2"
+bugly = "4.1.9.3"
+jiguang-jverification = "3.2.5"
 tencent-imsdk-plus = "8.1.6103"
 
-# 阿里云私有仓库
+# 私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
@@ -75,15 +75,15 @@ aliyun-captcha = "1.8.3.1_20240108"
 # https://mvnrepository.com/artifact/com.android.application/com.android.application.gradle.plugin
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
+# 指南 https://developer.android.com/develop/ui/compose/compiler?hl=zh-cn
+# Compose Compiler Gradle 插件仅适用于 Kotlin 2.0 及更高版本，同 kotlin 版本相同
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 # https://mvnrepository.com/artifact/com.google.dagger.hilt.android/com.google.dagger.hilt.android.gradle.plugin
 hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt-android" }
 # https://github.com/google/ksp/releases
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 # https://mvnrepository.com/artifact/org.jetbrains.kotlin.android/org.jetbrains.kotlin.android.gradle.plugin
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-# 指南 https://developer.android.com/develop/ui/compose/compiler?hl=zh-cn
-# Compose Compiler Gradle 插件仅适用于 Kotlin 2.0 及更高版本，同 kotlin 版本相同
-compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [libraries]
@@ -153,9 +153,6 @@ androidx-navigation-compose = { group = "androidx.navigation", name = "navigatio
 androidx-navigation-testing = { group = "androidx.navigation", name = "navigation-testing", version.ref = "navigation-compose-common" }
 # https://mvnrepository.com/artifact/androidx.hilt/hilt-navigation-compose
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation-compose" }
-
-# https://central.sonatype.com/artifact/com.airbnb.android/lottie-compose
-airbnb-android-lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
 
 # https://mvnrepository.com/artifact/androidx.core/core-splashscreen
 androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashscreen" }
@@ -242,59 +239,66 @@ kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serializ
 # https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
 
-# https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
-squareup-okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
-# https://central.sonatype.com/artifact/com.squareup.okhttp3/logging-interceptor
-squareup-okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
-# https://central.sonatype.com/artifact/com.squareup.retrofit2/retrofit
-squareup-retrofit2-retrofit = { group ="com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
-# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-kotlinx-serialization
-squareup-retrofit2-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
-# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-moshi/overview
-squareup-retrofit2-converter-moshi = { group ="com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.airbnb.android/lottie-compose
+lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+
 # https://central.sonatype.com/artifact/com.squareup.moshi/moshi
-squareup-moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
-squareup-moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
-squareup-moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
+moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
+
+# https://central.sonatype.com/artifact/com.squareup.okhttp3/okhttp
+okhttp3-okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
+# https://central.sonatype.com/artifact/com.squareup.okhttp3/logging-interceptor
+okhttp3-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3" }
+
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/retrofit
+retrofit2-retrofit = { group ="com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-kotlinx-serialization
+retrofit2-converter-kotlinx-serialization = { group = "com.squareup.retrofit2", name = "converter-kotlinx-serialization", version.ref = "retrofit" }
+# https://central.sonatype.com/artifact/com.squareup.retrofit2/converter-moshi/overview
+retrofit2-converter-moshi = { group ="com.squareup.retrofit2", name = "converter-moshi", version.ref = "retrofit" }
 
 # github open source library
-# https://github.com/zxing/zxing
-google-zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
-# https://mvnrepository.com/artifact/com.jakewharton.threetenabp/threetenabp
-jakewharton-threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
-# https://github.com/PatilShreyas/Capturable
-shreyaspatil-capturable = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
-# https://github.com/Jzvd/JZVideo
-jzvd-jiaozivideoplayer = { module = "cn.jzvd:jiaozivideoplayer", version.ref = "jiaozivideoplayer" }
 # https://github.com/AriaLyy/Aria
-laoyuyu-aria-core = { module = "me.laoyuyu.aria:core", version.ref = "aria-core" }
-laoyuyu-aria-compiler = { module = "me.laoyuyu.aria:compiler", version.ref = "aria-compiler" }
-# https://mvnrepository.com/artifact/com.itextpdf/itext-core
-itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itextCore" }
-# https://github.com/srikanth-lingala/zip4j
-zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
+aria-core = { module = "me.laoyuyu.aria:core", version.ref = "aria" }
+aria-compiler = { module = "me.laoyuyu.aria:compiler", version.ref = "aria" }
+# https://github.com/PatilShreyas/Capturable
+capturable-compose = { module = "dev.shreyaspatil:capturable", version.ref = "capturable" }
 # https://github.com/kizitonwose/Calendar
 calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
+# https://github.com/eygraber/compose-placeholder
+compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "compose-placeholder" }
+# https://mvnrepository.com/artifact/com.itextpdf/itext-core
+itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itextCore" }
+# https://github.com/Jzvd/JZVideo
+jzvd = { module = "cn.jzvd:jiaozivideoplayer", version.ref = "jiaozivideoplayer" }
+# https://github.com/aleyn97/router?tab=readme-ov-file
+lrouter-plugin = { module = "com.github.aleyn97.router:plugin", version.ref = "lrouter" }
+# https://github.com/Tencent/MMKV
+mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
+# https://github.com/guolindev/PermissionX?tab=readme-ov-file
+permissionx = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
 # https://github.com/Calvin-LL/Reorderable
-reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+reorderable-compose = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
+# https://mvnrepository.com/artifact/com.jakewharton.threetenabp/threetenabp
+threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabp" }
 # https://github.com/getActivity/Toaster
 toaster = { module = "com.github.getActivity:Toaster", version.ref = "toaster" }
 # https://github.com/Blankj/AndroidUtilCode
 utilcodex = { module = "com.blankj:utilcodex", version.ref = "utilcodex" }
-# https://github.com/aleyn97/router?tab=readme-ov-file
-lrouter-plugin = { module = "com.github.aleyn97.router:plugin", version.ref = "lrouter" }
-# https://github.com/eygraber/compose-placeholder
-compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "compose-placeholder" }
-# https://github.com/guolindev/PermissionX?tab=readme-ov-file
-permissionx = { module = "com.guolindev.permissionx:permissionx", version.ref = "permissionx" }
+# https://github.com/zxing/zxing
+zxing = { module = "com.google.zxing:core", version.ref = "zxing" }
+# https://github.com/srikanth-lingala/zip4j
+zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 
 # 第三方平台服务
+# https://help.aliyun.com/document_detail/435251.html?spm=a2c4g.435250.0.0.5dbbf55bKi6qou
+alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
 # https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification
 jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref = "jiguang-jverification" }
 # https://mvnrepository.com/artifact/com.tencent.bugly/crashreport
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
-# https://help.aliyun.com/document_detail/435251.html?spm=a2c4g.435250.0.0.5dbbf55bKi6qou
-alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
 # https://mvnrepository.com/artifact/com.tencent.imsdk/imsdk-plus
 tencent-imsdk-plus = { module = "com.tencent.imsdk:imsdk-plus", version.ref = "tencent-imsdk-plus" }
 
