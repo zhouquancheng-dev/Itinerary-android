@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,17 +50,15 @@ import kotlinx.coroutines.launch
 @Composable
 fun ConversationPrimary(
     conversation: V2TIMConversation,
-    swipeStates: MutableMap<Int, AnchoredDraggableState<DragValue>>,
     draggableState: AnchoredDraggableState<DragValue>,
+    currentSwipedIndex: MutableState<Int?>,
     onChatUI: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val resetAllStates = {
-        val anyEnd = swipeStates.values.any { it.currentValue == DragValue.End }
-        if (anyEnd) {
-            swipeStates.forEach { (_, state) ->
-                scope.launch { state.snapTo(DragValue.Start) }
-            }
+        scope.launch {
+            draggableState.snapTo(DragValue.Start)
+            currentSwipedIndex.value = null
         }
     }
 
@@ -74,8 +73,10 @@ fun ConversationPrimary(
 
     Surface(
         onClick = {
-            resetAllStates()
-            if (draggableState.currentValue == DragValue.Start) {
+            if (draggableState.currentValue == DragValue.End) {
+                resetAllStates()
+            } else {
+                resetAllStates()
                 onChatUI()
             }
         },

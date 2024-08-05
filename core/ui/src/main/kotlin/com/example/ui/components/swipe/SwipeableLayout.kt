@@ -12,15 +12,14 @@ import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -28,11 +27,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,7 +44,6 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 
 /**
@@ -60,15 +59,47 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SwipeBoxLayout(
-    draggableState: AnchoredDraggableState<DragValue>,
+    index: Int,
+    currentSwipedIndex: MutableState<Int?>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     swipeStyle: SwipeStyle = SwipeStyle.EndToStart,
-    childContent: @Composable () -> Unit,
-    primaryContent: @Composable () -> Unit
+    childContent: @Composable (draggableState: AnchoredDraggableState<DragValue>) -> Unit,
+    primaryContent: @Composable (draggableState: AnchoredDraggableState<DragValue>) -> Unit
 ) {
-    val density = LocalDensity.current
     val childWidth = remember { mutableFloatStateOf(0f) }
+    val density = LocalDensity.current
+
+    val draggableState = remember {
+        AnchoredDraggableState(
+            initialValue = DragValue.Start,
+            positionalThreshold = { distance -> distance * 0.5f },
+            velocityThreshold = { with(density) { 100.dp.toPx() } },
+            snapAnimationSpec = spring(DampingRatioLowBouncy),
+            decayAnimationSpec = exponentialDecay(frictionMultiplier = 20f)
+        )
+    }
+
+    LaunchedEffect(draggableState.currentValue) {
+        if (draggableState.currentValue == DragValue.End) {
+            currentSwipedIndex.value?.let { previousIndex ->
+                if (previousIndex != index) {
+                    currentSwipedIndex.value = index
+                }
+            } ?: run {
+                currentSwipedIndex.value = index
+            }
+        } else if (draggableState.currentValue == DragValue.Start && currentSwipedIndex.value == index) {
+            currentSwipedIndex.value = null
+        }
+    }
+
+    LaunchedEffect(currentSwipedIndex.value) {
+        if (currentSwipedIndex.value != index && draggableState.currentValue == DragValue.End) {
+            draggableState.snapTo(DragValue.Start)
+        }
+    }
+
     Box(
         modifier = modifier
             .anchoredDraggable(
@@ -96,7 +127,7 @@ fun SwipeBoxLayout(
                 }
                 .align(getChildAlign(swipeStyle))
         ) {
-            childContent()
+            childContent(draggableState)
         }
 
         Box(
@@ -110,7 +141,7 @@ fun SwipeBoxLayout(
                     }
                 }
         ) {
-            primaryContent()
+            primaryContent(draggableState)
         }
     }
 }
@@ -133,7 +164,7 @@ private fun getChildAlign(swipeStyle: SwipeStyle) =
 @Composable
 fun SwipeRowLayout(
     index: Int,
-    swipeStates: MutableMap<Int, AnchoredDraggableState<DragValue>>,
+    currentSwipedIndex: MutableState<Int?>,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     swipeStyle: SwipeStyle = SwipeStyle.EndToStart,
@@ -150,8 +181,6 @@ fun SwipeRowLayout(
             decayAnimationSpec = exponentialDecay(frictionMultiplier = 20f)
         )
     }
-
-    swipeStates[index] = draggableState
 
     val childWidthState = remember { mutableFloatStateOf(0f) }
 
@@ -171,11 +200,21 @@ fun SwipeRowLayout(
 
     LaunchedEffect(draggableState.currentValue) {
         if (draggableState.currentValue == DragValue.End) {
-            swipeStates.forEach { (key, state) ->
-                if (key != index && state.currentValue == DragValue.End) {
-                    state.snapTo(DragValue.Start)
+            currentSwipedIndex.value?.let { previousIndex ->
+                if (previousIndex != index) {
+                    currentSwipedIndex.value = index
                 }
+            } ?: run {
+                currentSwipedIndex.value = index
             }
+        } else if (draggableState.currentValue == DragValue.Start && currentSwipedIndex.value == index) {
+            currentSwipedIndex.value = null
+        }
+    }
+
+    LaunchedEffect(currentSwipedIndex.value) {
+        if (currentSwipedIndex.value != index && draggableState.currentValue == DragValue.End) {
+            draggableState.snapTo(DragValue.Start)
         }
     }
 
@@ -223,82 +262,63 @@ fun SwipeRowLayout(
 )
 @Composable
 private fun SwipeLayoutSample() {
-    val density = LocalDensity.current
-    val draggableState1 = remember {
-        AnchoredDraggableState(
-            initialValue = DragValue.Start,
-            positionalThreshold = { distance -> distance * 0.5f },
-            velocityThreshold = { with(density) { 100.dp.toPx() } },
-            snapAnimationSpec = spring(DampingRatioLowBouncy),
-            decayAnimationSpec = exponentialDecay(frictionMultiplier = 20f)
-        )
-    }
-    Column {
-        SwipeBoxLayout(
-            draggableState = draggableState1,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(150.dp),
-            childContent = {
-                Row(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(300.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(0)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.DeleteSweep,
-                            contentDescription = null,
-                            modifier = Modifier.size(45.dp)
-                        )
-                    }
-                    Button(
-                        onClick = {},
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(0)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = null,
-                            modifier = Modifier.size(45.dp)
-                        )
-                    }
-                }
-            }
-        ) {
-            Surface (
+    val currentSwipedIndex = remember { mutableStateOf<Int?>(null) }
+    val items = listOf("Item 1", "Item 2", "Item 3")
+
+    LazyColumn {
+        itemsIndexed(items) { index, item ->
+            SwipeBoxLayout(
+                index = index,
+                currentSwipedIndex = currentSwipedIndex,
                 modifier = Modifier.fillMaxWidth(),
-                color = Color.White
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "AnchoredDraggable是一种 Compose Material API，可帮助您构建可在各种不同状态间滑动的组件，例如底部动作条、抽屉式导航栏或滑动关闭。",
-                        fontSize = 18.sp
-                    )
+                swipeStyle = SwipeStyle.EndToStart,
+                childContent = { _ ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(300.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(
+                            onClick = {},
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(0)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.DeleteSweep,
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        }
+                        Button(
+                            onClick = {},
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red,
+                                contentColor = Color.White
+                            ),
+                            shape = RoundedCornerShape(0)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = null,
+                                modifier = Modifier.size(45.dp)
+                            )
+                        }
+                    }
+                },
+                primaryContent = { _ ->
+                    Text(item, modifier = Modifier.padding(16.dp))
                 }
-            }
+            )
         }
     }
 }

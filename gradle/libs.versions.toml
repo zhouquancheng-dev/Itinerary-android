@@ -35,7 +35,7 @@ kotlin = "2.0.0"
 ksp = "2.0.0-1.0.24"
 kotlin-serialization-json = "1.7.1"
 kotlin-collections-immutable = "0.3.7"
-lottie = "6.4.1"
+lottie = "6.5.0"
 lifecycle-common = "2.8.4"
 moshi = "1.15.1"
 navigation-compose-common = "2.8.0-beta06"
@@ -47,7 +47,7 @@ splashscreen = "1.2.0-alpha01"
 # github open source library
 aria = "3.8.16"
 capturable = "2.1.0"
-calendar-compose = "2.6.0-beta03"
+calendar-compose = "2.6.0-beta04"
 compose-placeholder = "1.0.8"
 itextCore = "8.0.5"
 jiaozivideoplayer = "7.7.2.3300"
@@ -70,7 +70,6 @@ tencent-imsdk-plus = "8.1.6103"
 # 私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
 
-# alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [plugins]
 # https://mvnrepository.com/artifact/com.android.application/com.android.application.gradle.plugin
 android-application = { id = "com.android.application", version.ref = "agp" }

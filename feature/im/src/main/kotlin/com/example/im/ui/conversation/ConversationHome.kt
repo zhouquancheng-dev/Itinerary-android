@@ -6,7 +6,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,9 +28,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -51,7 +51,6 @@ import com.example.im.ui.Color60DDAD
 import com.example.im.vm.IMViewModel
 import com.example.ui.components.HorizontalSpacer
 import com.example.ui.components.placeholder
-import com.example.ui.components.swipe.DragValue
 import com.example.ui.components.swipe.SwipeRowLayout
 import com.tencent.imsdk.v2.V2TIMConversation
 import com.tencent.qcloud.tuicore.TUIConstants
@@ -141,7 +140,6 @@ fun ConversationHome() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ConversationList(
     listState: LazyListState,
@@ -150,7 +148,7 @@ fun ConversationList(
     onPinned: (String, Boolean) -> Unit,
     onDeleteConversation: (String) -> Unit
 ) {
-    val swipeStates = remember { mutableStateMapOf<Int, AnchoredDraggableState<DragValue>>() }
+    val currentSwipedIndex = remember { mutableStateOf<Int?>(null) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -169,7 +167,7 @@ fun ConversationList(
             ConversationItem(
                 conversation = item,
                 index = index,
-                swipeStates = swipeStates,
+                currentSwipedIndex = currentSwipedIndex,
                 modifier = Modifier.animateItem(),
                 onChatUI, onPinned, onDeleteConversation
             )
@@ -182,7 +180,7 @@ fun ConversationList(
 fun ConversationItem(
     conversation: V2TIMConversation,
     index: Int,
-    swipeStates: MutableMap<Int, AnchoredDraggableState<DragValue>>,
+    currentSwipedIndex: MutableState<Int?>,
     modifier: Modifier = Modifier,
     onChatUI: (String) -> Unit,
     onPinned: (String, Boolean) -> Unit,
@@ -190,7 +188,7 @@ fun ConversationItem(
 ) {
     SwipeRowLayout(
         index = index,
-        swipeStates = swipeStates,
+        currentSwipedIndex = currentSwipedIndex,
         modifier = modifier
             .fillMaxWidth()
             .height(76.dp),
@@ -208,9 +206,9 @@ fun ConversationItem(
         }
     ) { draggableState ->
         ConversationPrimary(
-            conversation,
-            swipeStates,
-            draggableState,
+            conversation = conversation,
+            draggableState = draggableState,
+            currentSwipedIndex = currentSwipedIndex,
             onChatUI = { onChatUI(conversation.userID) }
         )
     }

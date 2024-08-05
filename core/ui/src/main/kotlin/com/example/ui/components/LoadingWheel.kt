@@ -35,7 +35,7 @@ import com.example.ui.theme.JetItineraryTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun NiaLoadingWheel(
+fun LoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -116,7 +116,7 @@ fun NiaLoadingWheel(
 }
 
 @Composable
-fun NiaOverlayLoadingWheel(
+fun OverlayLoadingWheel(
     contentDesc: String,
     modifier: Modifier = Modifier,
 ) {
@@ -127,7 +127,7 @@ fun NiaOverlayLoadingWheel(
         modifier = modifier
             .size(60.dp),
     ) {
-        NiaLoadingWheel(
+        LoadingWheel(
             contentDesc = contentDesc,
         )
     }
@@ -138,7 +138,7 @@ fun NiaOverlayLoadingWheel(
 fun NiaLoadingWheelPreview() {
     JetItineraryTheme {
         Surface {
-            NiaLoadingWheel(contentDesc = "LoadingWheel")
+            LoadingWheel(contentDesc = "LoadingWheel")
         }
     }
 }
@@ -148,7 +148,7 @@ fun NiaLoadingWheelPreview() {
 fun NiaOverlayLoadingWheelPreview() {
     JetItineraryTheme {
         Surface {
-            NiaOverlayLoadingWheel(contentDesc = "LoadingWheel")
+            OverlayLoadingWheel(contentDesc = "LoadingWheel")
         }
     }
 }
