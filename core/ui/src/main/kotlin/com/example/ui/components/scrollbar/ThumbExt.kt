@@ -2,14 +2,15 @@ package com.example.ui.components.scrollbar
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.LazyGridState
+import androidx.compose.foundation.lazy.staggeredgrid.LazyStaggeredGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import kotlin.math.roundToInt
 
 /**
  * Remembers a function to react to [Scrollbar] thumb position displacements for a [LazyListState]
@@ -36,6 +37,19 @@ fun LazyGridState.rememberDraggableScroller(
 )
 
 /**
+ * Remembers a function to react to [Scrollbar] thumb position displacements for a
+ * [LazyStaggeredGridState]
+ * @param itemsAvailable the amount of items in the staggered grid.
+ */
+@Composable
+fun LazyStaggeredGridState.rememberDraggableScroller(
+    itemsAvailable: Int,
+): (Float) -> Unit = rememberDraggableScroller(
+    itemsAvailable = itemsAvailable,
+    scroll = ::scrollToItem,
+)
+
+/**
  * Generic function to react to [Scrollbar] thumb displacements in a lazy layout.
  * @param itemsAvailable the total amount of items available to scroll in the layout.
  * @param scroll a function to be invoked when an index has been identified to scroll to.
@@ -50,7 +64,7 @@ private inline fun rememberDraggableScroller(
 
     LaunchedEffect(percentage) {
         if (percentage.isNaN()) return@LaunchedEffect
-        val indexToFind = (itemCount * percentage).toInt()
+        val indexToFind = (itemCount * percentage).roundToInt()
         scroll(indexToFind)
     }
     return remember {

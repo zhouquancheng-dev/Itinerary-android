@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.7.0-alpha03"
+agp = "8.7.0-alpha04"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha04"
 androidx-test-ext-junit = "1.2.1"
@@ -31,8 +31,8 @@ hilt-navigation-compose = "1.2.0"
 hilt-android = "2.52"
 junit = "4.13.2"
 junit-jupiter-api = "5.10.3"
-kotlin = "2.0.0"
-ksp = "2.0.0-1.0.24"
+kotlin = "2.0.10"
+ksp = "2.0.10-1.0.24"
 kotlin-serialization-json = "1.7.1"
 kotlin-collections-immutable = "0.3.7"
 lottie = "6.5.0"
@@ -54,6 +54,7 @@ jiaozivideoplayer = "7.7.2.3300"
 lrouter = "1.0.6"
 mmkv = "1.3.9"
 permissionx = "1.8.0"
+pictureselector = "v3.11.2"
 reorderable = "2.4.0-alpha01"
 threetenabp = "1.4.7"
 toaster = "12.6"
@@ -274,6 +275,11 @@ itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itext
 jzvd = { module = "cn.jzvd:jiaozivideoplayer", version.ref = "jiaozivideoplayer" }
 # https://github.com/aleyn97/router?tab=readme-ov-file
 lrouter-plugin = { module = "com.github.aleyn97.router:plugin", version.ref = "lrouter" }
+# https://github.com/LuckSiege/PictureSelector?tab=readme-ov-file
+lucksiege-pictureselector = { module = "io.github.lucksiege:pictureselector", version.ref = "pictureselector" }
+lucksiege-compress = { module = "io.github.lucksiege:compress", version.ref = "pictureselector" }
+lucksiege-ucrop = { module = "io.github.lucksiege:ucrop", version.ref = "pictureselector" }
+lucksiege-camerax = { module = "io.github.lucksiege:camerax", version.ref = "pictureselector" }
 # https://github.com/Tencent/MMKV
 mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
 # https://github.com/guolindev/PermissionX?tab=readme-ov-file

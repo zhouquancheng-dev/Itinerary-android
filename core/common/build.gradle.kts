@@ -85,4 +85,9 @@ dependencies {
     api(libs.tencent.imsdk.plus)
 
     implementation(libs.mmkv)
+
+    api(libs.lucksiege.pictureselector)
+    api(libs.lucksiege.compress)
+    api(libs.lucksiege.ucrop)
+    api(libs.lucksiege.camerax)
 }

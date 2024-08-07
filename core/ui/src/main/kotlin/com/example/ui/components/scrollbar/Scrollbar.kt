@@ -1,7 +1,8 @@
 package com.example.ui.components.scrollbar
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.Orientation.Horizontal
+import androidx.compose.foundation.gestures.Orientation.Vertical
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -12,31 +13,27 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.util.packFloats
 import androidx.compose.ui.util.unpackFloat1
 import androidx.compose.ui.util.unpackFloat2
@@ -45,6 +42,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withTimeout
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * The delay between scrolls when a user long presses on the scrollbar track to initiate a scroll
@@ -58,65 +56,31 @@ private const val SCROLLBAR_PRESS_DELAY_MS = 10L
  */
 private const val SCROLLBAR_PRESS_DELTA_PCT = 0.02f
 
-/**
- * Class definition for the core properties of a scroll bar
- */
-@Immutable
-@JvmInline
-value class ScrollbarState internal constructor(
-    internal val packedValue: Long,
-) {
-    companion object {
-        val FULL = ScrollbarState(
-            thumbSizePercent = 1f,
-            thumbMovedPercent = 0f,
-        )
+class ScrollbarState {
+    private var packedValue by mutableLongStateOf(0L)
+
+    internal fun onScroll(stateValue: ScrollbarStateValue) {
+        packedValue = stateValue.packedValue
     }
+
+    /**
+     * Returns the thumb size of the scrollbar as a percentage of the total track size
+     */
+    val thumbSizePercent
+        get() = unpackFloat1(packedValue)
+
+    /**
+     * Returns the distance the thumb has traveled as a percentage of total track size
+     */
+    val thumbMovedPercent
+        get() = unpackFloat2(packedValue)
+
+    /**
+     * Returns the max distance the thumb can travel as a percentage of total track size
+     */
+    val thumbTrackSizePercent
+        get() = 1f - thumbSizePercent
 }
-
-/**
- * Class definition for the core properties of a scroll bar track
- */
-@Immutable
-@JvmInline
-private value class ScrollbarTrack(
-    val packedValue: Long,
-) {
-    constructor(
-        max: Float,
-        min: Float,
-    ) : this(packFloats(max, min))
-}
-
-/**
- * Creates a [ScrollbarState] with the listed properties
- * @param thumbSizePercent the thumb size of the scrollbar as a percentage of the total track size.
- *  Refers to either the thumb width (for horizontal scrollbars)
- *  or height (for vertical scrollbars).
- * @param thumbMovedPercent the distance the thumb has traveled as a percentage of total
- * track size.
- */
-fun ScrollbarState(
-    thumbSizePercent: Float,
-    thumbMovedPercent: Float,
-) = ScrollbarState(
-    packFloats(
-        val1 = thumbSizePercent,
-        val2 = thumbMovedPercent,
-    ),
-)
-
-/**
- * Returns the thumb size of the scrollbar as a percentage of the total track size
- */
-val ScrollbarState.thumbSizePercent
-    get() = unpackFloat1(packedValue)
-
-/**
- * Returns the distance the thumb has traveled as a percentage of total track size
- */
-val ScrollbarState.thumbMovedPercent
-    get() = unpackFloat2(packedValue)
 
 /**
  * Returns the size of the scrollbar track in pixels
@@ -138,27 +102,68 @@ private fun ScrollbarTrack.thumbPosition(
 )
 
 /**
+ * Class definition for the core properties of a scroll bar
+ */
+@Immutable
+@JvmInline
+value class ScrollbarStateValue internal constructor(
+    internal val packedValue: Long,
+)
+
+/**
+ * Class definition for the core properties of a scroll bar track
+ */
+@Immutable
+@JvmInline
+private value class ScrollbarTrack(
+    val packedValue: Long,
+) {
+    constructor(
+        max: Float,
+        min: Float,
+    ) : this(packFloats(max, min))
+}
+
+/**
+ * Creates a [ScrollbarStateValue] with the listed properties
+ * @param thumbSizePercent the thumb size of the scrollbar as a percentage of the total track size.
+ *  Refers to either the thumb width (for horizontal scrollbars)
+ *  or height (for vertical scrollbars).
+ * @param thumbMovedPercent the distance the thumb has traveled as a percentage of total
+ * track size.
+ */
+fun scrollbarStateValue(
+    thumbSizePercent: Float,
+    thumbMovedPercent: Float,
+) = ScrollbarStateValue(
+    packFloats(
+        val1 = thumbSizePercent,
+        val2 = thumbMovedPercent,
+    ),
+)
+
+/**
  * Returns the value of [offset] along the axis specified by [this]
  */
 internal fun Orientation.valueOf(offset: Offset) = when (this) {
-    Orientation.Horizontal -> offset.x
-    Orientation.Vertical -> offset.y
+    Horizontal -> offset.x
+    Vertical -> offset.y
 }
 
 /**
  * Returns the value of [intSize] along the axis specified by [this]
  */
 internal fun Orientation.valueOf(intSize: IntSize) = when (this) {
-    Orientation.Horizontal -> intSize.width
-    Orientation.Vertical -> intSize.height
+    Horizontal -> intSize.width
+    Vertical -> intSize.height
 }
 
 /**
  * Returns the value of [intOffset] along the axis specified by [this]
  */
 internal fun Orientation.valueOf(intOffset: IntOffset) = when (this) {
-    Orientation.Horizontal -> intOffset.x
-    Orientation.Vertical -> intOffset.y
+    Horizontal -> intOffset.x
+    Vertical -> intOffset.y
 }
 
 /**
@@ -173,16 +178,14 @@ internal fun Orientation.valueOf(intOffset: IntOffset) = when (this) {
  */
 @Composable
 fun Scrollbar(
-    modifier: Modifier = Modifier,
     orientation: Orientation,
     state: ScrollbarState,
-    minThumbSize: Dp = 40.dp,
+    modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource? = null,
-    thumb: @Composable () -> Unit,
+    minThumbSize: Dp = 40.dp,
     onThumbMoved: ((Float) -> Unit)? = null,
+    thumb: @Composable () -> Unit,
 ) {
-    val localDensity = LocalDensity.current
-
     // Using Offset.Unspecified and Float.NaN instead of null
     // to prevent unnecessary boxing of primitives
     var pressedOffset by remember { mutableStateOf(Offset.Unspecified) }
@@ -194,31 +197,14 @@ fun Scrollbar(
 
     var track by remember { mutableStateOf(ScrollbarTrack(packedValue = 0)) }
 
-    val thumbTravelPercent = when {
-        interactionThumbTravelPercent.isNaN() -> state.thumbMovedPercent
-        else -> interactionThumbTravelPercent
-    }
-    val thumbSizePx = max(
-        a = state.thumbSizePercent * track.size,
-        b = with(localDensity) { minThumbSize.toPx() },
-    )
-    val thumbSizeDp by animateDpAsState(
-        targetValue = with(localDensity) { thumbSizePx.toDp() },
-        label = "scrollbar thumb size",
-    )
-    val thumbMovedPx = min(
-        a = track.size * thumbTravelPercent,
-        b = track.size - thumbSizePx,
-    )
-
     // scrollbar track container
     Box(
         modifier = modifier
             .run {
                 val withHover = interactionSource?.let(::hoverable) ?: this
                 when (orientation) {
-                    Orientation.Vertical -> withHover.fillMaxHeight()
-                    Orientation.Horizontal -> withHover.fillMaxWidth()
+                    Vertical -> withHover.fillMaxHeight()
+                    Horizontal -> withHover.fillMaxWidth()
                 }
             }
             .onGloballyPositioned { coordinates ->
@@ -277,25 +263,25 @@ fun Scrollbar(
                     onDrag@{ _, delta ->
                         if (draggedOffset == Offset.Unspecified) return@onDrag
                         draggedOffset = when (orientation) {
-                            Orientation.Vertical -> draggedOffset.copy(
+                            Vertical -> draggedOffset.copy(
                                 y = draggedOffset.y + delta,
                             )
 
-                            Orientation.Horizontal -> draggedOffset.copy(
+                            Horizontal -> draggedOffset.copy(
                                 x = draggedOffset.x + delta,
                             )
                         }
                     }
 
                 when (orientation) {
-                    Orientation.Horizontal -> detectHorizontalDragGestures(
+                    Horizontal -> detectHorizontalDragGestures(
                         onDragStart = onDragStart,
                         onDragEnd = onDragEnd,
                         onDragCancel = onDragCancel,
                         onHorizontalDrag = onDrag,
                     )
 
-                    Orientation.Vertical -> detectVerticalDragGestures(
+                    Vertical -> detectVerticalDragGestures(
                         onDragStart = onDragStart,
                         onDragEnd = onDragEnd,
                         onDragCancel = onDragCancel,
@@ -304,84 +290,113 @@ fun Scrollbar(
                 }
             },
     ) {
-        val scrollbarThumbMovedDp = max(
-            a = with(localDensity) { thumbMovedPx.toDp() },
-            b = 0.dp,
-        )
         // scrollbar thumb container
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .run {
-                    when (orientation) {
-                        Orientation.Horizontal -> width(thumbSizeDp)
-                        Orientation.Vertical -> height(thumbSizeDp)
-                    }
-                }
-                .offset(
-                    y = when (orientation) {
-                        Orientation.Horizontal -> 0.dp
-                        Orientation.Vertical -> scrollbarThumbMovedDp
+        Layout(content = { thumb() }) { measurables, constraints ->
+            val measurable = measurables.first()
+
+            val thumbSizePx = max(
+                a = state.thumbSizePercent * track.size,
+                b = minThumbSize.toPx(),
+            )
+
+            val trackSizePx = when (state.thumbTrackSizePercent) {
+                0f -> track.size
+                else -> (track.size - thumbSizePx) / state.thumbTrackSizePercent
+            }
+
+            val thumbTravelPercent = max(
+                a = min(
+                    a = when {
+                        interactionThumbTravelPercent.isNaN() -> state.thumbMovedPercent
+                        else -> interactionThumbTravelPercent
                     },
-                    x = when (orientation) {
-                        Orientation.Horizontal -> scrollbarThumbMovedDp
-                        Orientation.Vertical -> 0.dp
-                    },
+                    b = state.thumbTrackSizePercent,
                 ),
-        ) {
-            thumb()
+                b = 0f,
+            )
+
+            val thumbMovedPx = trackSizePx * thumbTravelPercent
+
+            val y = when (orientation) {
+                Horizontal -> 0
+                Vertical -> thumbMovedPx.roundToInt()
+            }
+            val x = when (orientation) {
+                Horizontal -> thumbMovedPx.roundToInt()
+                Vertical -> 0
+            }
+
+            val updatedConstraints = when (orientation) {
+                Horizontal -> {
+                    constraints.copy(
+                        minWidth = thumbSizePx.roundToInt(),
+                        maxWidth = thumbSizePx.roundToInt(),
+                    )
+                }
+                Vertical -> {
+                    constraints.copy(
+                        minHeight = thumbSizePx.roundToInt(),
+                        maxHeight = thumbSizePx.roundToInt(),
+                    )
+                }
+            }
+
+            val placeable = measurable.measure(updatedConstraints)
+            layout(placeable.width, placeable.height) {
+                placeable.place(x, y)
+            }
         }
     }
 
     if (onThumbMoved == null) return
 
-    // State that will be read inside the effects that follow
-    // but will not cause re-triggering of them
-    val updatedState by rememberUpdatedState(state)
-
     // Process presses
-    LaunchedEffect(pressedOffset) {
-        // Press ended, reset interactionThumbTravelPercent
-        if (pressedOffset == Offset.Unspecified) {
-            interactionThumbTravelPercent = Float.NaN
-            return@LaunchedEffect
-        }
-
-        var currentThumbMovedPercent = updatedState.thumbMovedPercent
-        val destinationThumbMovedPercent = track.thumbPosition(
-            dimension = orientation.valueOf(pressedOffset),
-        )
-        val isPositive = currentThumbMovedPercent < destinationThumbMovedPercent
-        val delta = SCROLLBAR_PRESS_DELTA_PCT * if (isPositive) 1f else -1f
-
-        while (currentThumbMovedPercent != destinationThumbMovedPercent) {
-            currentThumbMovedPercent = when {
-                isPositive -> min(
-                    a = currentThumbMovedPercent + delta,
-                    b = destinationThumbMovedPercent,
-                )
-
-                else -> max(
-                    a = currentThumbMovedPercent + delta,
-                    b = destinationThumbMovedPercent,
-                )
+    LaunchedEffect(Unit) {
+        snapshotFlow { pressedOffset }.collect { pressedOffset ->
+            // Press ended, reset interactionThumbTravelPercent
+            if (pressedOffset == Offset.Unspecified) {
+                interactionThumbTravelPercent = Float.NaN
+                return@collect
             }
-            onThumbMoved(currentThumbMovedPercent)
-            interactionThumbTravelPercent = currentThumbMovedPercent
-            delay(SCROLLBAR_PRESS_DELAY_MS)
+
+            var currentThumbMovedPercent = state.thumbMovedPercent
+            val destinationThumbMovedPercent = track.thumbPosition(
+                dimension = orientation.valueOf(pressedOffset),
+            )
+            val isPositive = currentThumbMovedPercent < destinationThumbMovedPercent
+            val delta = SCROLLBAR_PRESS_DELTA_PCT * if (isPositive) 1f else -1f
+
+            while (currentThumbMovedPercent != destinationThumbMovedPercent) {
+                currentThumbMovedPercent = when {
+                    isPositive -> min(
+                        a = currentThumbMovedPercent + delta,
+                        b = destinationThumbMovedPercent,
+                    )
+
+                    else -> max(
+                        a = currentThumbMovedPercent + delta,
+                        b = destinationThumbMovedPercent,
+                    )
+                }
+                onThumbMoved(currentThumbMovedPercent)
+                interactionThumbTravelPercent = currentThumbMovedPercent
+                delay(SCROLLBAR_PRESS_DELAY_MS)
+            }
         }
     }
 
     // Process drags
-    LaunchedEffect(draggedOffset) {
-        if (draggedOffset == Offset.Unspecified) {
-            interactionThumbTravelPercent = Float.NaN
-            return@LaunchedEffect
+    LaunchedEffect(Unit) {
+        snapshotFlow { draggedOffset }.collect { draggedOffset ->
+            if (draggedOffset == Offset.Unspecified) {
+                interactionThumbTravelPercent = Float.NaN
+                return@collect
+            }
+            val currentTravel = track.thumbPosition(
+                dimension = orientation.valueOf(draggedOffset),
+            )
+            onThumbMoved(currentTravel)
+            interactionThumbTravelPercent = currentTravel
         }
-        val currentTravel = track.thumbPosition(
-            dimension = orientation.valueOf(draggedOffset),
-        )
-        onThumbMoved(currentTravel)
-        interactionThumbTravelPercent = currentTravel
     }
 }

@@ -97,7 +97,7 @@ fun ConversationHome() {
     }
 
     val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
-    val animatedColor by infiniteTransition.animateColor(
+    val displayColor by infiniteTransition.animateColor(
         initialValue = Color60DDAD,
         targetValue = Color4285F4,
         animationSpec = infiniteRepeatable(tween(300), RepeatMode.Reverse),
@@ -115,7 +115,7 @@ fun ConversationHome() {
                     text = if (placeholderLoading) "收取中..." else "聊天",
                     style = MaterialTheme.typography.headlineLarge,
                     color = {
-                        if (placeholderLoading) animatedColor else Color4285F4
+                        if (placeholderLoading) displayColor else Color4285F4
                     }
                 )
             }
