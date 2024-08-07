@@ -52,7 +52,6 @@ dependencies {
     implementation(libs.retrofit2.retrofit)
 
     implementation(libs.retrofit2.converter.kotlinx.serialization)
-    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.retrofit2.converter.moshi)
     implementation(libs.moshi.kotlin)

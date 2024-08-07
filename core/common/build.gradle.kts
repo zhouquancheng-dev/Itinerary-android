@@ -67,7 +67,9 @@ dependencies {
 
     api(libs.androidx.datastore.preferences)
 
-    implementation(libs.kotlinx.serialization.json)
+    api(libs.kotlinx.serialization.json)
+
+    api(libs.kotlinx.datetime)
 
     implementation(libs.permissionx)
 

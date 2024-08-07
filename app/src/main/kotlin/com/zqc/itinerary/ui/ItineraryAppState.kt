@@ -12,6 +12,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.example.common.di.network.NetworkMonitor
+import com.example.common.di.timezone.TimeZoneMonitor
 import com.example.home.navigation.navigateToHome
 import com.zqc.itinerary.nav.Screen
 import com.zqc.itinerary.nav.Screen.HomeScreen
@@ -25,14 +26,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.datetime.TimeZone
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.serializer
 import kotlin.reflect.KClass
 
 @Composable
-fun rememberItineraryAppState(
+fun rememberAppState(
     networkMonitor: NetworkMonitor,
+    timeZoneMonitor: TimeZoneMonitor,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     navController: NavHostController = rememberNavController()
 ): ItineraryAppState {
@@ -42,9 +45,10 @@ fun rememberItineraryAppState(
         networkMonitor
     ) {
         ItineraryAppState(
-            navController,
-            coroutineScope,
-            networkMonitor
+            navController = navController,
+            coroutineScope = coroutineScope,
+            networkMonitor = networkMonitor,
+            timeZoneMonitor = timeZoneMonitor,
         )
     }
 }
@@ -54,6 +58,7 @@ class ItineraryAppState(
     val navController: NavHostController,
     coroutineScope: CoroutineScope,
     networkMonitor: NetworkMonitor,
+    timeZoneMonitor: TimeZoneMonitor
 ) {
     val bottomNavItems: List<Screen> = listOf(HomeScreen, ScenicSpotScreen, MessageScreen, ProfileScreen)
 
@@ -72,6 +77,13 @@ class ItineraryAppState(
             initialValue = false,
         )
 
+    val currentTimeZone = timeZoneMonitor.currentTimeZone
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = TimeZone.currentSystemDefault(),
+        )
+
     /**
      * UI logic for navigating to a top level destination in the app. Top level destinations have
      * only one copy of the destination of the back stack, and save and restore state whenever you
@@ -81,6 +93,7 @@ class ItineraryAppState(
      */
     fun navigateToTopLevelDestination(topLevelDestination: Screen) {
         navController.popBackStack()
+
         val topLevelNavOptions = navOptions {
             // Pop up to the start destination of the graph to
             // avoid building up a large stack of destinations

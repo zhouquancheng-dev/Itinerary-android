@@ -137,4 +137,6 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
 
     implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.kotlinx.datetime)
 }

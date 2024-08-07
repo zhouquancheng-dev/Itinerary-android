@@ -105,6 +105,7 @@ fun ConversationHome() {
     )
 
     Scaffold(
+        modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingButton { startActivity<ContactsActivity>(context) }
         }

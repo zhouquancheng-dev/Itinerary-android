@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.7.0-alpha04"
+agp = "8.5.1"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha04"
 androidx-test-ext-junit = "1.2.1"
@@ -33,8 +33,9 @@ junit = "4.13.2"
 junit-jupiter-api = "5.10.3"
 kotlin = "2.0.10"
 ksp = "2.0.10-1.0.24"
-kotlin-serialization-json = "1.7.1"
-kotlin-collections-immutable = "0.3.7"
+kotlinx-serialization-json = "1.7.1"
+kotlinx-collections-immutable = "0.3.7"
+kotlinx-datetime = "0.6.0"
 lottie = "6.5.0"
 lifecycle-common = "2.8.4"
 moshi = "1.15.1"
@@ -233,11 +234,12 @@ kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 # https://central.sonatype.com/artifact/org.jetbrains.kotlin/kotlin-gradle-plugin
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 # https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-collections-immutable
-kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlin-collections-immutable"}
+kotlinx-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinx-collections-immutable"}
 # https://central.sonatype.com/artifact/org.jetbrains.kotlin/kotlin-serialization
 kotlin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
 # https://central.sonatype.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
-kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
+kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 
 # https://central.sonatype.com/artifact/com.airbnb.android/lottie-compose
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
@@ -269,7 +271,7 @@ capturable-compose = { module = "dev.shreyaspatil:capturable", version.ref = "ca
 calendar-compose = { module = "com.kizitonwose.calendar:compose", version.ref = "calendar-compose" }
 # https://github.com/eygraber/compose-placeholder
 compose-placeholder-material3 = { module = "com.eygraber:compose-placeholder-material3", version.ref = "compose-placeholder" }
-# https://mvnrepository.com/artifact/com.itextpdf/itext-core
+# https://github.com/itext/itext-java
 itextpdf-itext-core = { module = "com.itextpdf:itext-core", version.ref = "itextCore" }
 # https://github.com/Jzvd/JZVideo
 jzvd = { module = "cn.jzvd:jiaozivideoplayer", version.ref = "jiaozivideoplayer" }
