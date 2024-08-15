@@ -5,6 +5,7 @@ import com.example.model.sms.TokenVerifyRequest
 import com.example.network.service.CaptchaService
 import com.example.network.service.IMService
 import com.example.network.service.UserService
+import okhttp3.MultipartBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,4 +41,9 @@ class ItineraryNetwork @Inject constructor(serviceCreator: ServiceCreator) {
      * TIM登录票据
      */
     suspend fun getUserSig(userId: String) = imService.getUserSig(userId)
+
+    /**
+     * oss 上传文件
+     */
+    suspend fun uploadFile(file: MultipartBody.Part) = imService.uploadFile(file)
 }

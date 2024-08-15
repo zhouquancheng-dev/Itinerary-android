@@ -19,12 +19,8 @@
 # 阿里云Captcha
 -dontwarn com.geetest.gtcaptcha4.alicom.**
 -keep class com.geetest.gtcaptcha4.alicom.** { *; }
+-dontwarn com.alicom.gtcaptcha4.**
 -keep class com.alicom.gtcaptcha4.**$Companion { *; }
-
-# 资源混淆白名单配置
--keepclassmembers class **.R$styleable { *; }
--keepclassmembers class **.R$string { *; }
--keepclassmembers class **.R$style { *; }
 
 -dontwarn com.oracle.svm.core.annotate.Delete
 -dontwarn com.oracle.svm.core.annotate.Substitute

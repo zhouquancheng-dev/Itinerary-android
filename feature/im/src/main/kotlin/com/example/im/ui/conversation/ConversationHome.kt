@@ -40,7 +40,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.startAcWithBundle
@@ -58,14 +59,13 @@ import com.tencent.qcloud.tuikit.tuichat.minimalistui.page.TUIC2CChatMinimalistA
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
-fun ConversationHome() {
+fun ConversationHome(ivm: IMViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val ivm = hiltViewModel<IMViewModel>()
     val conversations by ivm.conversations.collectAsStateWithLifecycle(emptyList())
     val placeholderLoading by ivm.placeholderLoading.collectAsStateWithLifecycle(true)
 
-    LaunchedEffect(lifecycleOwner) {
+    LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         ivm.getConversations(lifecycleOwner)
     }
 
@@ -123,7 +123,8 @@ fun ConversationHome() {
             ConversationList(
                 listState = listState,
                 conversations =  conversations,
-                onChatUI = { userId ->
+                onChatUI = { conversationID, userId ->
+                    ivm.cleanConversationUnreadMessageCount(conversationID)
                     val bundleExtra = bundleOf(
                         TUIConstants.TUIChat.CHAT_TYPE to V2TIMConversation.V2TIM_C2C,
                         TUIConstants.TUIChat.CHAT_ID to userId
@@ -145,7 +146,7 @@ fun ConversationHome() {
 fun ConversationList(
     listState: LazyListState,
     conversations: List<V2TIMConversation>,
-    onChatUI: (String) -> Unit,
+    onChatUI: (String, String) -> Unit,
     onPinned: (String, Boolean) -> Unit,
     onDeleteConversation: (String) -> Unit
 ) {
@@ -183,7 +184,7 @@ fun ConversationItem(
     index: Int,
     currentSwipedIndex: MutableState<Int?>,
     modifier: Modifier = Modifier,
-    onChatUI: (String) -> Unit,
+    onChatUI: (String, String) -> Unit,
     onPinned: (String, Boolean) -> Unit,
     onDeleteConversation: (String) -> Unit
 ) {
@@ -210,7 +211,7 @@ fun ConversationItem(
             conversation = conversation,
             draggableState = draggableState,
             currentSwipedIndex = currentSwipedIndex,
-            onChatUI = { onChatUI(conversation.userID) }
+            onChatUI = { onChatUI(conversation.conversationID, conversation.userID) }
         )
     }
 }

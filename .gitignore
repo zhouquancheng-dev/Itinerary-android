@@ -6,6 +6,7 @@ build/
 # Local configuration file (sdk path, etc)
 # 本地配置文件（sdk路径等）
 local.properties
+keystore.properties
 
 # Log/OS Files
 # 日志/操作系统文件

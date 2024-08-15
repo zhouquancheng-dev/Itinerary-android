@@ -13,13 +13,13 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.example.common.di.network.NetworkMonitor
 import com.example.common.di.timezone.TimeZoneMonitor
-import com.example.home.navigation.navigateToHome
+import com.example.home.graph.navigateToHome
+import com.example.profile.graph.navigateToProfile
 import com.zqc.itinerary.nav.Screen
 import com.zqc.itinerary.nav.Screen.HomeScreen
 import com.zqc.itinerary.nav.Screen.MessageScreen
 import com.zqc.itinerary.nav.Screen.ProfileScreen
 import com.zqc.itinerary.nav.Screen.ScenicSpotScreen
-import com.zqc.itinerary.nav.navigateToProfile
 import com.zqc.itinerary.nav.navigateToScenicSpot
 import com.zqc.itinerary.nav.navigateToMessage
 import kotlinx.coroutines.CoroutineScope
@@ -65,9 +65,6 @@ class ItineraryAppState(
     val currentDestination: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
-
-    val currentTopLevelDestination: Boolean
-        @Composable get() = currentDestination?.isTopLevelDestinationInHierarchy(HomeScreen) == true
 
     val isOffline = networkMonitor.isOnline
         .map(Boolean::not)

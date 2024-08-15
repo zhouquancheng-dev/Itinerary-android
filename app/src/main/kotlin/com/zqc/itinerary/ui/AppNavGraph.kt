@@ -7,16 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.common.navigation.Home
 import com.example.common.navigation.Message
-import com.example.common.navigation.Profile
 import com.example.common.navigation.ScenicSpot
-import com.example.mine.MineScreen
-import com.example.home.navigation.homeGraph
+import com.example.home.graph.homeGraph
 import com.example.im.ui.conversation.ConversationHome
+import com.example.im.vm.IMViewModel
+import com.example.profile.graph.profileNavGraph
 
 @Composable
 fun AppNavGraph(
@@ -39,12 +40,11 @@ fun AppNavGraph(
             }
         }
 
-        composable<Message> {
-            ConversationHome()
+        composable<Message> { backStackEntry ->
+            val ivm = hiltViewModel<IMViewModel>(backStackEntry)
+            ConversationHome(ivm)
         }
 
-        composable<Profile> {
-            MineScreen()
-        }
+        profileNavGraph()
     }
 }

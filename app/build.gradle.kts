@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -11,6 +14,10 @@ plugins {
 
 apply(rootProject.file("buildConfig.gradle.kts"))
 val autoConfig: Map<String, Any> by extra
+
+val keyStoreFile = rootProject.file("keystore.properties")
+val keyStoreProperties = Properties()
+keyStoreProperties.load(FileInputStream(keyStoreFile))
 
 android {
     namespace = "com.zqc.itinerary"
@@ -39,10 +46,11 @@ android {
             mapOf(
                 "JPUSH_PKGNAME" to "${autoConfig["APPLICATION_ID"]}",
                 "JPUSH_APPKEY" to "${autoConfig["JIGUANG_APPKEY"]}",
-                "JPUSH_CHANNEL" to "developer-default"
+                "JPUSH_CHANNEL" to "developer-default",
+                "APP_NAME" to "${autoConfig["APP_NAME"]}"
             )
         )
-
+        buildConfigField("String", "APP_NAME", "\"${autoConfig["APP_NAME"]}\"")
         buildConfigField("String", "APPLICATION_ID", "\"${autoConfig["APPLICATION_ID"]}\"")
         buildConfigField("String", "PRIVACY_URL", "\"${autoConfig["PRIVACY_URL"]}\"")
         buildConfigField("String", "USER_PROTOCOL_URL", "\"${autoConfig["USER_PROTOCOL_URL"]}\"")
@@ -51,26 +59,73 @@ android {
         buildConfigField("String", "TENCENT_IM_APP_ID", "\"${autoConfig["TENCENT_IM_APP_ID"]}\"")
     }
 
+    signingConfigs {
+        create("releaseConfig") {
+            storeFile = file("../key/itinerary.jks")
+            storePassword = keyStoreProperties["STORE_PASSWORD"].toString()
+            keyAlias = keyStoreProperties["KEY_ALIAS"].toString()
+            keyPassword = keyStoreProperties["KEY_PASSWORD"].toString()
+            enableV1Signing = true
+            enableV2Signing = true
+        }
+    }
+
     buildTypes {
         getByName("debug") {
+            signingConfig = signingConfigs.getByName("releaseConfig")
             isMinifyEnabled = false
             isShrinkResources = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             buildConfigField("boolean", "IS_DEBUG", "true")
         }
         getByName("release") {
+            signingConfig = signingConfigs.getByName("releaseConfig")
             isMinifyEnabled = true
             isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             buildConfigField("boolean", "IS_DEBUG", "false")
+        }
+    }
+
+    // 将 release APK 复制到输出目录
+    tasks.register("copyReleaseToOutputDir") {
+        doLast {
+            val outputDir = file("${project.rootDir}/app/release/")
+
+            // 清理旧文件
+            if (outputDir.exists()) {
+                outputDir.deleteRecursively()
+            }
+            outputDir.mkdirs()
+
+            // 确保 release APK 文件存在并复制
+            applicationVariants.all {
+                if (buildType.name == "release") {
+                    outputs.forEach { output ->
+                        val outputFile = output.outputFile
+                        if (outputFile.exists()) {
+                            val newApkName = "${autoConfig["APP_NAME"]}_${buildType.name}_v${versionName}.apk"
+                            val destinationFile = outputDir.resolve(newApkName)
+                            outputFile.copyTo(destinationFile, overwrite = true)
+                            println("Copied ${outputFile.name} to $destinationFile")
+
+                            if (outputFile.name.endsWith(".apk")) {
+                                // 删除旧文件
+                                outputFile.delete()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    applicationVariants.all {
+        if (buildType.name == "release") {
+            tasks.named("assemble${name.replaceFirstChar { it.uppercase() }}") {
+                finalizedBy(tasks.named("copyReleaseToOutputDir"))
+            }
         }
     }
 
@@ -121,7 +176,7 @@ dependencies {
     implementation(project(":feature:login"))
     implementation(project(":feature:home"))
     implementation(project(":feature:im"))
-    implementation(project(":feature:mine"))
+    implementation(project(":feature:profile"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

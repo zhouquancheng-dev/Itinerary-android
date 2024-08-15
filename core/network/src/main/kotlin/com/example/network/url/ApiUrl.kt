@@ -17,3 +17,9 @@ const val JG_AUTH_LOGIN = "/login/tokenVerify"
 
 // TIM登录票据
 const val TIM_USER_SIG = "/tim/userSig"
+
+// 上传文件
+const val UPLOAD = "/oss/upload"
+
+// 下载文件
+const val DOWNLOAD = "/oss/download"

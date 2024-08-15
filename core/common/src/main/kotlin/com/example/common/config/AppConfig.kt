@@ -2,6 +2,7 @@ package com.example.common.config
 
 /**
  * @property IS_DEBUG 是否处于debug环境
+ * @property APP_NAME 应用名称
  * @property APPLICATION_ID 应用包名
  * @property PRIVACY_URL 隐私协议
  * @property USER_PROTOCOL_URL 用户协议
@@ -11,6 +12,7 @@ package com.example.common.config
  */
 object AppConfig {
     var IS_DEBUG: Boolean = true
+    var APP_NAME: String = ""
     var APPLICATION_ID: String = ""
     var PRIVACY_URL: String = ""
     var USER_PROTOCOL_URL: String = ""

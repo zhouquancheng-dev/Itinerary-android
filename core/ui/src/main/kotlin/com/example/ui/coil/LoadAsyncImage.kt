@@ -6,9 +6,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
@@ -29,7 +29,7 @@ fun LoadAsyncImage(
     @DrawableRes placeholderResId: Int = R.drawable.module_ic_coil_placeholder,
     @DrawableRes errorResId: Int = R.drawable.module_ic_coil_error
 ) {
-    val context = LocalContext.current
+    val context = LocalPlatformContext.current
 
     setSingletonImageLoaderFactory {
         getAsyncImageLoader(context)

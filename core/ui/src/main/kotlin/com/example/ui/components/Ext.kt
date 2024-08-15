@@ -19,6 +19,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.common.util.ClickUtils.isFastClick
+import com.example.ui.theme.DarkGreenGray95
 import com.eygraber.compose.placeholder.PlaceholderHighlight
 import com.eygraber.compose.placeholder.material3.placeholder
 import com.eygraber.compose.placeholder.shimmer
@@ -82,7 +83,7 @@ fun Modifier.placeholder(
     } else {
         null
     }
-    val specifiedBackgroundColor = backgroundColor.takeOrElse { Color(0xFFDBD6D1).copy(0.6f) }
+    val specifiedBackgroundColor = backgroundColor.takeOrElse { DarkGreenGray95.copy(0.7f) }
     placeholder(
         color = specifiedBackgroundColor,
         visible = isLoading,

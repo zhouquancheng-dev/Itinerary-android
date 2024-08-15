@@ -1,9 +1,10 @@
 val autoConfig = mapOf(
     "IS_DEBUG" to true,  // 是否在debug环境
+    "APP_NAME" to "驴游",
     "APPLICATION_ID" to "com.zqc.itinerary",   // 应用包名
-    "COMPILE_SDK" to 34,
+    "COMPILE_SDK" to 35,
     "MIN_SDK" to 26,
-    "TARGET_SDK" to 34,
+    "TARGET_SDK" to 35,
     "VERSION_CODE" to 1,
     "VERSION_NAME" to "1.0.0",
     "PRIVACY_URL" to "https://zyuxr.top", // 隐私政策

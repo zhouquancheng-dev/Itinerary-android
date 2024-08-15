@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt.android)
     kotlin("kapt")
+    id("kotlinx-serialization")
     id("aleyn-router")
 }
 
@@ -11,7 +12,7 @@ apply(rootProject.file("buildConfig.gradle.kts"))
 val autoConfig: Map<String, Any> by extra
 
 android {
-    namespace = "com.example.mine"
+    namespace = "com.example.profile"
     compileSdk = autoConfig["COMPILE_SDK"] as Int
 
     defaultConfig {

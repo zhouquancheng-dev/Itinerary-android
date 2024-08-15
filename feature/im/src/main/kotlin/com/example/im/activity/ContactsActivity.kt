@@ -9,9 +9,7 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.common.util.addStatusBarColorUpdate
 import com.example.im.R
 import com.tencent.qcloud.tuikit.tuicontact.minimalistui.pages.TUIContactMinimalistFragment
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class ContactsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

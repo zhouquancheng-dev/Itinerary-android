@@ -38,7 +38,7 @@ include(":feature:login")
 include(":feature:splash")
 include(":feature:home")
 include(":feature:im")
-include(":feature:mine")
+include(":feature:profile")
 
 // 内部组件通信模块 (必要模块)
 include(":tuicore")

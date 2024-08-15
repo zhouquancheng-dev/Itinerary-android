@@ -13,7 +13,3 @@ fun NavController.navigateToScenicSpot(navOptions: NavOptions? = null) {
 fun NavController.navigateToMessage(navOptions: NavOptions? = null) {
     this.navigate(route = Message, navOptions = navOptions)
 }
-
-fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
-    this.navigate(route = Profile, navOptions = navOptions)
-}

@@ -146,4 +146,17 @@ class IMViewModel @Inject constructor(
             })
     }
 
+    fun cleanConversationUnreadMessageCount(conversationID: String) {
+        V2TIMManager.getConversationManager()
+            .cleanConversationUnreadMessageCount(conversationID, 0, 0, object : V2TIMCallback {
+                override fun onSuccess() {
+                    Log.i(TIM_TAG, "cleanConversationUnreadMessageCount success")
+                }
+
+                override fun onError(code: Int, desc: String?) {
+                    Log.i(TIM_TAG, "cleanConversationUnreadMessageCount failure, code: $code, desc: $desc")
+                }
+            })
+    }
+
 }

@@ -15,15 +15,13 @@ import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -56,28 +54,17 @@ fun ItineraryApp(
             )
         }
     }
-    DisposableEffect(lifecycleOwner, isOffline) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    ivm.observeIMLoginState(lifecycleOwner) {
-                        // 在线时票据过期 或 被踢下线
-                        LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                            (context as? Activity)?.finish()
-                        }
-                    }
-                    ivm.getTotalUnreadCount(lifecycleOwner)
-                }
-                Lifecycle.Event.ON_DESTROY -> {
-                    ivm.unregisterListener()
-                }
-                else -> {}
+    LifecycleStartEffect(isOffline) {
+        ivm.observeIMLoginState(lifecycleOwner) {
+            // 在线时票据过期 或 被踢下线
+            LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
+                (context as? Activity)?.finish()
             }
         }
+        ivm.getTotalUnreadCount(lifecycleOwner)
 
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
+        onStopOrDispose {
+            ivm.unregisterListener()
         }
     }
 

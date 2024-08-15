@@ -27,6 +27,7 @@ class MyApplication : BaseApplication() {
      */
     private fun initAppConfig() {
         AppConfig.IS_DEBUG = BuildConfig.IS_DEBUG
+        AppConfig.APP_NAME = BuildConfig.APP_NAME
         AppConfig.APPLICATION_ID = BuildConfig.APPLICATION_ID
         AppConfig.PRIVACY_URL = BuildConfig.PRIVACY_URL
         AppConfig.USER_PROTOCOL_URL = BuildConfig.USER_PROTOCOL_URL
