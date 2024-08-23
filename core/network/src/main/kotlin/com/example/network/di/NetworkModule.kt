@@ -72,6 +72,7 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @Named("okhttpClient")
     fun provideOkHttpClient(
         cacheInterceptor: CacheInterceptor,
         okHttpDns: OkHttpDns,
@@ -113,7 +114,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @Named("okhttpClient") okHttpClient: OkHttpClient,
         json: Json,
         moshi: Moshi
     ): Retrofit {

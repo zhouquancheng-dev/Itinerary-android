@@ -1,4 +1,4 @@
-package com.example.login.nav
+package com.example.login.graph
 
 import kotlinx.serialization.Serializable
 

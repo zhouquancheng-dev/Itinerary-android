@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.aleyn.annotation.Route
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
+import com.example.login.graph.LoginNavGraph
 import com.example.ui.theme.JetItineraryTheme
 import dagger.hilt.android.AndroidEntryPoint
 

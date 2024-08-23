@@ -14,7 +14,7 @@ data class Response<T>(
     val data: T?
 )
 
-const val SUCCESS_STRING = "success"
+const val SUCCESS_STR = "success"
 
 const val SUCCESS = 200
 

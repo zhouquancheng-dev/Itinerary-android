@@ -1,4 +1,4 @@
-package com.example.profile
+package com.example.profile.ui
 
 import android.app.Activity
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.login
+package com.example.login.graph
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
@@ -17,8 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.example.login.nav.LoginHome
-import com.example.login.nav.VerifyCode
 import com.example.login.ui.LoginScreen
 import com.example.login.ui.VerifyCodeScreen
 import com.example.login.vm.LoginViewModel

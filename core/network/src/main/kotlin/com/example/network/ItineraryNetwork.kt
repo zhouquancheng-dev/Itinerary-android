@@ -41,9 +41,4 @@ class ItineraryNetwork @Inject constructor(serviceCreator: ServiceCreator) {
      * TIM登录票据
      */
     suspend fun getUserSig(userId: String) = imService.getUserSig(userId)
-
-    /**
-     * oss 上传文件
-     */
-    suspend fun uploadFile(file: MultipartBody.Part) = imService.uploadFile(file)
 }

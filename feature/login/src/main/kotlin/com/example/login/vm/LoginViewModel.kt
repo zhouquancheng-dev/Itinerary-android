@@ -19,7 +19,7 @@ import com.example.login.client.JiGuangClient
 import com.example.login.client.JiGuangClient.Companion.AUTH_CODE_SUCCESS
 import com.example.login.state.DialogType
 import com.example.model.SUCCESS
-import com.example.model.SUCCESS_STRING
+import com.example.model.SUCCESS_STR
 import com.example.model.captcha.AliCaptchaRequest
 import com.example.model.captcha.SuccessResponse
 import com.example.model.sms.TokenVerifyRequest
@@ -284,7 +284,7 @@ class LoginViewModel @Inject constructor(
 
                 fetchData { networkApi.verifyCaptcha(request) }
                     .onEach { vResponse ->
-                        if (vResponse.result == SUCCESS_STRING) {
+                        if (vResponse.result == SUCCESS_STR) {
                             onSuccess()
                         } else {
                             LogUtils.e("二次验证失败; result: ${vResponse.result}, reason: ${vResponse.reason}")

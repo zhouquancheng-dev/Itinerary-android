@@ -1,6 +1,5 @@
 package com.example.network.okhttp
 
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import okhttp3.Call
 import okhttp3.Callback
@@ -9,23 +8,27 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 object HttpClient {
-    private val client = OkHttpClient.Builder()
+    val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .writeTimeout(15, TimeUnit.SECONDS)
         .build()
 
-    private val json = Json { ignoreUnknownKeys = true }
+    val json = Json { ignoreUnknownKeys = true }
 
-    fun <T> get(
+    inline fun <reified T> get(
         url: String,
-        responseSerializer: KSerializer<T>,
         callback: HttpCallback<T>
     ) {
+        require(url.isNotBlank()) { "URL cannot be blank" }
+
         val request = Request.Builder()
             .url(url)
             .build()
@@ -39,7 +42,7 @@ object HttpClient {
                 if (response.isSuccessful) {
                     val responseData = response.body.string()
                     runCatching {
-                        json.decodeFromString(responseSerializer, responseData)
+                        json.decodeFromString<T>(responseData)
                     }.onSuccess { deserializedData ->
                         callback.onSuccess(deserializedData)
                     }.onFailure { e ->
@@ -54,11 +57,24 @@ object HttpClient {
 
     fun post(
         url: String,
-        jsonBody: String? = null,
+        body: String? = null,
+        contentType: String = "application/json; charset=utf-8",
         callback: HttpCallback<String>
     ) {
-        val requestBody = jsonBody?.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
-            ?: "".toRequestBody("text/plain; charset=utf-8".toMediaTypeOrNull())
+        require(url.isNotBlank()) { "URL cannot be blank" }
+
+        when {
+            contentType.contains("application/json") -> {
+                require(body == null || isValidJson(body)) { "Invalid JSON format" }
+            }
+            contentType.contains("application/x-www-form-urlencoded") -> {
+                require(body == null || isValidFormData(body)) { "Invalid form data format" }
+            }
+            // 可以添加更多的contentType格式检查
+        }
+
+        val requestBody = body?.toRequestBody(contentType.toMediaTypeOrNull())
+            ?: "".toRequestBody(contentType.toMediaTypeOrNull())
 
         val request = Request.Builder()
             .url(url)
@@ -78,6 +94,26 @@ object HttpClient {
                 }
             }
         })
+    }
+
+    private fun isValidJson(json: String): Boolean {
+        return try {
+            JSONObject(json)
+            true
+        } catch (ex: JSONException) {
+            try {
+                JSONArray(json)
+                true
+            } catch (ex: JSONException) {
+                false
+            }
+        }
+    }
+
+    private fun isValidFormData(formData: String): Boolean {
+        return formData.split("&").all { pair ->
+            pair.contains("=") && pair.split("=").size == 2
+        }
     }
 
 }

@@ -7,7 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.common.navigation.Profile
-import com.example.profile.MineScreen
+import com.example.profile.ui.MineScreen
 import com.example.profile.vm.ProfileViewModel
 
 fun NavController.navigateToProfile(navOptions: NavOptions? = null) {
@@ -19,6 +19,10 @@ fun NavGraphBuilder.profileNavGraph() {
         composable<ProfileRoute> { backStackEntry ->
             val profileVm = hiltViewModel<ProfileViewModel>(backStackEntry)
             MineScreen(profileVm)
+        }
+
+        composable<ProfileSettings> {
+
         }
     }
 }

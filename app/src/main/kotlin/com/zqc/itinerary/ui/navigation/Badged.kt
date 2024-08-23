@@ -20,16 +20,14 @@ internal fun Badged(
     }
     BadgedBox(
         badge = {
-            if (itemIndex == 2) {
-                if (totalUnreadCount != 0L) {
-                    Badge {
-                        Text(
-                            text = totalCount,
-                            modifier = Modifier.semantics {
-                                contentDescription = "$totalUnreadCount new notifications"
-                            }
-                        )
-                    }
+            if (itemIndex == 2 && totalUnreadCount != 0L) {
+                Badge {
+                    Text(
+                        text = totalCount,
+                        modifier = Modifier.semantics {
+                            contentDescription = "$totalUnreadCount new notifications"
+                        }
+                    )
                 }
             }
         }

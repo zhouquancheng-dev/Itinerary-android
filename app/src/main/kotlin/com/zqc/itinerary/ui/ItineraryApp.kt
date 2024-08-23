@@ -93,10 +93,10 @@ internal fun App(
     NavigationSuiteScaffold(
         navigationSuiteItems = {
             navigationSuiteBar(
-                appState,
-                currentDestination,
-                appState::navigateToTopLevelDestination,
-                totalUnreadCount
+                appState = appState,
+                currentDestination = currentDestination,
+                onNavigateToDestination = appState::navigateToTopLevelDestination,
+                totalUnreadCount = totalUnreadCount
             )
         },
         modifier = modifier,
