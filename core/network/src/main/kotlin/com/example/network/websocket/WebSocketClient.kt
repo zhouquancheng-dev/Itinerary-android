@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
+import com.example.network.url.WEBSOCKET_BASE_URL
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -16,38 +15,65 @@ import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
 import okio.ByteString
-import javax.inject.Inject
-import javax.inject.Named
+import java.security.KeyStore
+import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 import kotlin.math.pow
 
 /**
  * WebSocket 客户端
  *
+ * @param owner LifecycleOwner 事件订阅的生命周期所有者
  * @param baseUrl WebSocket baseUrl
  * @param endpoint WebSocket endpoint
- * @param owner LifecycleOwner 事件订阅的生命周期所有者
- * @param listener WebSocket 事件监听器
  * @param reconnectStrategy 重连策略
+ * @param listener WebSocket 事件监听器
  */
-class WebSocketClient @Inject constructor(
+class WebSocketClient(
     private val owner: LifecycleOwner,
-    private val reconnectStrategy: ReconnectStrategy,
-    @Named("BaseUrl") private val baseUrl: String,
-    @Named("websocketOkhttpClient") private val okHttpClient: OkHttpClient,
-    @Assisted private val endpoint: String,
-    @Assisted private val listener: WebSocketEventListener
+    private val baseUrl: String = WEBSOCKET_BASE_URL,
+    private val endpoint: String,
+    private val reconnectStrategy: ReconnectStrategy = ReconnectStrategy(),
+    private val listener: WebSocketEventListener
 ) : DefaultLifecycleObserver {
+
+    private val sslSocketFactory: SSLSocketFactory
+    private val trustManager: X509TrustManager
 
     companion object {
         const val HEARTBEAT_INTERVAL = 30 // 心跳消息间隔，单位：秒
     }
 
+    init {
+        createSSLConfiguration().apply {
+            sslSocketFactory = first
+            trustManager = second
+        }
+    }
+
     private val url: String get() = "$baseUrl/$endpoint"
 
-    @AssistedFactory
-    interface Factory {
-        fun create(endpoint: String, listener: WebSocketEventListener): WebSocketClient
+    // 创建 SSL/TLS 配置
+    private fun createSSLConfiguration(): Pair<SSLSocketFactory, X509TrustManager> {
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+        trustManagerFactory.init(null as KeyStore?)
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagerFactory.trustManagers, null)
+
+        val trustManager = trustManagerFactory.trustManagers[0] as X509TrustManager
+        return sslContext.socketFactory to trustManager
     }
+
+    // OkHttpClient 配置
+    private val okHttpClient = OkHttpClient.Builder()
+        .readTimeout(0, TimeUnit.MILLISECONDS) // 保持连接
+        .sslSocketFactory(sslSocketFactory, trustManager)
+        .retryOnConnectionFailure(true) // 支持重连
+        .build()
 
     private val lifecycleScope = owner.lifecycleScope
 
@@ -113,8 +139,8 @@ class WebSocketClient @Inject constructor(
 
         lifecycleScope.launch {
             delay(delayTime.toLong())
-            connect()
             reconnectAttempt++
+            connect()
         }
     }
 
@@ -135,6 +161,7 @@ class WebSocketClient @Inject constructor(
         heartbeatJob?.cancel() // 取消心跳任务
         webSocket?.close(1000, "Client closing connection")
         webSocket = null
+        reconnectAttempt = 0
         isConnected = false
     }
 

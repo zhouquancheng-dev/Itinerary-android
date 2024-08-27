@@ -5,12 +5,13 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import java.io.IOException
 import javax.inject.Inject
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
 class ServiceCreator @Inject constructor(
     private val retrofit: Retrofit,
-    private val okHttpClient: OkHttpClient
+    @Named("okhttpClient") private val okHttpClient: OkHttpClient
 ) {
 
     // 普通泛型函数，用于创建 API 服务实例

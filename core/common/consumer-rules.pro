@@ -34,3 +34,8 @@
 -dontwarn org.graalvm.nativeimage.hosted.Feature$BeforeAnalysisAccess
 -dontwarn org.graalvm.nativeimage.hosted.Feature
 -dontwarn org.graalvm.nativeimage.hosted.RuntimeResourceAccess
+
+# 阿里云 OSS SDK
+-keep class com.alibaba.sdk.android.oss.** { *; }
+-dontwarn okio.**
+-dontwarn org.apache.commons.codec.binary.**

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
@@ -41,12 +43,16 @@ android {
 }
 
 composeCompiler {
-    // 启用强跳过模式
-    enableStrongSkippingMode = true
-    // 启用内在记忆性能优化
-    enableIntrinsicRemember = true
+    // 包含来源信息，记录可用于工具确定相应可组合函数的源位置的源信息
+    includeSourceInformation = true
+    featureFlags = setOf(
+        // 启用默认情况下禁用的功能标志
+        ComposeFeatureFlag.OptimizeNonSkippingGroups
+    )
     // Compose 编译器将使用该目录转储编译器指标报告
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
+    // 在生成的代码中包含成分跟踪标记，Compose编译器可以将额外的跟踪信息注入到字节码中
+    includeTraceMarkers = true
     // 稳定性配置文件
     stabilityConfigurationFile = rootProject.layout.projectDirectory.file("compose_compiler_config.conf")
 }

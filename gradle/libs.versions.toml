@@ -20,7 +20,7 @@ coil3-bom = "3.0.0-alpha10"
 cameraX = "1.4.0-rc01"
 dataStore = "1.1.1"
 databinding-runtime = "8.5.2"
-desugar-jdk-libs = "2.0.4"
+desugar-jdk-libs = "2.1.0"
 espresso-core = "3.6.1"
 glide = "5.0.0-rc01"
 glide-compose = "1.0.0-beta01"
@@ -56,7 +56,7 @@ lrouter = "1.0.6"
 mmkv = "1.3.9"
 permissionx = "1.8.0"
 pictureselector = "v3.11.2"
-reorderable = "2.4.0-alpha01"
+reorderable = "2.4.0-alpha02"
 threetenabp = "1.4.7"
 toaster = "12.6"
 utilcodex = "1.31.1"
@@ -67,7 +67,8 @@ zip4j = "2.11.5"
 alicloud-httpdns = "2.4.2"
 bugly = "4.1.9.3"
 jiguang-jverification = "3.2.8"
-tencent-imsdk-plus = "8.1.6116"
+ossAndroidSdk = "2.9.19"
+tencent-imsdk-plus = "8.1.6905"
 
 # 私有仓库
 aliyun-captcha = "1.8.3.1_20240108"
@@ -309,6 +310,8 @@ jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref =
 tencent-bugly = { module = "com.tencent.bugly:crashreport", version.ref = "bugly" }
 # https://mvnrepository.com/artifact/com.tencent.imsdk/imsdk-plus
 tencent-imsdk-plus = { module = "com.tencent.imsdk:imsdk-plus", version.ref = "tencent-imsdk-plus" }
+# https://mvnrepository.com/artifact/com.aliyun.dpa/oss-android-sdk
+aliyun-oss-android-sdk = { module = "com.aliyun.dpa:oss-android-sdk", version.ref = "ossAndroidSdk" }
 
 # 阿里云私有仓库
 aliyun-captcha-android = { module = "com.zqc.dev:aliyun-captcha-android", version.ref = "aliyun-captcha" }

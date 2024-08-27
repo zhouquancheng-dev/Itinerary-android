@@ -76,17 +76,20 @@ dependencies {
     api(libs.utilcodex)
     api(libs.toaster)
 
+    // 阿里云httpdns
     api(libs.alicloud.httpdns)
+    // 阿里云 oss
+    implementation(libs.aliyun.oss.android.sdk)
 
-    // 极光
+    // 极光认证
     api(libs.jiguang.jverification)
 
+    // 腾讯bugly
     implementation(libs.tencent.bugly)
-
+    // mmkv
+    implementation(libs.mmkv)
     // Tencent IM
     api(libs.tencent.imsdk.plus)
-
-    implementation(libs.mmkv)
 
     api(libs.lucksiege.pictureselector)
     api(libs.lucksiege.compress)
