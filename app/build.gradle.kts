@@ -62,7 +62,7 @@ android {
 
     signingConfigs {
         create("releaseConfig") {
-            storeFile = file("../key/itinerary.jks")
+            storeFile = file(keyStoreProperties["STORE_FILE"].toString())
             storePassword = keyStoreProperties["STORE_PASSWORD"].toString()
             keyAlias = keyStoreProperties["KEY_ALIAS"].toString()
             keyPassword = keyStoreProperties["KEY_PASSWORD"].toString()

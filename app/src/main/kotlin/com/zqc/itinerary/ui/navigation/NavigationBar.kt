@@ -34,8 +34,8 @@ import com.zqc.itinerary.ui.isTopLevelDestinationInHierarchy
 @Composable
 fun ItineraryBottomBar(
     modifier: Modifier = Modifier,
-    destinations: List<Screen>,
-    onNavigateToDestination: (Screen) -> Unit,
+    destinations: List<Screen<*>>,
+    onNavigateToDestination: (Screen<*>) -> Unit,
     currentDestination: NavDestination?
 ) {
     var totalUnreadCount by remember { mutableLongStateOf(0L) }
@@ -59,15 +59,13 @@ fun ItineraryBottomBar(
     }
 
     NavigationBar(modifier = modifier) {
-        destinations.forEachIndexed { itemIndex, screen ->
+        destinations.forEachIndexed { itemIndex, screen: Screen<*> ->
             val selected = currentDestination.isTopLevelDestinationInHierarchy(screen)
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    if (currentDestination != null) {
-                        if (!currentDestination.isSameRoute(screen)) {
-                            onNavigateToDestination(screen)
-                        }
+                    if (currentDestination != null && !currentDestination.isSameRoute(screen)) {
+                        onNavigateToDestination(screen)
                     }
                 },
                 icon = {

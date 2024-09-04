@@ -2,6 +2,7 @@ package com.example.profile.ui
 
 import android.app.Activity
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +33,7 @@ import com.aleyn.router.LRouter
 import com.aleyn.router.util.navArrival
 import com.example.common.data.LoginState
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
+import com.example.profile.R
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
 import com.example.ui.components.VerticalSpacer
@@ -40,7 +42,10 @@ import com.example.ui.components.symbols.AppIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MineScreen(profileVm: ProfileViewModel) {
+fun MineScreen(
+    profileVm: ProfileViewModel,
+    onProfileInfo: () -> Unit
+) {
     val context = LocalContext.current
     val profileInfo by profileVm.profile.collectAsStateWithLifecycle()
 
@@ -73,26 +78,22 @@ fun MineScreen(profileVm: ProfileViewModel) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            if (profileInfo.isNotEmpty()) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    LoadAsyncImage(
-                        model = profileInfo.first().faceUrl,
-                        modifier = Modifier
-                            .size(75.dp)
-                            .clip(CircleShape)
-                            .background(Color.White)
-                    )
-                    VerticalSpacer(8.dp)
-                    Text(
-                        text = profileInfo.first().nickName,
-                        fontSize = 21.sp
-                    )
-                }
-            } else {
-                ProfilePhotoPlaceholder()
+            Column(
+                modifier = Modifier.clickable { onProfileInfo() },
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                LoadAsyncImage(
+                    model = profileInfo.firstOrNull()?.faceUrl ?: R.drawable.ic_default_face,
+                    modifier = Modifier
+                        .size(75.dp)
+                        .clip(CircleShape)
+                        .background(Color.White)
+                )
+                VerticalSpacer(8.dp)
+                Text(
+                    text = profileInfo.firstOrNull()?.nickName ?: "",
+                    fontSize = 21.sp
+                )
             }
 
             Button(

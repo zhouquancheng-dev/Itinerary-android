@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -38,6 +39,7 @@ import com.example.common.config.AppConfig
 import com.example.ui.R
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.components.symbols.rememberLock
+import com.example.ui.theme.Blue80
 import com.example.ui.theme.JetItineraryTheme
 
 @Composable
@@ -132,7 +134,7 @@ fun TermsAndConditions(
         style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold),
         focusedStyle = null,
         hoveredStyle = null,
-        pressedStyle = SpanStyle(color = MaterialTheme.colorScheme.tertiary)
+        pressedStyle = SpanStyle(color = Blue80)
     )
 
     val annotatedString = buildAnnotatedString {
@@ -182,22 +184,31 @@ fun ButtonBar(
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Button(
             onClick = { onAcceptRequest() },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(46.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary
             )
         ) {
-            Text(stringResource(R.string.app_accept), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = stringResource(R.string.app_accept),
+                color = MaterialTheme.colorScheme.background,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
         TextButton(
             onClick = { onRejectRequest() },
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().height(46.dp),
             colors = ButtonDefaults.textButtonColors(
                 contentColor = MaterialTheme.colorScheme.primary
             )
         ) {
-            Text(stringResource(R.string.app_reject), style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = stringResource(R.string.app_reject),
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }

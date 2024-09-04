@@ -14,18 +14,16 @@ import com.zqc.itinerary.ui.isTopLevelDestinationInHierarchy
 fun NavigationSuiteScope.navigationSuiteBar(
     appState: ItineraryAppState,
     currentDestination: NavDestination?,
-    onNavigateToDestination: (Screen) -> Unit,
+    onNavigateToDestination: (Screen<*>) -> Unit,
     totalUnreadCount: Long
 ) {
-    appState.bottomNavItems.forEachIndexed { itemIndex, screen ->
+    appState.bottomNavItems.forEachIndexed { itemIndex, screen: Screen<*> ->
         val selected = currentDestination.isTopLevelDestinationInHierarchy(screen)
         item(
             selected = selected,
             onClick = {
-                if (currentDestination != null) {
-                    if (!currentDestination.isSameRoute(screen)) {
-                        onNavigateToDestination(screen)
-                    }
+                if (currentDestination != null && !currentDestination.isSameRoute(screen)) {
+                    onNavigateToDestination(screen)
                 }
             },
             icon = {

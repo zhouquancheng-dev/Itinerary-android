@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.6.0-rc01"
+agp = "8.6.0"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha05"
 androidx-test-ext-junit = "1.2.1"
@@ -8,7 +8,7 @@ activity-compose = "1.9.1"
 androidx-metrics = "1.0.0-beta01"
 androidx-profileinstaller = "1.4.0-beta01"
 adaptive-navigation-suite = "1.3.0-rc01"
-adaptive = "1.0.0-rc01"
+adaptive = "1.1.0-alpha01"
 bcprov-jdk15on = "1.70"
 core-ktx = "1.13.1"
 constraintlayout = "2.2.0-alpha14"
@@ -16,11 +16,11 @@ constraintlayout-compose = "1.1.0-alpha14"
 compose-bom = "2024.08.00"
 coroutines-android = "1.8.1"
 coil-bom = "2.7.0"
-coil3-bom = "3.0.0-alpha10"
+coil3-bom = "3.0.0-alpha09"
 cameraX = "1.4.0-rc01"
 dataStore = "1.1.1"
-databinding-runtime = "8.5.2"
-desugar-jdk-libs = "2.1.0"
+databinding-runtime = "8.6.0"
+desugar-jdk-libs = "2.1.1"
 espresso-core = "3.6.1"
 glide = "5.0.0-rc01"
 glide-compose = "1.0.0-beta01"
@@ -33,7 +33,7 @@ junit = "4.13.2"
 junit-jupiter-api = "5.10.3"
 kotlin = "2.0.20"
 ksp = "2.0.20-1.0.24"
-kotlinx-serialization-json = "1.7.1"
+kotlinx-serialization-json = "1.7.2"
 kotlinx-collections-immutable = "0.3.7"
 kotlinx-datetime = "0.6.1"
 lottie = "6.5.0"
@@ -135,10 +135,11 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material3-window = { group = "androidx.compose.material3", name = "material3-window-size-class" }
 androidx-compose-material3-android = { group = "androidx.compose.material3", name = "material3-android" }
-# https://maven.google.com/web/index.html?q=androidx.compose.material3#androidx.compose.material3
+# https://maven.google.com/web/index.html?q=androidx.compose.material3#androidx.compose.material3:material3-adaptive-navigation-suite
 androidx-compose-material3-adaptive-navigation-suite = { module = "androidx.compose.material3:material3-adaptive-navigation-suite", version.ref = "adaptive-navigation-suite" }
-androidx-compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
+# https://maven.google.com/web/index.html?q=androidx.compose.material3#androidx.compose.material3.adaptive:adaptive
 androidx-compose-material3-adaptive = { module = "androidx.compose.material3.adaptive:adaptive", version.ref = "adaptive" }
+androidx-compose-material3-adaptive-layout = { module = "androidx.compose.material3.adaptive:adaptive-layout", version.ref = "adaptive" }
 androidx-compose-material3-adaptive-navigation = { module = "androidx.compose.material3.adaptive:adaptive-navigation", version.ref = "adaptive" }
 # https://maven.google.com/web/index.html?q=androidx.graphics#androidx.graphics:graphics-shapes
 androidx-compose-ui-graphics-shapes = { group = "androidx.graphics", name = "graphics-shapes", version.ref = "graphics-shapes" }

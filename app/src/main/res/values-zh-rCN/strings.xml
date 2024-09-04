@@ -7,6 +7,6 @@
     <string name="bottomBar_message_label">消息</string>
     <string name="bottomBar_mine_label">我的</string>
 
-    <string name="not_connected">⚠️ 没有连接到互联网，请检查网络连接</string>
+    <string name="not_connected">⚠️ 没有连接到网络，请检查网络连接</string>
 
 </resources>

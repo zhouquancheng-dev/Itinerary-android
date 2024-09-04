@@ -13,24 +13,20 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.example.common.di.network.NetworkMonitor
 import com.example.common.di.timezone.TimeZoneMonitor
-import com.example.home.graph.navigateToHome
-import com.example.profile.graph.navigateToProfile
 import com.zqc.itinerary.nav.Screen
 import com.zqc.itinerary.nav.Screen.HomeScreen
 import com.zqc.itinerary.nav.Screen.MessageScreen
 import com.zqc.itinerary.nav.Screen.ProfileScreen
 import com.zqc.itinerary.nav.Screen.ScenicSpotScreen
+import com.zqc.itinerary.nav.navigateToHome
 import com.zqc.itinerary.nav.navigateToScenicSpot
 import com.zqc.itinerary.nav.navigateToMessage
+import com.zqc.itinerary.nav.navigateToProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.datetime.TimeZone
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.InternalSerializationApi
-import kotlinx.serialization.serializer
-import kotlin.reflect.KClass
 
 @Composable
 fun rememberAppState(
@@ -60,9 +56,9 @@ class ItineraryAppState(
     networkMonitor: NetworkMonitor,
     timeZoneMonitor: TimeZoneMonitor
 ) {
-    val bottomNavItems: List<Screen> = listOf(HomeScreen, ScenicSpotScreen, MessageScreen, ProfileScreen)
+    val bottomNavItems = listOf(HomeScreen, ScenicSpotScreen, MessageScreen, ProfileScreen)
 
-    val currentDestination: NavDestination?
+    val currentDestinationAsState: NavDestination?
         @Composable get() = navController
             .currentBackStackEntryAsState().value?.destination
 
@@ -88,19 +84,14 @@ class ItineraryAppState(
      *
      * @param topLevelDestination: The destination the app needs to navigate to.
      */
-    fun navigateToTopLevelDestination(topLevelDestination: Screen) {
+    fun navigateToTopLevelDestination(topLevelDestination: Screen<*>) {
         navController.popBackStack()
 
         val topLevelNavOptions = navOptions {
-            // Pop up to the start destination of the graph to
-            // avoid building up a large stack of destinations
-            // on the back stack as users select items
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
             }
-            // Avoid multiple copies of the same destination when reselecting the same item
             launchSingleTop = true
-            // Restore state when reselecting a previously selected item
             restoreState = true
         }
 
@@ -113,28 +104,21 @@ class ItineraryAppState(
     }
 }
 
-private val routeCache = mutableMapOf<KClass<*>, String>()
-
-@OptIn(ExperimentalSerializationApi::class, InternalSerializationApi::class)
-private fun <T : Any> NavDestination.hasRoute(route: KClass<T>): Boolean {
-    val routeName = routeCache.getOrPut(route) {
-        route.serializer().descriptor.serialName
-    }
-    return routeName == this.route
-}
-
-internal fun NavDestination?.isTopLevelDestinationInHierarchy(destination: Screen): Boolean {
-    return this?.hierarchy?.any { navDestination ->
-        when (destination.route) {
-            is KClass<*> -> navDestination.hasRoute(destination.route)
-            else -> false
-        }
+internal fun NavDestination?.isTopLevelDestinationInHierarchy(destination: Screen<*>): Boolean {
+    return this?.hierarchy?.any {
+        it.route == destination.route!!::class.qualifiedName
     } == true
 }
 
-fun NavDestination.isSameRoute(destination: Screen): Boolean {
-    return when (destination.route) {
-        is KClass<*> -> this.hasRoute(destination.route)
-        else -> false
-    }
+internal fun NavDestination?.isSameRoute(screen: Screen<*>): Boolean {
+    return this?.route == screen.route!!::class.qualifiedName ||
+            this?.hierarchy?.any { it.route == screen.route::class.qualifiedName } == true
+}
+
+internal fun NavDestination?.shouldShowBottomBar(bottomNavItems: List<Screen<*>>): Boolean {
+    return this?.route?.let { route ->
+        bottomNavItems.any { screen ->
+            route == screen.route!!::class.qualifiedName
+        }
+    } == true
 }

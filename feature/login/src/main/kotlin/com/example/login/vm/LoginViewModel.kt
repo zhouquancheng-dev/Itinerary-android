@@ -297,7 +297,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun showNotify(message: String, isSuccess: Boolean) {
-        val isNightMode = BaseApplication.getInstance().isNightMode.value
+        val isNightMode = BaseApplication.isModeNightYes()
         val successLayoutId = if (isNightMode) com.example.ui.R.layout.toast_custom_view_success_white else com.example.ui.R.layout.toast_custom_view_success_black
         val errorLayoutId = if (isNightMode) com.example.ui.R.layout.toast_custom_view_error_white else com.example.ui.R.layout.toast_custom_view_error_black
         val params = ToastParams().apply {

@@ -13,7 +13,7 @@ object ToasterUtil {
     }
 
     private fun getLayoutId(status: ToastStatus): Int {
-        val isNightMode = BaseApplication.getInstance().isNightMode.value
+        val isNightMode = BaseApplication.isModeNightYes()
         return when (status) {
             ToastStatus.SUCCESS -> if (isNightMode) com.example.ui.R.layout.toast_custom_view_success_white else com.example.ui.R.layout.toast_custom_view_success_black
             ToastStatus.ERROR -> if (isNightMode) com.example.ui.R.layout.toast_custom_view_error_white else com.example.ui.R.layout.toast_custom_view_error_black

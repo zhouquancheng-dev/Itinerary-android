@@ -166,7 +166,9 @@ class VoiceWaveView @JvmOverloads constructor(
             runnable = object : Runnable {
                 override fun run() {
                     val last = bodyWaveList.pollLast()
-                    bodyWaveList.addFirst(last)
+                    if (last != null) {
+                        bodyWaveList.addFirst(last)
+                    }
                     invalidate()
                     valHandler.postDelayed(this, duration);
                 }

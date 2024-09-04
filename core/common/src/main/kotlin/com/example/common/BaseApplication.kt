@@ -2,10 +2,7 @@ package com.example.common
 
 import android.app.Application
 import android.app.UiModeManager
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.text.TextUtils
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -33,18 +30,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 abstract class BaseApplication : Application() {
 
     private val applicationScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
-
-    private val _isNightMode = MutableStateFlow(false)
-    val isNightMode = _isNightMode.asStateFlow()
-
-    private var configChangeReceiver: BroadcastReceiver? = null
 
     abstract fun isDebug(): Boolean
 
@@ -52,10 +42,6 @@ abstract class BaseApplication : Application() {
     abstract fun getSystemNightMode(): Int
 
     inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
-        override fun onStop(owner: LifecycleOwner) {
-            super.onStop(owner)
-            unregisterConfigChangeReceiver()
-        }
         override fun onDestroy(owner: LifecycleOwner) {
             super.onDestroy(owner)
             applicationScope.cancel()
@@ -86,10 +72,7 @@ abstract class BaseApplication : Application() {
         instance = this
 
         AppCompatDelegate.setDefaultNightMode(getSystemNightMode())
-        _isNightMode.value = isModeNightYes()
-
         observeLifecycle()
-        registerConfigChangeReceiver()
 
         // 并行初始化各个方法
         applicationScope.launch {
@@ -115,24 +98,6 @@ abstract class BaseApplication : Application() {
     private fun observeLifecycle() {
         // 监听整个应用程序过程的生命周期
         ProcessLifecycleOwner.get().lifecycle.addObserver(ApplicationLifecycleObserver())
-    }
-
-    private fun registerConfigChangeReceiver() {
-        // 监听配置变化
-        configChangeReceiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent?) {
-                _isNightMode.value = isModeNightYes()
-            }
-        }
-        val filter = IntentFilter(Intent.ACTION_CONFIGURATION_CHANGED)
-        registerReceiver(configChangeReceiver, filter)
-    }
-
-    private fun unregisterConfigChangeReceiver() {
-        configChangeReceiver?.let {
-            unregisterReceiver(it)
-            configChangeReceiver = null
-        }
     }
 
     /**

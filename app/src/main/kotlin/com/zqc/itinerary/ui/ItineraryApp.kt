@@ -6,12 +6,15 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.material3.NavigationRailDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration.Indefinite
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.adaptive.WindowAdaptiveInfo
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
+import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteDefaults
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
 import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffoldDefaults
 import androidx.compose.runtime.Composable
@@ -56,7 +59,7 @@ fun ItineraryApp(
     }
     LifecycleStartEffect(isOffline) {
         ivm.observeIMLoginState(lifecycleOwner) {
-            // 在线时票据过期 或 被踢下线
+            // 在线时 [票据过期] 或 [被踢下线]，跳转登录页重新登录
             LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
                 (context as? Activity)?.finish()
             }
@@ -87,8 +90,9 @@ internal fun App(
     totalUnreadCount: Long
 ) {
     val navController = appState.navController
-    val currentDestination = appState.currentDestination
+    val currentDestination = appState.currentDestinationAsState
     val layoutType = NavigationSuiteScaffoldDefaults.calculateFromAdaptiveInfo(windowAdaptiveInfo)
+//    val shouldShowBottomBar = currentDestination.shouldShowBottomBar(appState.bottomNavItems)
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -101,6 +105,10 @@ internal fun App(
         },
         modifier = modifier,
         layoutType = layoutType,
+        navigationSuiteColors = NavigationSuiteDefaults.colors(
+            navigationBarContainerColor = NavigationBarDefaults.containerColor,
+            navigationRailContainerColor = NavigationRailDefaults.ContainerColor
+        ),
         containerColor = Color.Transparent
     ) {
         Scaffold(

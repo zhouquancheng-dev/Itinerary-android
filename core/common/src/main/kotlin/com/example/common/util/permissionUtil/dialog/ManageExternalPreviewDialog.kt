@@ -30,7 +30,7 @@ class ManageExternalPreviewDialog(
             it.setLayout(width, height)
         }
         val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
-        if (uiModeManager.getNightMode() == UiModeManager.MODE_NIGHT_YES) {
+        if (uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES) {
             setDarkTheme()
         }
         initView()
