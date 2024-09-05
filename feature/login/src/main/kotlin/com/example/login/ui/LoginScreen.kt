@@ -1,6 +1,5 @@
 package com.example.login.ui
 
-import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -50,7 +49,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
+import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.common.util.ClickUtils.isFastClick
 import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
@@ -205,9 +204,7 @@ fun LoginScreen(
                         .clip(CircleShape)
                         .click(debounce = true) {
                             loginViewModel.loginAuth(context) {
-                                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
-                                    (context as? Activity)?.finish()
-                                }
+                                LRouter.navigator(ROUTER_MAIN_ACTIVITY)
                             }
                         }
                 )

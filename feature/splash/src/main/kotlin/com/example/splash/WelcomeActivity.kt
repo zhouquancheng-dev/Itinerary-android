@@ -1,6 +1,5 @@
 package com.example.splash
 
-import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -36,7 +35,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,7 +45,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
+import com.aleyn.router.util.navigator
 import com.example.common.util.ClickUtils.isFastClick
 import com.example.common.data.DatastoreKey.IS_FIRST_TIME_LAUNCH
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
@@ -72,7 +70,6 @@ class WelcomeActivity : ComponentActivity() {
 
 @Composable
 private fun WelcomeScreen() {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -88,10 +85,7 @@ private fun WelcomeScreen() {
     val navigateToMain: () -> Unit = {
         scope.launch {
             putBoolean(IS_FIRST_TIME_LAUNCH, false)
-            LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                // 导航执行成功
-                (context as? Activity)?.finish()
-            }
+            LRouter.navigator(ROUTER_LOGIN_ACTIVITY)
         }
     }
 

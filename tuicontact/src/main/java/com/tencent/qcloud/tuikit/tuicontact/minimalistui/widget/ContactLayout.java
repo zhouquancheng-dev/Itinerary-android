@@ -32,6 +32,7 @@ public class ContactLayout extends LinearLayout implements IContactLayout {
     private View createNewButton;
     private Menu menu;
     private ImageView homeView;
+    private ImageView backBtn;
     private TextView titleView;
     private TextView rtCubeTitleView;
 
@@ -63,9 +64,16 @@ public class ContactLayout extends LinearLayout implements IContactLayout {
         mContactListView = findViewById(R.id.contact_listview);
         createNewButton = findViewById(R.id.create_new_button);
         homeView = findViewById(R.id.home_rtcube);
+        backBtn = findViewById(R.id.back_btn);
         titleView = findViewById(R.id.title);
         rtCubeTitleView = findViewById(R.id.title_rtcube);
         initContactMenu();
+        backBtn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClickListener.finishActivity();
+            }
+        });
         createNewButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

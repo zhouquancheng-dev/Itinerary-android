@@ -2,5 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.profile">
 
+    <application>
+        <activity
+            android:name=".activity.ProfileInfoActivity"
+            android:exported="false" />
+    </application>
 
 </manifest>

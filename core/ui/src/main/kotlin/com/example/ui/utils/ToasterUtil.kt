@@ -1,6 +1,5 @@
 package com.example.ui.utils
 
-import android.view.Gravity
 import com.example.common.BaseApplication
 import com.hjq.toast.ToastParams
 import com.hjq.toast.Toaster
@@ -24,7 +23,7 @@ object ToasterUtil {
     fun showCustomToaster(message: String, status: ToastStatus) {
         val params = ToastParams().apply {
             text = message
-            style = CustomToastStyle(getLayoutId(status), Gravity.CENTER)
+            style = CustomToastStyle(getLayoutId(status))
         }
         Toaster.show(params)
     }

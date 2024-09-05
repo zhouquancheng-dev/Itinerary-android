@@ -2,11 +2,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
-        <activity android:name=".WelcomeActivity" android:exported="false" />
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false"
+            android:noHistory="true"
+            android:theme="@style/Theme.ItineraryAndroid"/>
+
         <activity
             android:name=".SplashActivity"
-            android:theme="@style/Theme.ItineraryAndroid"
-            android:exported="true">
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.ItineraryAndroid">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

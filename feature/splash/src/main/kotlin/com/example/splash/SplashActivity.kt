@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
+import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.common.util.startAcWithIntent
@@ -52,17 +52,12 @@ class SplashActivity : ComponentActivity() {
                             is Event.FinishAc -> finish()
                             is Event.StartWelcome -> {
                                 startAcWithIntent<WelcomeActivity>()
-                                finish()
                             }
                             is Event.StartMain -> {
-                                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
-                                    finish()
-                                }
+                                LRouter.navigator(ROUTER_MAIN_ACTIVITY)
                             }
                             is Event.StartLogin -> {
-                                LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                                    finish()
-                                }
+                                LRouter.navigator(ROUTER_LOGIN_ACTIVITY)
                             }
                         }
                     }

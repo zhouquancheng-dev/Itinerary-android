@@ -1,6 +1,6 @@
 package com.zqc.itinerary.ui
 
-import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,9 +29,8 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
-import com.example.im.vm.IMViewModel
+import com.example.im.vm.TIMBaseViewModel
 import com.example.ui.components.AppBackground
 import com.zqc.itinerary.R
 import com.zqc.itinerary.ui.navigation.navigationSuiteBar
@@ -44,11 +43,12 @@ fun ItineraryApp(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    val ivm = viewModel<IMViewModel>()
+    val ivm = viewModel<TIMBaseViewModel>()
     val totalUnreadCount by ivm.totalUnreadCount.collectAsStateWithLifecycle()
 
     val isOffline by appState.isOffline.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(isOffline) {
         if (isOffline) {
             snackbarHostState.showSnackbar(
@@ -57,15 +57,15 @@ fun ItineraryApp(
             )
         }
     }
-    LifecycleStartEffect(isOffline) {
-        ivm.observeIMLoginState(lifecycleOwner) {
+    LifecycleStartEffect(isOffline, lifecycleOwner) {
+        ivm.observeIMLoginState(lifecycleOwner)
+        ivm.multiTerminalLoginState(lifecycleOwner) {
             // 在线时 [票据过期] 或 [被踢下线]，跳转登录页重新登录
-            LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                (context as? Activity)?.finish()
-            }
+            LRouter.build(ROUTER_LOGIN_ACTIVITY)
+                .withFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .navigation(context)
         }
-        ivm.getTotalUnreadCount(lifecycleOwner)
-
         onStopOrDispose {
             ivm.unregisterListener()
         }

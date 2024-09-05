@@ -1,11 +1,10 @@
 package com.example.profile.ui
 
-import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,19 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
-import com.example.common.data.LoginState
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 import com.example.profile.R
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
 import com.example.ui.components.VerticalSpacer
-import com.example.ui.components.placeholder
 import com.example.ui.components.symbols.AppIcons
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MineScreen(
+fun ProfileHomeScreen(
     profileVm: ProfileViewModel,
     onProfileInfo: () -> Unit
 ) {
@@ -98,34 +94,16 @@ fun MineScreen(
 
             Button(
                 onClick = {
-                    LoginState.isLoggedIn = false
-                    LRouter.build(ROUTER_LOGIN_ACTIVITY).navArrival {
-                        (context as? Activity)?.finish()
+                    profileVm.logout {
+                        LRouter.build(ROUTER_LOGIN_ACTIVITY)
+                            .withFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            .navigation(context)
                     }
                 }
             ) {
                 Text("退出登录")
             }
         }
-    }
-}
-
-@Composable
-private fun ProfilePhotoPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(
-            Modifier
-                .size(75.dp)
-                .clip(CircleShape)
-                .placeholder(true))
-        VerticalSpacer(8.dp)
-        Spacer(
-            Modifier
-                .size(width = 90.dp, height = 24.dp)
-                .clip(CircleShape)
-                .placeholder(true))
     }
 }

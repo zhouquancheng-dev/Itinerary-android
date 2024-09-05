@@ -10,6 +10,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import cn.jiguang.verifysdk.api.JVerificationInterface
+import com.aleyn.router.LRouter
 import com.alibaba.sdk.android.httpdns.InitConfig
 import com.alibaba.sdk.android.httpdns.ranking.IPRankingBean
 import com.blankj.utilcode.util.LogUtils
@@ -108,6 +109,8 @@ abstract class BaseApplication : Application() {
         LogUtils.getConfig().setLogSwitch(isDebug()).setLog2FileSwitch(false)
         Toaster.init(getInstance())
         MMKV.initialize(getInstance())
+        LRouter.init(getInstance())
+        LRouter.setLogSwitch(isDebug())
     }
 
     /**

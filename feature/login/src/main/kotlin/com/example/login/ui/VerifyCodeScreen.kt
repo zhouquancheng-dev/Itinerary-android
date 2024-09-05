@@ -1,6 +1,5 @@
 package com.example.login.ui
 
-import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navArrival
+import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
 import com.example.ui.utils.ToasterUtil.ToastStatus.*
 import com.example.ui.utils.ToasterUtil.showCustomToaster
@@ -83,9 +82,7 @@ fun VerifyCodeScreen(
             context, phoneNumber, codeValue,
             onFailure = { codeValue = "" },
             onSuccess = {
-                LRouter.build(ROUTER_MAIN_ACTIVITY).navArrival {
-                    (context as? Activity)?.finish()
-                }
+                LRouter.navigator(ROUTER_MAIN_ACTIVITY)
             }
         )
     }

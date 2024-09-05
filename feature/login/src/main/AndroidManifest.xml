@@ -5,18 +5,9 @@
     <application>
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="main"
-                    android:scheme="login" />
-            </intent-filter>
-        </activity>
+            android:exported="true"
+            android:noHistory="true"
+            android:theme="@style/Theme.ItineraryAndroid" />
 
         <activity
             android:name="cn.jiguang.verifysdk.CtLoginActivity"

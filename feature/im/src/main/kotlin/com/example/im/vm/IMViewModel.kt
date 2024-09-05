@@ -10,7 +10,6 @@ import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
 import com.example.im.listener.V2TIMListener
 import com.example.im.listener.conversation.ConversationChangedEvent
-import com.example.im.listener.conversation.TotalUnreadMessageCountChangedEvent
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMConversation
 import com.tencent.imsdk.v2.V2TIMConversationOperationResult
@@ -89,30 +88,6 @@ class IMViewModel @Inject constructor(
             }
             val sortedConversations = conversationMap.values.sortedByDescending { it.orderKey }
             _conversations.value = sortedConversations
-        }
-    }
-
-    private val _totalUnreadCount = MutableStateFlow(0L)
-    val totalUnreadCount = _totalUnreadCount
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
-
-    fun getTotalUnreadCount(owner: LifecycleOwner) {
-        V2TIMManager.getConversationManager()
-            .getTotalUnreadMessageCount(object : V2TIMValueCallback<Long?> {
-                override fun onSuccess(aLong: Long?) {
-                    if (aLong != null) {
-                        _totalUnreadCount.value = aLong
-                    }
-                }
-
-                override fun onError(code: Int, desc: String) {
-                    Log.i(TIM_TAG, "Error, code:$code, desc:$desc")
-                    _totalUnreadCount.value = 0
-                }
-            })
-
-        FlowBus.subscribe<TotalUnreadMessageCountChangedEvent>(owner, dispatcher = ioDispatcher) { event ->
-            _totalUnreadCount.value = event.totalUnreadCount
         }
     }
 

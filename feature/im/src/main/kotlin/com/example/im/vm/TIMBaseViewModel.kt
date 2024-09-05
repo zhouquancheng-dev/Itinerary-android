@@ -15,6 +15,7 @@ import com.example.common.util.DataStoreUtils.getStringSync
 import com.example.common.vm.BaseViewModel
 import com.example.im.listener.V2TIMListener
 import com.example.im.listener.ListenerManager
+import com.example.im.listener.conversation.TotalUnreadMessageCountChangedEvent
 import com.example.im.listener.sdk.KickedOffline
 import com.example.im.listener.sdk.UserSigExpired
 import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
@@ -23,8 +24,12 @@ import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMManager.V2TIM_STATUS_LOGINED
 import com.tencent.imsdk.v2.V2TIMManager.V2TIM_STATUS_LOGOUT
+import com.tencent.imsdk.v2.V2TIMValueCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,13 +47,14 @@ open class TIMBaseViewModel @Inject constructor(
         ListenerManager.unregisterListeners(v2TimListener)
     }
 
-    fun observeIMLoginState(owner: LifecycleOwner, action: () -> Unit) {
+    fun observeIMLoginState(owner: LifecycleOwner) {
         viewModelScope.launch {
             val loginStatus = V2TIMManager.getInstance().loginStatus
             when (loginStatus) {
                 // 已登录
                 V2TIM_STATUS_LOGINED -> {
                     initListener()
+                    getTotalUnreadCount(owner)
                 }
                 // 未登录
                 V2TIM_STATUS_LOGOUT -> {
@@ -58,6 +64,7 @@ open class TIMBaseViewModel @Inject constructor(
                         override fun onSuccess() {
                             Log.i(TIM_TAG, "IM登录成功")
                             initListener()
+                            getTotalUnreadCount(owner)
                         }
 
                         override fun onError(code: Int, desc: String?) {
@@ -66,20 +73,56 @@ open class TIMBaseViewModel @Inject constructor(
                     })
                 }
             }
+        }
+    }
 
-            // 在线时被踢下线
-            FlowBus.subscribe<KickedOffline>(owner, dispatcher = ioDispatcher) {
-                LoginState.isLoggedIn = false
-                showCustomToaster("您的账号已在其他设备登录", WARN)
-                action()
-            }
+    fun multiTerminalLoginState(owner: LifecycleOwner, action: () -> Unit) {
+        val handleLogout: (String) -> Unit = { message ->
+            LoginState.isLoggedIn = false
+            showCustomToaster(message, WARN)
+            V2TIMManager.getInstance().logout(object : V2TIMCallback {
+                override fun onSuccess() {
+                    Log.i(TIM_TAG, "IM登出成功")
+                    V2TIMManager.getInstance().unInitSDK()
+                    action()
+                }
 
-            // 在线时票据过期
-            FlowBus.subscribe<UserSigExpired>(owner, dispatcher = ioDispatcher) {
-                LoginState.isLoggedIn = false
-                showCustomToaster("登录过期，请重新登录", WARN)
-                action()
-            }
+                override fun onError(code: Int, desc: String?) {
+                    LogUtils.iTag(TIM_TAG, "IM登出失败 code: $code, desc: $desc")
+                }
+            })
+        }
+
+        FlowBus.subscribe<KickedOffline>(owner, dispatcher = ioDispatcher) {
+            handleLogout("您的账号已在其他设备登录")
+        }
+
+        FlowBus.subscribe<UserSigExpired>(owner, dispatcher = ioDispatcher) {
+            handleLogout("登录过期，请重新登录")
+        }
+    }
+
+    private val _totalUnreadCount = MutableStateFlow(0L)
+    val totalUnreadCount = _totalUnreadCount
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
+
+    private fun getTotalUnreadCount(owner: LifecycleOwner) {
+        V2TIMManager.getConversationManager()
+            .getTotalUnreadMessageCount(object : V2TIMValueCallback<Long?> {
+                override fun onSuccess(aLong: Long?) {
+                    if (aLong != null) {
+                        _totalUnreadCount.value = aLong
+                    }
+                }
+
+                override fun onError(code: Int, desc: String) {
+                    Log.i(TIM_TAG, "Error, code:$code, desc:$desc")
+                    _totalUnreadCount.value = 0
+                }
+            })
+
+        FlowBus.subscribe<TotalUnreadMessageCountChangedEvent>(owner, dispatcher = ioDispatcher) { event ->
+            _totalUnreadCount.value = event.totalUnreadCount
         }
     }
 

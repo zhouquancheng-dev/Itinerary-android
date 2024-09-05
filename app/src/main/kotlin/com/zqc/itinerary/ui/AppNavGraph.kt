@@ -14,13 +14,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.aleyn.router.LRouter
+import com.aleyn.router.util.navigator
+import com.example.common.data.Router.ROUTER_PROFILE_INFO_ACTIVITY
 import com.example.common.navigation.Home
 import com.example.common.navigation.Message
 import com.example.common.navigation.Profile
 import com.example.common.navigation.ScenicSpot
 import com.example.im.ui.conversation.ConversationHome
 import com.example.im.vm.IMViewModel
-import com.example.profile.ui.MineScreen
+import com.example.profile.ui.ProfileHomeScreen
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
 
@@ -69,10 +72,10 @@ fun AppNavGraph(
             exitTransition = { ExitTransition.None }
         ) { backStackEntry ->
             val profileVm = hiltViewModel<ProfileViewModel>(backStackEntry)
-            MineScreen(
+            ProfileHomeScreen(
                 profileVm = profileVm,
                 onProfileInfo = {
-
+                    LRouter.navigator(ROUTER_PROFILE_INFO_ACTIVITY)
                 }
             )
         }

@@ -1,10 +1,14 @@
 package com.example.profile.vm
 
 import android.util.Log
+import com.blankj.utilcode.util.LogUtils
 import com.example.common.data.Constants.TIM_TAG
+import com.example.common.data.LoginState
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.vm.BaseViewModel
+import com.hjq.toast.Toaster
+import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 import com.tencent.imsdk.v2.V2TIMValueCallback
@@ -38,6 +42,22 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    fun logout(action: () -> Unit) {
+        LoginState.isLoggedIn = false
+        V2TIMManager.getInstance().logout(object : V2TIMCallback {
+            override fun onSuccess() {
+                Log.i(TIM_TAG, "IM登出成功")
+                V2TIMManager.getInstance().unInitSDK()
+                Toaster.show("退出登录成功")
+                action()
+            }
+
+            override fun onError(code: Int, desc: String?) {
+                LogUtils.iTag(TIM_TAG, "IM登出失败 code: $code, desc: $desc")
+            }
+        })
     }
 
 }
