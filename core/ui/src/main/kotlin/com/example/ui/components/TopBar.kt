@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import com.example.ui.theme.JetItineraryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +30,7 @@ import com.example.ui.theme.JetItineraryTheme
 fun StandardTopAppBar(
     title: String,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    iconSize: DpSize = DpSize(24.dp, 24.dp),
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     colors: @Composable () -> TopAppBarColors = { TopAppBarDefaults.topAppBarColors() },
@@ -45,7 +49,7 @@ fun StandardTopAppBar(
     TopAppBar(
         title = titleComposable,
         modifier = Modifier.fillMaxWidth(),
-        navigationIcon = if (showBackButton) { { BackButton(onPressClick) } } else { {} },
+        navigationIcon = if (showBackButton) { { BackButton(iconSize, onPressClick) } } else { {} },
         actions = actions,
         colors = colors(),
         windowInsets = windowInsets
@@ -57,6 +61,7 @@ fun StandardTopAppBar(
 fun StandardCenterTopAppBar(
     title: String,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    iconSize: DpSize = DpSize(24.dp, 24.dp),
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     colors: @Composable () -> TopAppBarColors = { TopAppBarDefaults.topAppBarColors() },
@@ -75,7 +80,7 @@ fun StandardCenterTopAppBar(
     CenterAlignedTopAppBar(
         title = titleComposable,
         modifier = Modifier.fillMaxWidth(),
-        navigationIcon = if (showBackButton) { { BackButton(onPressClick) } } else { {} },
+        navigationIcon = if (showBackButton) { { BackButton(iconSize, onPressClick) } } else { {} },
         actions = actions,
         colors = colors(),
         windowInsets = windowInsets
@@ -83,9 +88,13 @@ fun StandardCenterTopAppBar(
 }
 
 @Composable
-private fun BackButton(onPressClick: () -> Unit) {
+private fun BackButton(
+    iconSize: DpSize = DpSize(24.dp, 24.dp),
+    onPressClick: () -> Unit
+) {
     IconButton(onClick = onPressClick) {
         Icon(
+            modifier = Modifier.size(iconSize),
             imageVector = Icons.Rounded.ArrowBackIosNew,
             contentDescription = "back"
         )

@@ -85,8 +85,8 @@ object PermissionCase {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             add(
                 PermissionDetails(
-                    getString(R.string.p_media_title),
-                    getString(R.string.p_media_desc),
+                    getString(R.string.p_photoalbum_title),
+                    getString(R.string.p_photoalbum_desc),
                     R.drawable.ic_photoalbum,
                     listOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO)
                 )

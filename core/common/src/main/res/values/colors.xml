@@ -2,6 +2,7 @@
 <resources>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
+    <color name="black_transparent">#CC000000</color>
 
     <color name="dialog_bg_color">#FFFFFFFF</color>
     <color name="dialog_cancel_color">#FFDEDEDE</color>

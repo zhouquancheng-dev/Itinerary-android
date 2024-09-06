@@ -11,6 +11,8 @@
     <string name="cancel">取消</string>
     <string name="hint">提示</string>
 
+    <string name="toast_custom_message" translatable="false">自定义Toaster消息</string>
+
     <string name="p_storage_title">存储权限</string>
     <string name="p_storage_desc">为了方便您访问和管理存储空间内的文件，请允许我们访问您的存储空间</string>
 
@@ -32,8 +34,8 @@
     <string name="p_sensors_title">传感器权限</string>
     <string name="p_sensors_desc">为了方便您访问设备的传感器数据，请允许我们访问传感器</string>
 
-    <string name="p_media_title">媒体权限</string>
-    <string name="p_media_desc">为了方便您访问和管理媒体文件，请允许我们访问您的媒体文件</string>
+    <string name="p_photoalbum_title">相册权限</string>
+    <string name="p_photoalbum_desc">为了方便您访问设备照片，请允许我们访问您的相册目录，如照片、视频、音频</string>
 
     <string name="p_notifications_title">通知权限</string>
     <string name="p_notifications_desc">为了方便您接收通知，请允许我们发送和接收通知</string>

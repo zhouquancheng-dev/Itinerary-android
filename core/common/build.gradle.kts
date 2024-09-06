@@ -97,4 +97,6 @@ dependencies {
     api(libs.lucksiege.compress)
     api(libs.lucksiege.ucrop)
     api(libs.lucksiege.camerax)
+
+    api(libs.glide)
 }

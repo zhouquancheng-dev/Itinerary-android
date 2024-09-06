@@ -45,9 +45,9 @@ class ProfileViewModel @Inject constructor(
     }
 
     fun logout(action: () -> Unit) {
-        LoginState.isLoggedIn = false
         V2TIMManager.getInstance().logout(object : V2TIMCallback {
             override fun onSuccess() {
+                LoginState.isLoggedIn = false
                 Log.i(TIM_TAG, "IM登出成功")
                 V2TIMManager.getInstance().unInitSDK()
                 Toaster.show("退出登录成功")

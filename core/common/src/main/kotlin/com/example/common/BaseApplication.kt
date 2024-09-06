@@ -106,9 +106,14 @@ abstract class BaseApplication : Application() {
      */
     open fun initData() {
         DataStoreUtils.init(getInstance())
+
         LogUtils.getConfig().setLogSwitch(isDebug()).setLog2FileSwitch(false)
+
         Toaster.init(getInstance())
+        Toaster.setView(if (isModeNightYes()) R.layout.toast_global_view_white else R.layout.toast_global_view_black)
+
         MMKV.initialize(getInstance())
+
         LRouter.init(getInstance())
         LRouter.setLogSwitch(isDebug())
     }
