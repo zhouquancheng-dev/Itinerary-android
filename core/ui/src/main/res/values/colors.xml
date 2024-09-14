@@ -7,6 +7,7 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
+    <color name="example_gray">#FF606060</color>
     <color name="example_1_bg">#3A284C</color>
     <color name="example_1_bg_light">#433254</color>
     <color name="example_1_bg_secondary">#51356E</color>

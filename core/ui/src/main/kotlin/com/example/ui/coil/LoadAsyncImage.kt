@@ -23,6 +23,9 @@ import com.example.ui.R
 fun LoadAsyncImage(
     model: Any?,
     modifier: Modifier = Modifier,
+    memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
+    networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
     contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
@@ -38,9 +41,9 @@ fun LoadAsyncImage(
     val imageRequest = remember(model) {
         ImageRequest.Builder(context)
             .data(model)
-            .memoryCachePolicy(CachePolicy.ENABLED)
-            .diskCachePolicy(CachePolicy.ENABLED)
-            .networkCachePolicy(CachePolicy.ENABLED)
+            .memoryCachePolicy(memoryCachePolicy)
+            .diskCachePolicy(diskCachePolicy)
+            .networkCachePolicy(networkCachePolicy)
             .placeholder(placeholderResId)
             .error(errorResId)
             .crossfade(true)

@@ -1,4 +1,4 @@
-package com.example.im.listener
+package com.example.common.listener
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

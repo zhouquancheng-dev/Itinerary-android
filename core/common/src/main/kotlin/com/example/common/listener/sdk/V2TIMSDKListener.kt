@@ -1,4 +1,4 @@
-package com.example.im.listener.sdk
+package com.example.common.listener.sdk
 
 import android.util.Log
 import com.example.common.data.Constants.TIM_TAG
@@ -34,7 +34,7 @@ class V2TIMSDKListener @Inject constructor() : V2TIMSDKListener() {
         FlowBus.post(UserSigExpired("登录票据已经过期"))
     }
 
-    override fun onSelfInfoUpdated(info: V2TIMUserFullInfo?) {
+    override fun onSelfInfoUpdated(info: V2TIMUserFullInfo) {
         Log.i(TIM_TAG, "当前用户的资料发生了更新")
         FlowBus.post(SelfInfoUpdated(info))
     }

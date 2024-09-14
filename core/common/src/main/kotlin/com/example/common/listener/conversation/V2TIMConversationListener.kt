@@ -1,4 +1,4 @@
-package com.example.im.listener.conversation
+package com.example.common.listener.conversation
 
 import android.util.Log
 import com.example.common.data.Constants.TIM_TAG

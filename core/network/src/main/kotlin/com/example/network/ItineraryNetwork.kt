@@ -2,18 +2,17 @@ package com.example.network
 
 import com.example.model.captcha.AliCaptchaRequest
 import com.example.model.sms.TokenVerifyRequest
-import com.example.network.service.CaptchaService
 import com.example.network.service.IMService
+import com.example.network.service.OSSService
 import com.example.network.service.UserService
-import okhttp3.MultipartBody
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ItineraryNetwork @Inject constructor(serviceCreator: ServiceCreator) {
     private val userService = serviceCreator.createRequestApi(UserService::class.java)
-    private val captchaService = serviceCreator.createRequestApi(CaptchaService::class.java)
     private val imService = serviceCreator.createRequestApi(IMService::class.java)
+    private val ossService = serviceCreator.createRequestApi(OSSService::class.java)
 
     /**
      * 极光一键登录验证
@@ -35,10 +34,15 @@ class ItineraryNetwork @Inject constructor(serviceCreator: ServiceCreator) {
     /**
      * 阿里云行为验证码二次核验
      */
-    suspend fun verifyCaptcha(request: AliCaptchaRequest) = captchaService.verifyCaptcha(request)
+    suspend fun verifyCaptcha(request: AliCaptchaRequest) = userService.verifyCaptcha(request)
 
     /**
      * TIM登录票据
      */
     suspend fun getUserSig(userId: String) = imService.getUserSig(userId)
+
+    /**
+     * 获取OSS STS临时凭证
+     */
+    suspend fun getStsToken() = ossService.getStsToken()
 }

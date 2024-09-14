@@ -1,4 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="profile_info_title">个人信息</string>
+    <string name="nickName_fg_title">设置昵称</string>
+    <string name="gender_fg_title">设置性别</string>
+    <string name="self_signature_fg_title">设置签名</string>
+    <string name="save_btn">保存</string>
+    <string name="done_btn">完成</string>
+    <string name="save_dialog_title">正在保存</string>
+    <string name="confirm_btn">确定</string>
+    <string name="cancel_btn">取消</string>
+    <string name="empty_text" />
+    <string name="crop_dialog_title">裁剪中</string>
+    <string name="upload_profile_image_dialog_title">上传头像中</string>
+    <string name="setting_dialog_title">正在设置</string>
 </resources>

@@ -4,6 +4,9 @@
 
     <application>
         <activity
+            android:name=".activity.CropImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.ProfileInfoActivity"
             android:exported="false" />
     </application>

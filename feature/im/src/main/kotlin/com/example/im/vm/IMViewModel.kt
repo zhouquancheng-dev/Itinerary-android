@@ -8,8 +8,8 @@ import com.example.common.data.Constants.TIM_TAG
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
-import com.example.im.listener.V2TIMListener
-import com.example.im.listener.conversation.ConversationChangedEvent
+import com.example.common.listener.V2TIMListener
+import com.example.common.listener.conversation.ConversationChangedEvent
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMConversation
 import com.tencent.imsdk.v2.V2TIMConversationOperationResult
@@ -32,6 +32,7 @@ class IMViewModel @Inject constructor(
 
     private val _conversations = MutableStateFlow<List<V2TIMConversation>>(emptyList())
     val conversations = _conversations
+        .asStateFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     private val _placeholderLoading = MutableStateFlow(false)

@@ -65,7 +65,7 @@ import com.example.login.vm.LoginViewModel
 import com.example.network.captcha.AliYunCaptchaClient
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.components.click
-import com.example.ui.dialog.ProgressIndicatorDialog
+import com.example.ui.dialog.IndicatorDialog
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -223,7 +223,7 @@ fun LoginScreen(
         }
     }
 
-    ProgressIndicatorDialog(
+    IndicatorDialog(
         showDialog = loginAuthState != DialogType.NONE,
         dialogText = loginAuthState.dialogText
     )

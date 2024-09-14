@@ -6,6 +6,4 @@ object Router {
 
     const val ROUTER_LOGIN_ACTIVITY = "/feature/login/route/LoginActivity"
 
-    const val ROUTER_PROFILE_INFO_ACTIVITY = "/feature/profile/route/ProfileInfoActivity"
-
 }

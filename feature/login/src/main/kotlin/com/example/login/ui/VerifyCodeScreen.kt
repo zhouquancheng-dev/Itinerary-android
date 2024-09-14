@@ -50,7 +50,7 @@ import com.example.login.components.SeparateVerificationCodeTextField
 import com.example.login.vm.LoginViewModel
 import com.example.ui.components.StandardCenterTopAppBar
 import com.example.ui.components.VerticalSpacer
-import com.example.ui.dialog.ProgressIndicatorDialog
+import com.example.ui.dialog.IndicatorDialog
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.ticker
 
@@ -194,7 +194,7 @@ fun VerifyCodeScreen(
         }
     }
 
-    ProgressIndicatorDialog(verifying, "正在验证")
+    IndicatorDialog(verifying, "验证中")
 }
 
 private fun AnnotatedString.Builder.append(text: String, style: SpanStyle) {

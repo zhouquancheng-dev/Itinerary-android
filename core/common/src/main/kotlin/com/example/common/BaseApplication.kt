@@ -17,6 +17,7 @@ import com.blankj.utilcode.util.LogUtils
 import com.example.common.config.AppConfig
 import com.example.common.data.Constants.JG_TAG
 import com.example.common.data.DatastoreKey.IS_PRIVACY_AGREE
+import com.example.common.listener.sdk.V2TIMSDKListener
 import com.example.common.util.DataStoreUtils
 import com.example.common.util.DataStoreUtils.getBooleanSync
 import com.hjq.toast.Toaster
@@ -185,10 +186,12 @@ abstract class BaseApplication : Application() {
             logLevel = V2TIMSDKConfig.V2TIM_LOG_DEBUG
             logListener = object : V2TIMLogListener() {
                 override fun onLog(logLevel: Int, logContent: String?) {
-                    super.onLog(logLevel, logContent)
+
                 }
             }
         }
+        // V2TIMSDKListener 事件监听器
+        V2TIMManager.getInstance().addIMSDKListener(V2TIMSDKListener())
         // 初始化SDK
         V2TIMManager.getInstance().initSDK(getInstance(), AppConfig.TENCENT_IM_APP_ID, config)
     }

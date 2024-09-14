@@ -3,8 +3,11 @@ package com.example.network.service
 import com.example.model.sms.TokenVerifyRequest
 import com.example.model.sms.TokenVerifyResponse
 import com.example.model.Response
+import com.example.model.captcha.AliCaptchaRequest
+import com.example.model.captcha.AliCaptchaResponse
 import com.example.model.sms.CheckSmsResponse
 import com.example.model.sms.SendSmsResponse
+import com.example.network.url.ALI_CAPTCHA
 import com.example.network.url.ALI_SEND_CODE
 import com.example.network.url.ALI_VERIFY_CODE
 import com.example.network.url.JG_AUTH_LOGIN
@@ -18,11 +21,13 @@ interface UserService {
     /**
      * 极光一键登录验证
      *
-     * @param request
+     * @param request Body
+     * ```
      * {
      *    "loginToken": "",
      *    "exID": null
      * }
+     * ```
      */
     @POST(JG_AUTH_LOGIN)
     suspend fun loginTokenVerify(
@@ -58,5 +63,24 @@ interface UserService {
         @Field("phoneNumber") phoneNumber: String,
         @Field("verifyCode") verifyCode: String
     ): Response<CheckSmsResponse>
+
+    /**
+     * 阿里云行为验证码二次校验
+     *
+     * @param request Body
+     * ```
+     * {
+     *     "lot_number": "",
+     *     "captcha_output": "",
+     *     "pass_token": "",
+     *     "gen_time": "",
+     *     "captcha_id": ""
+     * }
+     * ```
+     */
+    @POST(ALI_CAPTCHA)
+    suspend fun verifyCaptcha(
+        @Body request: AliCaptchaRequest
+    ): AliCaptchaResponse
 
 }

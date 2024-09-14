@@ -1,4 +1,4 @@
-package com.example.im.listener.sdk
+package com.example.common.listener.sdk
 
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 
@@ -12,4 +12,4 @@ data class KickedOffline(val message: String)
 
 data class UserSigExpired(val message: String)
 
-data class SelfInfoUpdated(val info: V2TIMUserFullInfo?)
+data class SelfInfoUpdated(val info: V2TIMUserFullInfo)

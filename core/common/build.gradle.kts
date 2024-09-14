@@ -81,7 +81,7 @@ dependencies {
     // 阿里云httpdns
     api(libs.alicloud.httpdns)
     // 阿里云 oss
-    implementation(libs.aliyun.oss.android.sdk)
+    api(libs.aliyun.oss.android.sdk)
 
     // 极光认证
     api(libs.jiguang.jverification)

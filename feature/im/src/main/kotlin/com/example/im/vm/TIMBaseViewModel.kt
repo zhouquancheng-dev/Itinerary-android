@@ -13,11 +13,11 @@ import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
 import com.example.common.util.DataStoreUtils.getStringSync
 import com.example.common.vm.BaseViewModel
-import com.example.im.listener.V2TIMListener
-import com.example.im.listener.ListenerManager
-import com.example.im.listener.conversation.TotalUnreadMessageCountChangedEvent
-import com.example.im.listener.sdk.KickedOffline
-import com.example.im.listener.sdk.UserSigExpired
+import com.example.common.listener.V2TIMListener
+import com.example.common.listener.ListenerManager
+import com.example.common.listener.conversation.TotalUnreadMessageCountChangedEvent
+import com.example.common.listener.sdk.KickedOffline
+import com.example.common.listener.sdk.UserSigExpired
 import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
 import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.tencent.imsdk.v2.V2TIMCallback
@@ -29,6 +29,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -80,17 +81,7 @@ open class TIMBaseViewModel @Inject constructor(
         val handleLogout: (String) -> Unit = { message ->
             LoginState.isLoggedIn = false
             showCustomToaster(message, WARN)
-            V2TIMManager.getInstance().logout(object : V2TIMCallback {
-                override fun onSuccess() {
-                    Log.i(TIM_TAG, "IM登出成功")
-                    V2TIMManager.getInstance().unInitSDK()
-                    action()
-                }
-
-                override fun onError(code: Int, desc: String?) {
-                    LogUtils.iTag(TIM_TAG, "IM登出失败 code: $code, desc: $desc")
-                }
-            })
+            action()
         }
 
         FlowBus.subscribe<KickedOffline>(owner, dispatcher = ioDispatcher) {
@@ -104,6 +95,7 @@ open class TIMBaseViewModel @Inject constructor(
 
     private val _totalUnreadCount = MutableStateFlow(0L)
     val totalUnreadCount = _totalUnreadCount
+        .asStateFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), 0L)
 
     private fun getTotalUnreadCount(owner: LifecycleOwner) {

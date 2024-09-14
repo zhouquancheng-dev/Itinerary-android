@@ -59,6 +59,8 @@ composeCompiler {
 dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
+    implementation(project(":core:model"))
+    implementation(project(":core:network"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -71,4 +73,5 @@ dependencies {
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
 
+    implementation(libs.compose.cropper)
 }

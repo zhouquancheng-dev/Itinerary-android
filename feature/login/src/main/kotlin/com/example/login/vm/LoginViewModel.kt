@@ -62,7 +62,7 @@ class LoginViewModel @Inject constructor(
 ) : BaseViewModel(ioDispatcher) {
 
     private val _loginAuthState = MutableStateFlow(DialogType.NONE)
-    val loginAuthState = _loginAuthState.asStateFlow()
+    internal val loginAuthState = _loginAuthState.asStateFlow()
 
     private val _sendingVerifyCode = MutableStateFlow(false)
     val sendingVerifyCode = _sendingVerifyCode.asStateFlow()

@@ -4,11 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.example.common.flowbus.FlowBus
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 
 // Activity 的扩展函数
 inline fun <reified T> AppCompatActivity.subscribe(
@@ -40,9 +43,20 @@ inline fun <reified T> subscribe(
     crossinline onEvent: (T) -> Unit
 ) {
     DisposableEffect(lifecycleOwner) {
-        val job = FlowBus.subscribe(lifecycleOwner, sticky, dispatcher, false, filter, onEvent)
+        var job: Job? = null
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                job = FlowBus.subscribe(lifecycleOwner, sticky, dispatcher, false, filter, onEvent)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
-            job.cancel()
+            job?.cancel()
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+
+        onDispose {
+
         }
     }
 }
