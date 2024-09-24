@@ -20,7 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -49,7 +49,7 @@ class GenderFragment : AbstractComposeFragment() {
     override fun ComposeContent() {
         JetItineraryTheme {
             val initialGender = arguments?.getInt("key_gender") ?: 0
-            var genderValue by remember { mutableStateOf(initialGender) }
+            var genderValue by remember { mutableIntStateOf(initialGender) }
 
             val profileVm = hiltViewModel<ProfileViewModel>()
             val loading by profileVm.loading.collectAsStateWithLifecycle()

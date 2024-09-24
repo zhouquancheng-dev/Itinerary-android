@@ -32,11 +32,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.common.config.AppConfig
 import com.example.ui.R
+import com.example.ui.components.ThemePreviews
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.components.symbols.rememberLock
 import com.example.ui.theme.Blue80
@@ -213,7 +213,7 @@ fun ButtonBar(
     }
 }
 
-@PreviewLightDark
+@ThemePreviews
 @Composable
 private fun AcceptPrivacyPreview() {
     JetItineraryTheme {

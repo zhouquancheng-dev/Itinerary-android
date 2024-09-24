@@ -35,7 +35,7 @@ abstract class AbstractComposeFragment : Fragment() {
                 if (!handleComposeBackPress()) {
                     // 如果Compose中没有处理返回事件，执行默认行为
                     isEnabled = false
-                    requireActivity().onBackPressed()
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
                 }
             }
         })

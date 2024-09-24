@@ -94,7 +94,7 @@ class SelfSignatureFragment : AbstractComposeFragment() {
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         suffix = {
                             Text(
-                                text = selfSignatureValueLength.value.toString(),
+                                text = selfSignatureValueLength.intValue.toString(),
                                 fontSize = 14.sp
                             )
                         },
