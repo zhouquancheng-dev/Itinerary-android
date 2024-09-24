@@ -65,52 +65,19 @@ class UploadImageViewModel @Inject constructor(
                             securityToken
                         )
 
-                        val expirationInstant = Instant.parse(expiration)
-                        val expirationTimeInSeconds = expirationInstant.epochSecond
-
                         // 如果StsToken即将过期，有效时间小于5分钟，则重新获取并更新StsToken
-                        if (DateUtil.getFixedSkewedTimeMillis() / 1000 > expirationTimeInSeconds - 5 * 60) {
+                        if (shouldUpdateStsToken(credentials.expiration)) {
                             updateStsToken(oss)
                         }
 
                         val byteArray = imageBitmapToByteArray(imageBitmap, Bitmap.CompressFormat.JPEG)
-                        if (oss != null) {
-                            val loginUserId = V2TIMManager.getInstance().loginUser
-                            val imageName = "im_${loginUserId}_profile_img_${System.currentTimeMillis()}"
-                            val objectKey = "$PROFILE_IMG_FOLDER$imageName.jpeg"
-                            aliYunOssClient.uploadFile(oss, objectKey, byteArray, object : UploadCallback {
-                                override fun onStart() {
-                                    _dialogType.value = DialogType.UPLOADING
-                                }
+                        val loginUserId = V2TIMManager.getInstance().loginUser
+                        val imageName = "im_${loginUserId}_profile_img_${System.currentTimeMillis()}"
+                        val uploadObjectKey = "$PROFILE_IMG_FOLDER$imageName.jpeg"
+                        val queryPrefix = "${PROFILE_IMG_FOLDER}im_${loginUserId}_profile_img"
 
-                                override fun onSuccess(objectUrl: String) {
-                                    Log.d("Upload", "File uploaded successfully: $objectUrl")
-                                    _dialogType.value = DialogType.SETTING
-                                    setFaceUrl(
-                                        faceUrl = objectUrl,
-                                        onSuccess = {
-                                            cancelDialog()
-                                            callback()
-                                        },
-                                        onError = {
-                                            callback()
-                                            Toaster.show("设置失败，请稍后重试")
-                                        }
-                                    )
-                                }
-
-                                override fun onProgress(currentSize: Long, totalSize: Long) {
-                                    // currentSize表示已上传文件的大小，单位字节
-                                    // totalSize表示上传文件的总大小，单位字节
-                                    val progress = (currentSize.toFloat() / totalSize.toFloat())
-                                    _uploadProgress.value = progress
-                                }
-
-                                override fun onFailure(exception: Exception) {
-                                    callback()
-                                    Toaster.show("上传失败，请稍后重试")
-                                }
-                            })
+                        oss?.let {
+                            uploadAndUpdateFaceUrl(it, uploadObjectKey, byteArray, queryPrefix, callback)
                         }
                     }
                 }
@@ -138,6 +105,62 @@ class UploadImageViewModel @Inject constructor(
                 Log.e(tag, "Error updating STS token: $e")
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun uploadAndUpdateFaceUrl(
+        oss: OSSClient,
+        uploadObjectKey: String,
+        byteArray: ByteArray,
+        queryPrefix: String,
+        callback: () -> Unit
+    ) {
+        aliYunOssClient.queryObjects(oss, queryPrefix) { objectKeys ->
+            if (objectKeys.isEmpty()) {
+                uploadFileToOss(oss, uploadObjectKey, byteArray, callback)
+            } else {
+                aliYunOssClient.deleteObjects(oss, objectKeys) {
+                    uploadFileToOss(oss, uploadObjectKey, byteArray, callback)
+                }
+            }
+        }
+    }
+
+    private fun uploadFileToOss(
+        oss: OSSClient,
+        uploadObjectKey: String,
+        byteArray: ByteArray,
+        callback: () -> Unit
+    ) {
+        aliYunOssClient.uploadFile(oss, uploadObjectKey, byteArray, object : UploadCallback {
+            override fun onStart() {
+                _dialogType.value = DialogType.UPLOADING
+            }
+
+            override fun onSuccess(objectUrl: String) {
+                Log.d("Upload", "File uploaded successfully: $objectUrl")
+                _dialogType.value = DialogType.SETTING
+                setFaceUrl(
+                    objectUrl,
+                    onSuccess = {
+                        cancelDialog()
+                        callback()
+                    },
+                    onError = {
+                        callback()
+                        Toaster.show("设置失败，请稍后重试")
+                    }
+                )
+            }
+
+            override fun onProgress(currentSize: Long, totalSize: Long) {
+                _uploadProgress.value = currentSize.toFloat() / totalSize
+            }
+
+            override fun onFailure(exception: Exception) {
+                callback()
+                Toaster.show("上传失败，请稍后重试")
+            }
+        })
     }
 
     private fun setFaceUrl(
@@ -169,6 +192,12 @@ class UploadImageViewModel @Inject constructor(
 
     private fun cancelDialog() {
         _dialogType.value = DialogType.NONE
+    }
+
+    private fun shouldUpdateStsToken(expiration: String): Boolean {
+        val expirationInstant = Instant.parse(expiration)
+        val expirationTimeInSeconds = expirationInstant.epochSecond
+        return DateUtil.getFixedSkewedTimeMillis() / 1000 > expirationTimeInSeconds - 5 * 60
     }
 
     // 将ImageBitmap转换为byte[]数组

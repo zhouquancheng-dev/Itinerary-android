@@ -11,6 +11,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import cn.jiguang.verifysdk.api.JVerificationInterface
 import com.aleyn.router.LRouter
+import com.alibaba.sdk.android.httpdns.HttpDns
 import com.alibaba.sdk.android.httpdns.InitConfig
 import com.alibaba.sdk.android.httpdns.ranking.IPRankingBean
 import com.blankj.utilcode.util.LogUtils
@@ -155,26 +156,27 @@ abstract class BaseApplication : Application() {
      * 初始化阿里云 https dns 加速
      */
     private fun initAliHttpDNS() {
-        //初始化配置，调用即可，不必处理返回值
-        InitConfig.Builder()
+        //初始化配置，调用即可，不必处理返回值。
+        val config = InitConfig.Builder()
             // 配置是否启用https，默认http
             .setEnableHttps(true)
             // 配置服务请求的超时时长，毫秒，默认2秒，最大5秒
             .setTimeoutMillis(2 * 1000)
             // 配置是否启用本地缓存，默认不启用
             .setEnableCacheIp(true)
-            // 自定义解析结果TTL
+            // 配置是否允许返回过期IP，默认允许
+            .setEnableExpiredIp(true)
+            // 配置ipv4探测域名
+            .setIPRankingList(listOf(IPRankingBean("api.zyuxr.top", 9090)))
+            // 配置接口来自定义缓存的ttl时间
             .configCacheTtlChanger { host, _, ttl ->
                 if (TextUtils.equals(host, "api.zyuxr.top")) {
                     ttl * 10
                 } else ttl
             }
-            // 配置是否允许返回过期IP，默认允许
-            .setEnableExpiredIp(true)
-            // 启用IP优选
-            .setIPRankingList(arrayListOf(IPRankingBean("api.zyuxr.top", 9090)))
-            // 针对哪一个account配置
-            .buildFor("113753")
+            .build()
+
+        HttpDns.init("113753", config)
     }
 
     /**

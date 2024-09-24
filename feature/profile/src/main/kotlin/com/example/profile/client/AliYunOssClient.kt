@@ -13,11 +13,14 @@ import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider
 import com.alibaba.sdk.android.oss.model.CannedAccessControlList
 import com.alibaba.sdk.android.oss.model.CreateBucketRequest
 import com.alibaba.sdk.android.oss.model.CreateBucketResult
+import com.alibaba.sdk.android.oss.model.DeleteMultipleObjectRequest
+import com.alibaba.sdk.android.oss.model.DeleteMultipleObjectResult
+import com.alibaba.sdk.android.oss.model.ListObjectsRequest
+import com.alibaba.sdk.android.oss.model.ListObjectsResult
 import com.alibaba.sdk.android.oss.model.PutObjectRequest
 import com.alibaba.sdk.android.oss.model.PutObjectResult
 import com.alibaba.sdk.android.oss.model.StorageClass
 import com.example.common.config.AppConfig
-import com.example.network.okhttp.OkHttpDns
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -27,18 +30,15 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @Singleton
-class AliYunOssClient @Inject constructor(
-    @ApplicationContext private val context: Context,
-    private val okHttpDns: OkHttpDns
-) {
+class AliYunOssClient @Inject constructor(@ApplicationContext private val context: Context) {
     private var ossClient: OSSClient? = null
 
     companion object {
         private val TAG = AliYunOssClient::class.java.simpleName
 
         private const val OSS_ENDPOINT = "https://oss-cn-shenzhen.aliyuncs.com"
-        private const val MY_OSS_DOMAIN = "https://oss.zyuxr.top"
         private const val BUCKET_NAME = "web-userzhou"
+        private const val RETURN_URL = "https://web-userzhou.oss-cn-shenzhen.aliyuncs.com"
     }
 
     /**
@@ -63,12 +63,12 @@ class AliYunOssClient @Inject constructor(
                     maxConcurrentRequest = 5
                     maxErrorRetry = 2
                     maxLogSize = 3 * 1024 * 1024
+                    isHttpDnsEnable = false
                 }
 
                 val dispatcher = Dispatcher().apply { maxRequests = config.maxConcurrentRequest }
 
                 val builder = OkHttpClient.Builder().apply {
-                    dns(okHttpDns)
                     connectTimeout(config.connectionTimeout.toLong(), TimeUnit.MILLISECONDS)
                     readTimeout(config.socketTimeout.toLong(), TimeUnit.MILLISECONDS)
                     writeTimeout(config.socketTimeout.toLong(), TimeUnit.MILLISECONDS)
@@ -85,7 +85,7 @@ class AliYunOssClient @Inject constructor(
 
                 try {
                     val credentialProvider = OSSStsTokenCredentialProvider(accessKeyId, accessKeySecret, securityToken)
-                    ossClient = OSSClient(context, MY_OSS_DOMAIN, credentialProvider, config)
+                    ossClient = OSSClient(context, OSS_ENDPOINT, credentialProvider, config)
                 } catch (e: Exception) {
                     Log.e(TAG, "CreateOssClient Exception: ", e)
                 }
@@ -117,13 +117,13 @@ class AliYunOssClient @Inject constructor(
                 serviceException: ServiceException?
             ) {
                 clientException?.run {
-                    Log.e(TAG, "AsyncCreateBucket ClientException: ", this)
+                    Log.e(TAG, "createBucket ClientException: ", this)
                 }
                 serviceException?.run {
-                    Log.e(TAG, "AsyncCreateBucket ErrorCode: $errorCode")
-                    Log.e(TAG, "AsyncCreateBucket RequestId: $requestId")
-                    Log.e(TAG, "AsyncCreateBucket HostId: $hostId")
-                    Log.e(TAG, "AsyncCreateBucket RawMessage: $rawMessage")
+                    Log.e(TAG, "createBucket ErrorCode: $errorCode")
+                    Log.e(TAG, "createBucket RequestId: $requestId")
+                    Log.e(TAG, "createBucket HostId: $hostId")
+                    Log.e(TAG, "createBucket RawMessage: $rawMessage")
                 }
             }
         })
@@ -164,7 +164,7 @@ class AliYunOssClient @Inject constructor(
 //                val signatureRequest = GeneratePresignedUrlRequest(BUCKET_NAME, objectKey, expiration, HttpMethod.GET)
 //                val objectURL = ossClient.presignConstrainedObjectURL(signatureRequest)
 
-                val objectURL = "$MY_OSS_DOMAIN/$objectKey"
+                val objectURL = "$RETURN_URL/$objectKey"
 
                 Log.d(TAG, "uploadFile UploadSuccess")
                 Log.d(TAG, "uploadFile ETag: ${result?.eTag}")
@@ -179,15 +179,90 @@ class AliYunOssClient @Inject constructor(
                 serviceException: ServiceException?
             ) {
                 clientException?.run {
-                    Log.e(TAG, "UploadFile ClientException: ", this)
+                    Log.e(TAG, "uploadFile ClientException: ", this)
                     callback.onFailure(this)
                 }
                 serviceException?.run {
-                    Log.e(TAG, "UploadFile ErrorCode: $errorCode")
-                    Log.e(TAG, "UploadFile RequestId: $requestId")
-                    Log.e(TAG, "UploadFile HostId: $hostId")
-                    Log.e(TAG, "UploadFile RawMessage: $rawMessage")
+                    Log.e(TAG, "uploadFile ErrorCode: $errorCode")
+                    Log.e(TAG, "uploadFile RequestId: $requestId")
+                    Log.e(TAG, "uploadFile HostId: $hostId")
+                    Log.e(TAG, "uploadFile RawMessage: $rawMessage")
                     callback.onFailure(this)
+                }
+            }
+        })
+    }
+
+    /**
+     * 列举指定前缀的文件
+     */
+    fun queryObjects(
+        ossClient: OSSClient,
+        objectKeyPrefix: String,
+        onSuccess: (key: List<String>) -> Unit
+    ) {
+        val request = ListObjectsRequest(BUCKET_NAME)
+        // 前缀为模糊匹配
+        request.prefix = objectKeyPrefix
+
+        ossClient.asyncListObjects(request, object : OSSCompletedCallback<ListObjectsRequest, ListObjectsResult> {
+            override fun onSuccess(request: ListObjectsRequest?, result: ListObjectsResult?) {
+                for (objectSummary in result!!.objectSummaries) {
+                    Log.i("ListObjects", objectSummary.key)
+                }
+                val keys = result.objectSummaries?.map { it.key } ?: emptyList()
+                onSuccess(keys)
+            }
+
+            override fun onFailure(
+                request: ListObjectsRequest?,
+                clientException: ClientException?,
+                serviceException: ServiceException?
+            ) {
+                clientException?.run {
+                    Log.e(TAG, "queryObjects ClientException: ", this)
+                }
+                serviceException?.run {
+                    Log.e(TAG, "queryObjects ErrorCode: $errorCode")
+                    Log.e(TAG, "queryObjects RequestId: $requestId")
+                    Log.e(TAG, "queryObjects HostId: $hostId")
+                    Log.e(TAG, "queryObjects RawMessage: $rawMessage")
+                }
+            }
+        })
+    }
+
+    /**
+     * 批量删除指定文件
+     */
+    fun deleteObjects(
+        ossClient: OSSClient,
+        objectKeys: List<String>,
+        onSuccess: () -> Unit
+    ) {
+        val request = DeleteMultipleObjectRequest(BUCKET_NAME, objectKeys, true)
+        ossClient.asyncDeleteMultipleObject(request, object : OSSCompletedCallback<DeleteMultipleObjectRequest, DeleteMultipleObjectResult> {
+            override fun onSuccess(
+                request: DeleteMultipleObjectRequest?,
+                result: DeleteMultipleObjectResult?
+            ) {
+                Log.i("deleteObjects", "success")
+                onSuccess()
+            }
+
+            override fun onFailure(
+                request: DeleteMultipleObjectRequest?,
+                clientException: ClientException?,
+                serviceException: ServiceException?
+            ) {
+                clientException?.run {
+                    Log.e(TAG, "deleteObjects ClientException: ", this)
+                }
+                serviceException?.run {
+                    Log.e(TAG, "deleteObjects ErrorCode: $errorCode")
+                    Log.e(TAG, "deleteObjects RequestId: $requestId")
+                    Log.e(TAG, "deleteObjects HostId: $hostId")
+                    Log.e(TAG, "deleteObjects RawMessage: $rawMessage")
                 }
             }
         })

@@ -39,6 +39,8 @@
 -keep class com.alibaba.sdk.android.oss.** { *; }
 -dontwarn okio.**
 -dontwarn org.apache.commons.codec.binary.**
+-keep class org.apache.commons.**{ *;}
+-keep class com.alibaba.sdk.*{ *;}
 
 # PictureSelector
 -keep class com.luck.picture.lib.** { *; }

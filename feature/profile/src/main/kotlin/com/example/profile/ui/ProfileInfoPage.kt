@@ -158,7 +158,7 @@ fun ProfileInfoPage(
                     model = profileFirstOrNull?.faceUrl ?: R.drawable.ic_default_face,
                     modifier = Modifier
                         .size(55.dp)
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp)),
                 )
             }
             InfoItem(
