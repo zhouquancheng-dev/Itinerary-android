@@ -91,14 +91,14 @@ fun ConversationPrimary(
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 13.dp, vertical = 5.dp),
+                .padding(horizontal = 14.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             LoadAsyncImage(
                 model = conversation.faceUrl,
                 modifier = Modifier
-                    .size(65.dp)
+                    .size(55.dp)
                     .clip(RoundedCornerShape(8.dp)),
                 placeholderResId = R.drawable.ic_default_face,
                 errorResId = R.drawable.ic_default_face

@@ -10,6 +10,7 @@ import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
 import com.example.common.listener.V2TIMListener
 import com.example.common.listener.conversation.ConversationChangedEvent
+import com.hjq.toast.Toaster
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMConversation
 import com.tencent.imsdk.v2.V2TIMConversationOperationResult
@@ -18,6 +19,7 @@ import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMValueCallback
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,8 +37,8 @@ class IMViewModel @Inject constructor(
         .asStateFlow()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
-    private val _placeholderLoading = MutableStateFlow(false)
-    val placeholderLoading = _placeholderLoading.asStateFlow()
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
 
     private var nextSeq: Long = 0
     private var isFinished: Boolean = false
@@ -44,33 +46,29 @@ class IMViewModel @Inject constructor(
     fun getConversations(owner: LifecycleOwner) {
         loadConversations()
         FlowBus.subscribe<ConversationChangedEvent>(owner, dispatcher = ioDispatcher) { event ->
-            launch {
-                updateConversations(event.conversations)
-            }
+            updateConversations(event.conversations)
         }
     }
 
     private fun loadConversations(nextSeq: Long = 0, count: Int = 20) {
         if (isFinished) return
-        _placeholderLoading.value = true
+        _isLoading.value = true
 
         V2TIMManager.getConversationManager()
             .getConversationList(nextSeq, count, object : V2TIMValueCallback<V2TIMConversationResult> {
                 override fun onSuccess(v2TResult: V2TIMConversationResult?) {
-                    launch {
-                        val v2TIMConversationList = v2TResult?.conversationList.orEmpty()
-                        _conversations.value = v2TIMConversationList
+                    val v2TIMConversationList = v2TResult?.conversationList.orEmpty()
+                    _conversations.value = v2TIMConversationList
 
-                        this@IMViewModel.nextSeq = v2TResult?.nextSeq ?: 0
-                        this@IMViewModel.isFinished = v2TResult?.isFinished ?: true
+                    this@IMViewModel.nextSeq = v2TResult?.nextSeq ?: 0
+                    this@IMViewModel.isFinished = v2TResult?.isFinished ?: true
 
-                        _placeholderLoading.value = false
-                    }
+                    _isLoading.value = false
                 }
 
                 override fun onError(code: Int, desc: String?) {
                     Log.i(TIM_TAG, "failure, code: $code, desc: $desc")
-                    _placeholderLoading.value = false
+                    _isLoading.value = false
                 }
             })
     }
@@ -89,6 +87,31 @@ class IMViewModel @Inject constructor(
             }
             val sortedConversations = conversationMap.values.sortedByDescending { it.orderKey }
             _conversations.value = sortedConversations
+        }
+    }
+
+    private val _isPullRefreshing = MutableStateFlow(false)
+    val isPullRefreshing = _isPullRefreshing.asStateFlow()
+
+    fun refreshConversations() {
+        launch {
+            _isPullRefreshing.value = true
+            delay(500)
+            V2TIMManager.getConversationManager()
+                .getConversationList(0, 100, object : V2TIMValueCallback<V2TIMConversationResult> {
+                    override fun onSuccess(v2TResult: V2TIMConversationResult?) {
+                        val v2TIMConversationList = v2TResult?.conversationList.orEmpty()
+                        _conversations.value = v2TIMConversationList
+                        _isPullRefreshing.value = false
+                        Toaster.showShort("更新成功")
+                    }
+
+                    override fun onError(code: Int, desc: String?) {
+                        Log.i(TIM_TAG, "failure, code: $code, desc: $desc")
+                        _isPullRefreshing.value = false
+                        Toaster.showShort("更新失败")
+                    }
+                })
         }
     }
 
