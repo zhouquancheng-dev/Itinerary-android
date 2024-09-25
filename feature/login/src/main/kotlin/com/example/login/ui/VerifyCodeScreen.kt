@@ -22,6 +22,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +67,7 @@ fun VerifyCodeScreen(
     val maxLength = 6
     var codeValue by remember { mutableStateOf("") }
 
-    var timerTotalSeconds by remember { mutableIntStateOf(60) }
+    var timerTotalSeconds by rememberSaveable { mutableIntStateOf(60) }
     LaunchedEffect(Unit) {
         val ticker = ticker(delayMillis = 1000, initialDelayMillis = 0)
         for (tick in ticker) {

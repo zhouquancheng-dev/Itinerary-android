@@ -7,5 +7,5 @@
 
     <color name="dialog_bg_color">#FFFFFFFF</color>
     <color name="dialog_cancel_color">#FFDEDEDE</color>
-    <color name="dialog_title_color">#FF000000</color>
+    <color name="dialog_title_color">#FF1E1E1E</color>
 </resources>

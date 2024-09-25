@@ -18,15 +18,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.common.util.isDarkMode
 import com.example.ui.R
+import com.example.ui.components.resolveColorResource
 import com.example.ui.theme.JetItineraryTheme
 
 @Composable
@@ -34,10 +32,7 @@ fun IndicatorDialog(
     showDialog: Boolean,
     dialogText: String
 ) {
-    val context = LocalContext.current
-    val dialogBgColor =
-        if (context.isDarkMode()) colorResource(R.color.example_gray)
-        else colorResource(R.color.black_transparent)
+    val dialogBgColor = resolveColorResource(R.color.example_black, R.color.example_gray)
 
     if (showDialog) {
         Dialog(onDismissRequest = {}) {
@@ -77,10 +72,7 @@ fun ProgressDialog(
     progress: Float,
     dialogText: String
 ) {
-    val context = LocalContext.current
-    val dialogBgColor =
-        if (context.isDarkMode()) colorResource(R.color.example_gray)
-        else colorResource(R.color.black_transparent)
+    val dialogBgColor = resolveColorResource(R.color.example_black, R.color.example_gray)
 
     val normalizedProgress = progress.coerceIn(0f, 1f)
     val animatedProgress by animateFloatAsState(
@@ -132,10 +124,7 @@ fun ProgressDialog(
 @Composable
 private fun IndicatorDialogPreview() {
     JetItineraryTheme {
-        val context = LocalContext.current
-        val dialogBgColor =
-            if (context.isDarkMode()) colorResource(R.color.example_gray)
-            else colorResource(R.color.black_transparent)
+        val dialogBgColor = resolveColorResource(R.color.example_black, R.color.example_gray)
 
         Dialog(onDismissRequest = {}) {
             Surface(
@@ -171,10 +160,7 @@ private fun IndicatorDialogPreview() {
 @Composable
 private fun ProgressDialogPreview() {
     JetItineraryTheme {
-        val context = LocalContext.current
-        val dialogBgColor =
-            if (context.isDarkMode()) colorResource(R.color.example_gray)
-            else colorResource(R.color.black_transparent)
+        val dialogBgColor = resolveColorResource(R.color.example_black, R.color.example_gray)
 
         Dialog(onDismissRequest = {}) {
             Surface(

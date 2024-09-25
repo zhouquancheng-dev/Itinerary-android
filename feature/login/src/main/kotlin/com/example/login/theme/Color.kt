@@ -2,4 +2,4 @@ package com.example.login.theme
 
 import androidx.compose.ui.graphics.Color
 
-val ColorF4F6FF = Color(0xFF5697FF)
+internal val ColorFF6195F9 = Color(0xFF6195F9)

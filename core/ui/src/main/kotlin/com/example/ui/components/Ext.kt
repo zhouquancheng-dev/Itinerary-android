@@ -15,10 +15,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.common.util.ClickUtils.isFastClick
+import com.example.common.util.isDarkMode
 import com.example.ui.theme.DarkGreenGray95
 import com.eygraber.compose.placeholder.PlaceholderHighlight
 import com.eygraber.compose.placeholder.material3.placeholder
@@ -33,6 +36,27 @@ fun VerticalSpacer(height: Dp) {
 fun HorizontalSpacer(width: Dp) {
     Spacer(modifier = Modifier.width(width))
 }
+
+@Composable
+fun resolveColor(dayColor: Color, nightColor: Color): Color {
+    val context = LocalContext.current
+    return if (context.isDarkMode()) {
+        nightColor
+    } else {
+        dayColor
+    }
+}
+
+@Composable
+fun resolveColorResource(dayColorRes: Int, nightColorRes: Int): Color {
+    val context = LocalContext.current
+    return if (context.isDarkMode()) {
+        colorResource(nightColorRes)
+    } else {
+        colorResource(dayColorRes)
+    }
+}
+
 
 inline fun Modifier.click(
     enabled: Boolean = true,

@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.login.R
 import com.example.login.state.VerifyCodeState
-import com.example.login.theme.ColorF4F6FF
+import com.example.login.theme.ColorFF6195F9
+import com.example.ui.components.ThemePreviews
+import com.example.ui.theme.JetItineraryTheme
 import kotlinx.coroutines.delay
 
 @Composable
@@ -71,7 +73,7 @@ fun SeparateVerificationCodeTextField(
         val border = remember(verificationCodeState) {
             when (verificationCodeState) {
                 VerifyCodeState.ENTERED, VerifyCodeState.PENDING -> null
-                VerifyCodeState.INPUTTING -> BorderStroke(width = 3.dp, color = ColorF4F6FF)
+                VerifyCodeState.INPUTTING -> BorderStroke(width = 3.dp, color = ColorFF6195F9)
             }
         }
 
@@ -165,4 +167,16 @@ private fun BasicVerificationCodeTextField(
             }
         }
     )
+}
+
+@ThemePreviews
+@Composable
+private fun SeparateVerificationCodeTextFieldPreview() {
+    JetItineraryTheme {
+        SeparateVerificationCodeTextField(
+            codeValue = "1",
+            codeTextLength = 6,
+            onValueChange = {}
+        )
+    }
 }

@@ -36,6 +36,14 @@ fun Context.isDarkMode(): Boolean {
     return resources.configuration.uiMode == 0x21
 }
 
+fun Context.resolveColor(dayColorRes: Int, nightColorRes: Int): Int {
+    return if (isDarkMode()) {
+        getColorCompat(nightColorRes)
+    } else {
+        getColorCompat(dayColorRes)
+    }
+}
+
 fun Context.dp2px(value: Int): Int = TypedValue.applyDimension(
     TypedValue.COMPLEX_UNIT_DIP,
     value.toFloat(),

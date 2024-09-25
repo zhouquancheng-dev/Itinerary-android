@@ -38,11 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.util.TimestampUtils.formatTimestamp
 import com.example.im.R
+import com.example.im.ui.ColorFFFA5151
 import com.example.im.utils.getLastMessageContent
 import com.example.ui.coil.LoadAsyncImage
 import com.example.ui.components.HorizontalSpacer
+import com.example.ui.components.resolveColor
 import com.example.ui.components.swipe.DragValue
-import com.example.ui.theme.errorContainerLightMediumContrast
+import com.example.ui.theme.Color14FFFFFF
+import com.example.ui.theme.ColorFFF2F2F2
 import com.tencent.imsdk.v2.V2TIMConversation
 import kotlinx.coroutines.launch
 
@@ -67,7 +70,7 @@ fun ConversationPrimary(
     }
 
     val surfaceColor by animateColorAsState(
-        targetValue = if (conversation.isPinned) MaterialTheme.colorScheme.surfaceContainerLow else MaterialTheme.colorScheme.background,
+        targetValue = if (conversation.isPinned) resolveColor(ColorFFF2F2F2, Color14FFFFFF) else MaterialTheme.colorScheme.background,
         label = "bg"
     )
 
@@ -153,7 +156,7 @@ fun ConversationPrimary(
                             }
                             .drawBehind {
                                 drawCircle(
-                                    color = errorContainerLightMediumContrast,
+                                    color = ColorFFFA5151,
                                     radius = 11.dp.toPx()
                                 )
                             }

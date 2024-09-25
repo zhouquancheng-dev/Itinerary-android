@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.7.0-beta02"
+agp = "8.7.0-rc01"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha06"
 androidx-test-ext-junit = "1.2.1"

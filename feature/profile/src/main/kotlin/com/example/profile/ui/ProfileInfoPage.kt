@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -52,7 +53,12 @@ import com.example.profile.activity.CropImageActivity
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
 import com.example.ui.components.StandardCenterTopAppBar
+import com.example.ui.components.resolveColor
 import com.example.ui.theme.JetItineraryTheme
+import com.example.ui.theme.navigationBarDarkColor
+import com.example.ui.theme.navigationBarLightColor
+import com.example.ui.theme.tableDarkColor
+import com.example.ui.theme.tableLightColor
 import com.luck.picture.lib.basic.PictureSelector
 import com.luck.picture.lib.config.SelectMimeType
 import com.luck.picture.lib.config.SelectModeConfig
@@ -90,6 +96,13 @@ fun ProfileInfoPage(
                 title = stringResource(R.string.profile_info_title),
                 textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
                 iconSize = DpSize(21.dp, 21.dp),
+                colors = {
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = resolveColor(navigationBarLightColor, navigationBarDarkColor),
+                        titleContentColor = MaterialTheme.colorScheme.onBackground,
+                        navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                },
                 onPressClick = onBack
             )
         },
@@ -217,7 +230,10 @@ private fun InfoItem(
     dividerEnabled: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    Surface(onClick = { onClick() }) {
+    Surface(
+        onClick = { onClick() },
+        color = resolveColor(tableLightColor, tableDarkColor)
+    ) {
         ConstraintLayout(
             modifier = modifier.fillMaxWidth()
         ) {

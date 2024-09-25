@@ -1,4 +1,4 @@
-package com.zqc.itinerary.webview
+package com.example.ui.webview
 
 import android.util.Log
 import android.webkit.JavascriptInterface

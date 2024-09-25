@@ -12,6 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -32,8 +33,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.profile.R
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.components.StandardCenterTopAppBar
+import com.example.ui.components.resolveColor
 import com.example.ui.dialog.IndicatorDialog
 import com.example.ui.theme.JetItineraryTheme
+import com.example.ui.theme.navigationBarDarkColor
+import com.example.ui.theme.navigationBarLightColor
 import com.example.ui.utils.AbstractComposeFragment
 
 class SelfSignatureFragment : AbstractComposeFragment() {
@@ -71,6 +75,13 @@ class SelfSignatureFragment : AbstractComposeFragment() {
                             ) {
                                 Text(text = stringResource(R.string.save_btn))
                             }
+                        },
+                        colors = {
+                            TopAppBarDefaults.topAppBarColors(
+                                containerColor = resolveColor(navigationBarLightColor, navigationBarDarkColor),
+                                titleContentColor = MaterialTheme.colorScheme.onBackground,
+                                navigationIconContentColor = MaterialTheme.colorScheme.onBackground
+                            )
                         },
                         onPressClick = {
                             requireActivity().onBackPressedDispatcher.onBackPressed()

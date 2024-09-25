@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -215,6 +216,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .size(55.dp)
                         .clip(CircleShape)
+                        .background(Color.White)
                         .click(debounce = true) {
                             showCustomToaster("暂未接入", WARN)
                         }

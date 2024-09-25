@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.startAcWithBundle
 import com.example.common.util.startActivity
 import com.example.im.activity.ContactsActivity
+import com.example.im.components.FloatingButton
 import com.example.im.ui.Color4285F4
 import com.example.im.ui.Color60DDAD
 import com.example.im.vm.IMViewModel

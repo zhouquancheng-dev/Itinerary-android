@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.zqc.itinerary.webview.AndroidJsInterface
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable

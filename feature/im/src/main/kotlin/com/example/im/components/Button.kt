@@ -1,4 +1,4 @@
-package com.example.im.ui.conversation
+package com.example.im.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.material3.FloatingActionButton

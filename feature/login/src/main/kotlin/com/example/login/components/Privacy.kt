@@ -1,6 +1,8 @@
 package com.example.login.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -17,11 +19,14 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.example.login.R
+import com.example.login.theme.ColorFF6195F9
+import com.example.ui.components.TermsAndConditions
 import com.example.ui.components.symbols.rememberCheckCircle
 import com.example.ui.components.symbols.rememberRadioButtonUnchecked
-import com.example.ui.dialog.TermsAndConditions
+import com.example.ui.theme.JetItineraryTheme
 
 @Composable
 fun PrivacyContent(
@@ -56,9 +61,19 @@ fun PrivacyContent(
                     },
                     role = Role.RadioButton
                 ),
-            tint = MaterialTheme.colorScheme.primary
+            tint = ColorFF6195F9
         )
 
         TermsAndConditions(fullText, firstTag, secondTag)
+    }
+}
+
+@PreviewLightDark
+@Composable
+private fun PrivacyContentPreview() {
+    JetItineraryTheme {
+        Box(Modifier.background(MaterialTheme.colorScheme.background)) {
+            PrivacyContent(checked = false, onCheckedChange = {})
+        }
     }
 }

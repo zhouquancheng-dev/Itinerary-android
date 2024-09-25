@@ -1,26 +1,37 @@
 package com.example.login.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.ui.components.symbols.rememberKeyboardBackspace
+import com.example.login.R
+import com.example.ui.components.ThemePreviews
+import com.example.ui.components.resolveColor
+import com.example.ui.theme.JetItineraryTheme
 
 @Composable
 fun CustomNumericKeypad(
@@ -51,8 +62,8 @@ fun CustomNumericKeypad(
             )
         }
         item {
-            IconButton(
-                icon = rememberKeyboardBackspace(),
+            IconKeyButton(
+                icon = painterResource(R.drawable.ic_delete),
                 haptic = haptic,
                 onKeyPress = onKeyPress
             )
@@ -68,6 +79,10 @@ private fun KeyButton(key: String, haptic: HapticFeedback, onKeyPress: (KeypadAc
             haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
         },
         modifier = Modifier.height(60.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = resolveColor(Color(0xFF4C4C4C), Color(0xFF606060)),
+            contentColor = Color.White
+        ),
         shape = RoundedCornerShape(10)
     ) {
         Text(
@@ -78,16 +93,20 @@ private fun KeyButton(key: String, haptic: HapticFeedback, onKeyPress: (KeypadAc
 }
 
 @Composable
-private fun IconButton(icon: ImageVector, haptic: HapticFeedback, onKeyPress: (KeypadAction) -> Unit) {
-    Button(
+private fun IconKeyButton(icon: Painter, haptic: HapticFeedback, onKeyPress: (KeypadAction) -> Unit) {
+    FilledIconButton(
         onClick = {
             onKeyPress(KeypadAction.Delete)
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         },
         modifier = Modifier.height(60.dp),
+        colors = IconButtonDefaults.filledIconButtonColors(
+            containerColor = resolveColor(Color(0xFF4C4C4C), Color(0xFF606060)),
+            contentColor = Color.White
+        ),
         shape = RoundedCornerShape(10)
     ) {
-        Icon(imageVector = icon, contentDescription = "Delete")
+        Icon(painter = icon, contentDescription = "Delete", modifier = Modifier.size(28.dp))
     }
 }
 
@@ -111,6 +130,20 @@ enum class KeypadAction(val value: String) {
                 "delete" -> Delete
                 else -> throw IllegalArgumentException("Unknown key: $key")
             }
+        }
+    }
+}
+
+@ThemePreviews
+@Composable
+private fun CustomNumericKeypadPreview() {
+    JetItineraryTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            CustomNumericKeypad(onKeyPress = {})
         }
     }
 }

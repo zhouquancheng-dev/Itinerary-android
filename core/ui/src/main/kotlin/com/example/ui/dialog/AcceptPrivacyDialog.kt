@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -23,23 +22,20 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLinkStyles
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.common.config.AppConfig
 import com.example.ui.R
+import com.example.ui.components.TermsAndConditions
 import com.example.ui.components.ThemePreviews
 import com.example.ui.components.VerticalSpacer
+import com.example.ui.components.resolveColor
 import com.example.ui.components.symbols.rememberLock
-import com.example.ui.theme.Blue80
+import com.example.ui.theme.ColorFF576B95
+import com.example.ui.theme.ColorFF7D90A9
 import com.example.ui.theme.JetItineraryTheme
 
 @Composable
@@ -96,14 +92,13 @@ fun PrivacyIcon() {
     Surface(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.primary,
-        contentColor = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.size(80.dp)
     ) {
         Icon(
             imageVector = rememberLock(),
             contentDescription = "Icon",
             modifier = Modifier.padding(12.dp),
-            tint = MaterialTheme.colorScheme.onPrimary
+            tint = Color.White
         )
     }
 }
@@ -125,58 +120,6 @@ fun PrivacyDescription() {
 }
 
 @Composable
-fun TermsAndConditions(
-    fullText: String,
-    firstTag: String,
-    secondTag: String
-) {
-    val linkStyle = TextLinkStyles(
-        style = SpanStyle(color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.SemiBold),
-        focusedStyle = null,
-        hoveredStyle = null,
-        pressedStyle = SpanStyle(color = Blue80)
-    )
-
-    val annotatedString = buildAnnotatedString {
-        val defaultStyle = SpanStyle(color = MaterialTheme.colorScheme.onSurface)
-        append(fullText, defaultStyle)
-
-        val firstTagStart = fullText.indexOf(firstTag)
-        val firstTagEnd = firstTagStart + firstTag.length
-        addLink(
-            LinkAnnotation.Url(
-                url = AppConfig.PRIVACY_URL,
-                styles = linkStyle
-            ),
-            start = firstTagStart,
-            end = firstTagEnd
-        )
-
-        val secondTagStart = fullText.indexOf(secondTag)
-        val secondTagEnd = secondTagStart + secondTag.length
-        addLink(
-            LinkAnnotation.Url(
-                url = AppConfig.USER_PROTOCOL_URL,
-                styles = linkStyle
-            ),
-            start = secondTagStart,
-            end = secondTagEnd
-        )
-    }
-
-    BasicText(
-        text = annotatedString,
-        style = MaterialTheme.typography.bodyLarge,
-    )
-}
-
-private fun AnnotatedString.Builder.append(text: String, style: SpanStyle) {
-    withStyle(style = style) {
-        append(text)
-    }
-}
-
-@Composable
 fun ButtonBar(
     onAcceptRequest: () -> Unit,
     onRejectRequest: () -> Unit
@@ -192,7 +135,6 @@ fun ButtonBar(
         ) {
             Text(
                 text = stringResource(R.string.app_accept),
-                color = MaterialTheme.colorScheme.background,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -201,7 +143,7 @@ fun ButtonBar(
             onClick = { onRejectRequest() },
             modifier = Modifier.fillMaxWidth().height(46.dp),
             colors = ButtonDefaults.textButtonColors(
-                contentColor = MaterialTheme.colorScheme.primary
+                contentColor = resolveColor(ColorFF576B95, ColorFF7D90A9)
             )
         ) {
             Text(
