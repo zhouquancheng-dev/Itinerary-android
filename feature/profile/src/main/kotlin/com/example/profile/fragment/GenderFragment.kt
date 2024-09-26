@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -38,6 +36,7 @@ import com.example.profile.R
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.components.StandardCenterTopAppBar
 import com.example.ui.components.resolveColor
+import com.example.ui.components.symbols.AppIcons
 import com.example.ui.dialog.IndicatorDialog
 import com.example.ui.theme.JetItineraryTheme
 import com.example.ui.theme.navigationBarDarkColor
@@ -116,7 +115,7 @@ class GenderFragment : AbstractComposeFragment() {
                         )
                         if (genderValue == V2TIM_GENDER_MALE) {
                             Icon(
-                                imageVector = Icons.Rounded.Done,
+                                imageVector = AppIcons.Done,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .padding(end = 16.dp)
@@ -147,7 +146,7 @@ class GenderFragment : AbstractComposeFragment() {
                         )
                         if (genderValue == V2TIM_GENDER_FEMALE) {
                             Icon(
-                                imageVector = Icons.Rounded.Done,
+                                imageVector = AppIcons.Done,
                                 contentDescription = null,
                                 modifier = Modifier
                                     .padding(end = 21.dp)

@@ -17,6 +17,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -54,12 +55,18 @@ fun ConversationHome(ivm: IMViewModel) {
     val conversations by ivm.conversations.collectAsStateWithLifecycle(emptyList())
     val isLoading by ivm.isLoading.collectAsStateWithLifecycle(false)
     val isPullRefreshing by ivm.isPullRefreshing.collectAsStateWithLifecycle(false)
+    val pullRefreshState = rememberPullToRefreshState()
 
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         ivm.getConversations(lifecycleOwner)
     }
 
     val listState = rememberLazyListState()
+    val isAtTop by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex == 0
+        }
+    }
     val isAtEnd by remember {
         derivedStateOf {
             val layoutInfo = listState.layoutInfo
@@ -105,8 +112,13 @@ fun ConversationHome(ivm: IMViewModel) {
                 )
             }
             PullToRefreshBox(
+                state = pullRefreshState,
                 isRefreshing = isPullRefreshing,
-                onRefresh = ivm::refreshConversations
+                onRefresh = {
+                    if (isAtTop) {
+                        ivm.refreshConversations()
+                    }
+                }
             ) {
                 ConversationList(
                     listState = listState,

@@ -1,17 +1,22 @@
 package com.example.profile.ui
 
 import android.Manifest
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,12 +27,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -36,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -53,6 +62,7 @@ import com.example.profile.activity.CropImageActivity
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
 import com.example.ui.components.StandardCenterTopAppBar
+import com.example.ui.components.bounceScrollEffect
 import com.example.ui.components.resolveColor
 import com.example.ui.theme.JetItineraryTheme
 import com.example.ui.theme.navigationBarDarkColor
@@ -71,6 +81,7 @@ import com.tencent.imsdk.v2.V2TIMUserFullInfo.V2TIM_GENDER_UNKNOWN
 import top.zibin.luban.Luban
 import top.zibin.luban.OnNewCompressListener
 import java.io.File
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,14 +92,18 @@ fun ProfileInfoPage(
     onSelfSignature: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val density = LocalDensity.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val permissions = remember { mutableListOf<String>() }
     val profileVm = hiltViewModel<ProfileViewModel>()
     val profileInfo by profileVm.profile.collectAsStateWithLifecycle()
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         profileVm.getUserInfo(lifecycleOwner)
     }
     val profileFirstOrNull = profileInfo.firstOrNull()
+
+    val coroutineScope = rememberCoroutineScope()
+    val maxOffsetY by remember { mutableFloatStateOf(with(density) { 300.dp.toPx() }) }
+    val animatedOffsetY = remember { Animatable(0f) }
 
     Scaffold(
         topBar = {
@@ -108,115 +123,83 @@ fun ProfileInfoPage(
         },
         contentColor = MaterialTheme.colorScheme.onBackground
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(paddingValues)
+                .bounceScrollEffect(maxOffsetY, coroutineScope, animatedOffsetY)
         ) {
-            InfoItem(
-                onClick = {
-                    permissions.add(Manifest.permission.CAMERA)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
-                    } else {
-                        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    }
-                    AllowPermissionUseCase.requestMultiPermission(context as FragmentActivity, permissions) {
-                        PictureSelector.create(context)
-                            .openGallery(SelectMimeType.ofImage())
-                            .setImageEngine(GlideEngine.createGlideEngine())
-                            .setSelectionMode(SelectModeConfig.SINGLE)
-                            .setCompressEngine(CompressFileEngine { context, source, call ->
-                                Luban.with(context).load(source).ignoreBy(100)
-                                    .setCompressListener(object : OnNewCompressListener {
-                                        override fun onStart() {
-
-                                        }
-
-                                        override fun onSuccess(
-                                            source: String?,
-                                            compressFile: File?
-                                        ) {
-                                            if (compressFile != null) {
-                                                call?.onCallback(source, compressFile.absolutePath)
-                                            }
-                                        }
-
-                                        override fun onError(source: String?, e: Throwable?) {
-                                            call.onCallback(source, null)
-                                        }
-                                    }).launch()
-                            })
-                            .forResult(object : OnResultCallbackListener<LocalMedia> {
-                                override fun onResult(result: ArrayList<LocalMedia>?) {
-                                    val extra = Bundle().apply {
-                                        putString("compressPath", result?.firstOrNull()?.compressPath)
-                                    }
-                                    startAcWithBundle<CropImageActivity>(context, extra)
-                                }
-
-                                override fun onCancel() {
-
-                                }
-                            })
-                    }
-                },
-                label = "头像",
-                modifier = Modifier.height(76.dp),
-                dividerEnabled = true
+            Column(
+                modifier = Modifier
+                    .matchParentSize()
+                    .verticalScroll(rememberScrollState())
+                    .offset { IntOffset(x = 0, y = animatedOffsetY.value.roundToInt()) },
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                LoadAsyncImage(
-                    model = profileFirstOrNull?.faceUrl ?: R.drawable.ic_default_face,
-                    modifier = Modifier
-                        .size(55.dp)
-                        .clip(RoundedCornerShape(8.dp)),
-                )
-            }
-            InfoItem(
-                onClick = { onNickName(profileFirstOrNull?.nickName ?: "") },
-                label = "昵称",
-                modifier = Modifier.height(58.dp),
-                dividerEnabled = true
-            ) {
-                Text(
-                    text = profileFirstOrNull?.nickName ?: "",
-                    color = Color.Gray,
-                    textAlign = TextAlign.End
-                )
-            }
-            InfoItem(
-                onClick = { onGender(profileFirstOrNull?.gender ?: V2TIM_GENDER_UNKNOWN) },
-                label = "性别",
-                modifier = Modifier.height(58.dp),
-                dividerEnabled = true
-            ) {
-                val genderStr = when (profileFirstOrNull?.gender) {
-                    V2TIM_GENDER_MALE -> "男"
-                    V2TIM_GENDER_FEMALE -> "女"
-                    V2TIM_GENDER_UNKNOWN -> ""
-                    else -> ""
+                InfoItem(
+                    onClick = {
+                        selectPicture(context) { result ->
+                            val extra = Bundle().apply {
+                                putString("compressPath", result?.firstOrNull()?.compressPath)
+                            }
+                            startAcWithBundle<CropImageActivity>(context, extra)
+                        }
+                    },
+                    label = "头像",
+                    modifier = Modifier.height(76.dp),
+                    dividerEnabled = true
+                ) {
+                    LoadAsyncImage(
+                        model = profileFirstOrNull?.faceUrl ?: R.drawable.ic_default_face,
+                        modifier = Modifier
+                            .size(55.dp)
+                            .clip(RoundedCornerShape(8.dp)),
+                    )
                 }
-                Text(
-                    text = genderStr,
-                    color = Color.Gray,
-                    textAlign = TextAlign.End
-                )
-            }
-            InfoItem(
-                onClick = { onSelfSignature(profileFirstOrNull?.selfSignature ?: "") },
-                label = "个性签名",
-                modifier = Modifier.height(58.dp)
-            ) {
-                Text(
-                    text = profileFirstOrNull?.selfSignature ?: "",
-                    modifier = Modifier.widthIn(max = 240.dp, min = 150.dp),
-                    color = Color.Gray,
-                    textAlign = TextAlign.End,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                InfoItem(
+                    onClick = { onNickName(profileFirstOrNull?.nickName ?: "") },
+                    label = "昵称",
+                    modifier = Modifier.height(58.dp),
+                    dividerEnabled = true
+                ) {
+                    Text(
+                        text = profileFirstOrNull?.nickName ?: "",
+                        color = Color.Gray,
+                        textAlign = TextAlign.End
+                    )
+                }
+                InfoItem(
+                    onClick = { onGender(profileFirstOrNull?.gender ?: V2TIM_GENDER_UNKNOWN) },
+                    label = "性别",
+                    modifier = Modifier.height(58.dp),
+                    dividerEnabled = true
+                ) {
+                    val genderStr = when (profileFirstOrNull?.gender) {
+                        V2TIM_GENDER_MALE -> "男"
+                        V2TIM_GENDER_FEMALE -> "女"
+                        V2TIM_GENDER_UNKNOWN -> ""
+                        else -> ""
+                    }
+                    Text(
+                        text = genderStr,
+                        color = Color.Gray,
+                        textAlign = TextAlign.End
+                    )
+                }
+                InfoItem(
+                    onClick = { onSelfSignature(profileFirstOrNull?.selfSignature ?: "") },
+                    label = "个性签名",
+                    modifier = Modifier.height(58.dp)
+                ) {
+                    Text(
+                        text = profileFirstOrNull?.selfSignature ?: "",
+                        modifier = Modifier.widthIn(max = 240.dp, min = 150.dp),
+                        color = Color.Gray,
+                        textAlign = TextAlign.End,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
@@ -284,6 +267,56 @@ private fun InfoItem(
                 )
             }
         }
+    }
+}
+
+private fun selectPicture(
+    context: Context,
+    onResult: (ArrayList<LocalMedia>?) -> Unit
+) {
+    val permissions = mutableListOf<String>()
+    permissions.add(Manifest.permission.CAMERA)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+    } else {
+        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+    }
+    AllowPermissionUseCase.requestMultiPermission(context as FragmentActivity, permissions) {
+        PictureSelector.create(context)
+            .openGallery(SelectMimeType.ofImage())
+            .setImageEngine(GlideEngine.createGlideEngine())
+            .setSelectionMode(SelectModeConfig.SINGLE)
+            .setCompressEngine(CompressFileEngine { context, source, call ->
+                Luban.with(context).load(source).ignoreBy(100)
+                    .setCompressListener(object : OnNewCompressListener {
+                        override fun onStart() {
+
+                        }
+
+                        override fun onSuccess(
+                            source: String?,
+                            compressFile: File?
+                        ) {
+                            if (compressFile != null) {
+                                call?.onCallback(source, compressFile.absolutePath)
+                            }
+                        }
+
+                        override fun onError(source: String?, e: Throwable?) {
+                            call.onCallback(source, null)
+                        }
+                    }).launch()
+            })
+            .forResult(object : OnResultCallbackListener<LocalMedia> {
+                override fun onResult(result: ArrayList<LocalMedia>?) {
+                    onResult(result)
+                }
+
+                override fun onCancel() {
+
+                }
+            })
     }
 }
 

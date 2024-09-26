@@ -65,7 +65,7 @@ zxing = "3.5.3"
 zip4j = "2.11.5"
 
 # 第三方平台服务
-alicloud-httpdns = "2.4.3"
+alicloud-httpdns = "2.5.0"
 bugly = "4.1.9.3"
 jiguang-jverification = "3.2.9"
 ossAndroidSdk = "2.9.19"

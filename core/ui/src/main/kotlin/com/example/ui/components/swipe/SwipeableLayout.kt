@@ -23,9 +23,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.DeleteSweep
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +41,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ui.components.symbols.AppIcons
 import kotlin.math.roundToInt
 
 /**
@@ -291,7 +289,7 @@ private fun SwipeLayoutSample() {
                             shape = RoundedCornerShape(0)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.DeleteSweep,
+                                imageVector = AppIcons.DeleteSweep,
                                 contentDescription = null,
                                 modifier = Modifier.size(45.dp)
                             )
@@ -308,7 +306,7 @@ private fun SwipeLayoutSample() {
                             shape = RoundedCornerShape(0)
                         ) {
                             Icon(
-                                imageVector = Icons.Outlined.Delete,
+                                imageVector = AppIcons.Delete,
                                 contentDescription = null,
                                 modifier = Modifier.size(45.dp)
                             )
