@@ -48,3 +48,9 @@
 -dontwarn com.yalantis.ucrop**
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
+
+# 高德定位
+-keep class com.amap.api.location.**{*;}
+-keep class com.amap.api.fence.**{*;}
+-keep class com.loc.**{*;}
+-keep class com.autonavi.aps.amapapi.model.**{*;}

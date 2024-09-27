@@ -42,6 +42,6 @@ fun LoadingContent(modifier: Modifier = Modifier) {
     device = "spec:width=1440px,height=3200px,dpi=560"
 )
 @Composable
-fun LoadingContentPreview() {
+private fun LoadingContentPreview() {
     LoadingContent()
 }

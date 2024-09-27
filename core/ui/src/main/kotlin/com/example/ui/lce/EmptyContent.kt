@@ -49,6 +49,6 @@ fun EmptyContent(
     device = "spec:width=1440px,height=3200px,dpi=560"
 )
 @Composable
-fun NoContentPreview() {
+private fun NoContentPreview() {
     EmptyContent(noContent = NoContent("无内容"))
 }

@@ -49,7 +49,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ConversationHome(ivm: IMViewModel) {
+fun ConversationHomeScreen(ivm: IMViewModel) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val conversations by ivm.conversations.collectAsStateWithLifecycle(emptyList())

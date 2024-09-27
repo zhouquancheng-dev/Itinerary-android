@@ -64,6 +64,6 @@ fun ErrorContent(
     device = "spec:width=1440px,height=3200px,dpi=560"
 )
 @Composable
-fun ErrorContentPreview() {
+private fun ErrorContentPreview() {
     ErrorContent {}
 }

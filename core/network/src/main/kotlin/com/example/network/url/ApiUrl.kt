@@ -4,6 +4,9 @@ const val APP_LOCAL_URL = "https://192.168.31.173:8080"
 const val APP_BASE_URL = "https://api.zyuxr.top"
 const val WEBSOCKET_BASE_URL = "wss://api.zyuxr.top"
 
+// 和风天气免费订阅 BASE_URL
+const val Q_WEATHER_BASE_URL = "https://devapi.qweather.com/v7"
+
 // 行为验证码二次核验
 const val ALI_CAPTCHA = "/validate/aliCaptcha"
 
@@ -27,3 +30,5 @@ const val UPLOAD = "/oss/upload"
 
 // 下载文件
 const val DOWNLOAD = "/oss/download"
+
+const val REALTIME_WEATHER = "/weather/now"

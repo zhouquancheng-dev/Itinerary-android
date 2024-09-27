@@ -1,6 +1,6 @@
-package com.example.common.listener
+package com.example.common.listener.im
 
-import com.example.common.listener.conversation.V2TIMConversationListener
+import com.example.common.listener.im.conversation.V2TIMConversationListener
 import com.tencent.imsdk.v2.V2TIMManager
 import javax.inject.Inject
 

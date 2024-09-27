@@ -78,6 +78,9 @@ dependencies {
     api(libs.utilcodex)
     api(libs.toaster)
 
+    // 高德定位
+    api(libs.amap.location)
+
     // 阿里云httpdns
     api(libs.alicloud.httpdns)
     // 阿里云 oss

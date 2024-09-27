@@ -8,8 +8,8 @@ import com.example.common.data.Constants.TIM_TAG
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
-import com.example.common.listener.V2TIMListener
-import com.example.common.listener.conversation.ConversationChangedEvent
+import com.example.common.listener.im.V2TIMListener
+import com.example.common.listener.im.conversation.ConversationChangedEvent
 import com.hjq.toast.Toaster
 import com.tencent.imsdk.v2.V2TIMCallback
 import com.tencent.imsdk.v2.V2TIMConversation

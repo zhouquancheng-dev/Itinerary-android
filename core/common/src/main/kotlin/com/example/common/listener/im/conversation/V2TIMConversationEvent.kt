@@ -1,4 +1,4 @@
-package com.example.common.listener.conversation
+package com.example.common.listener.im.conversation
 
 import com.tencent.imsdk.v2.V2TIMConversation
 import com.tencent.imsdk.v2.V2TIMConversationListFilter

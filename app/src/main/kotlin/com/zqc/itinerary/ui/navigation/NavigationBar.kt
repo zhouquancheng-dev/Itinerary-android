@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.navigation.NavDestination
 import com.example.common.data.Constants.TIM_TAG
-import com.example.common.listener.conversation.TotalUnreadMessageCountChangedEvent
+import com.example.common.listener.im.conversation.TotalUnreadMessageCountChangedEvent
 import com.example.ui.theme.JetItineraryTheme
 import com.example.ui.utils.subscribe
 import com.tencent.imsdk.v2.V2TIMManager

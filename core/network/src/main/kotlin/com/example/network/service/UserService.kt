@@ -5,16 +5,26 @@ import com.example.model.sms.TokenVerifyResponse
 import com.example.model.Response
 import com.example.model.captcha.AliCaptchaRequest
 import com.example.model.captcha.AliCaptchaResponse
+import com.example.model.oss.StsResponse
 import com.example.model.sms.CheckSmsResponse
 import com.example.model.sms.SendSmsResponse
 import com.example.network.url.ALI_CAPTCHA
 import com.example.network.url.ALI_SEND_CODE
 import com.example.network.url.ALI_VERIFY_CODE
 import com.example.network.url.JG_AUTH_LOGIN
+import com.example.network.url.OSS_STS_TOKEN
+import com.example.network.url.TIM_USER_SIG
+import com.example.network.url.UPLOAD
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
+import retrofit2.http.Query
 
 interface UserService {
 
@@ -82,5 +92,28 @@ interface UserService {
     suspend fun verifyCaptcha(
         @Body request: AliCaptchaRequest
     ): AliCaptchaResponse
+
+    /**
+     * 获取TIM登录票据
+     */
+    @GET(TIM_USER_SIG)
+    suspend fun getUserSig(@Query("userId") userId: String): Response<String?>
+
+    /**
+     * 获取OSS STS临时凭证
+     */
+    @GET(OSS_STS_TOKEN)
+    suspend fun getStsToken(): Response<StsResponse>
+
+    /**
+     * 上传文件
+     */
+    @Multipart
+    @POST(UPLOAD)
+    suspend fun uploadFile(
+        @Part file: MultipartBody.Part,
+        @Part("bucketDirName") bucketDirName: RequestBody,
+        @Part("fileName") fileName: RequestBody
+    ): Response<String?>
 
 }

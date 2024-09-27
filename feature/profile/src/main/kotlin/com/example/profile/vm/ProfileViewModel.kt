@@ -9,7 +9,7 @@ import com.example.common.data.LoginState
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
-import com.example.common.listener.sdk.SelfInfoUpdated
+import com.example.common.listener.im.sdk.SelfInfoUpdated
 import com.example.common.vm.BaseViewModel
 import com.hjq.toast.Toaster
 import com.tencent.imsdk.v2.V2TIMCallback

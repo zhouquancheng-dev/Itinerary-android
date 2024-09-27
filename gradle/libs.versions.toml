@@ -66,6 +66,7 @@ zip4j = "2.11.5"
 
 # 第三方平台服务
 alicloud-httpdns = "2.5.0"
+amap-location = "6.4.7"
 bugly = "4.1.9.3"
 jiguang-jverification = "3.2.9"
 ossAndroidSdk = "2.9.19"
@@ -309,6 +310,8 @@ zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }
 alicloud-httpdns = { module = "com.aliyun.ams:alicloud-android-httpdns", version.ref = "alicloud-httpdns" }
 # https://mvnrepository.com/artifact/com.aliyun.dpa/oss-android-sdk
 aliyun-oss-android-sdk = { module = "com.aliyun.dpa:oss-android-sdk", version.ref = "ossAndroidSdk" }
+# https://central.sonatype.com/artifact/com.amap.api/location
+amap-location = { module = "com.amap.api:location", version.ref = "amap-location" }
 # https://central.sonatype.com/artifact/cn.jiguang.sdk/jverification
 jiguang-jverification = { module = "cn.jiguang.sdk:jverification", version.ref = "jiguang-jverification" }
 # https://mvnrepository.com/artifact/com.tencent.bugly/crashreport

@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class OkHttpDns @Inject constructor (@ApplicationContext private val context: Context) : Dns {
+class OkHttpDns @Inject constructor(@ApplicationContext private val context: Context) : Dns {
 
     override fun lookup(hostname: String): List<InetAddress> {
         val httpdnsResult: HTTPDNSResult = HttpDns.getService(context, "113753")

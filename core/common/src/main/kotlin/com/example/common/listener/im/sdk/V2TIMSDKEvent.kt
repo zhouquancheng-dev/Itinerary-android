@@ -1,4 +1,4 @@
-package com.example.common.listener.sdk
+package com.example.common.listener.im.sdk
 
 import com.tencent.imsdk.v2.V2TIMUserFullInfo
 

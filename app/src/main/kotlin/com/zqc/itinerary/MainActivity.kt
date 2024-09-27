@@ -1,11 +1,11 @@
 package com.zqc.itinerary
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.metrics.performance.JankStats
 import com.aleyn.annotation.Route
@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 @Route(path = ROUTER_MAIN_ACTIVITY)
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     /**
      * Lazily inject [JankStats], which is used to track jank throughout the app.
