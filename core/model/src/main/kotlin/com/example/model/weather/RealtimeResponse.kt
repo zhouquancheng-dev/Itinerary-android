@@ -1,12 +1,16 @@
 package com.example.model.weather
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RealtimeResponse(
     val code: String,
-    val updateTime: String,
-    val fxLink: String,
-    val now: Now,
-    val refer: Refer
+    val updateTime: String?,
+    val fxLink: String?,
+    val now: Now?,
+    val refer: Refer?
 ) {
+    @Serializable
     data class Now(
         val obsTime: String,
         val temp: String,

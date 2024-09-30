@@ -127,7 +127,7 @@ fun Modifier.placeholder(
     } else {
         null
     }
-    val specifiedBackgroundColor = backgroundColor.takeOrElse { DarkGreenGray95.copy(0.7f) }
+    val specifiedBackgroundColor = backgroundColor.takeOrElse { DarkGreenGray95.copy(0.8f) }
     placeholder(
         color = specifiedBackgroundColor,
         visible = isLoading,

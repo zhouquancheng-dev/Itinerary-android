@@ -23,10 +23,10 @@ import com.example.ui.R
 fun LoadAsyncImage(
     model: Any?,
     modifier: Modifier = Modifier,
+    contentDescription: String? = null,
     memoryCachePolicy: CachePolicy = CachePolicy.ENABLED,
     diskCachePolicy: CachePolicy = CachePolicy.ENABLED,
     networkCachePolicy: CachePolicy = CachePolicy.ENABLED,
-    contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
     @DrawableRes placeholderResId: Int = R.drawable.module_ic_coil_placeholder,

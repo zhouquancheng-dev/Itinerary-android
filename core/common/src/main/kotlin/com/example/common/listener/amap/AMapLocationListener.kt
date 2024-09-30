@@ -82,7 +82,7 @@ class AMapLocationListener @Inject constructor(
             httpTimeOut = 20000
             // 缓存机制，当开启定位缓存功能，在高精度模式和低功耗模式下进行的网络定位结果均会生成本地缓存，
             // 不区分单次定位还是连续定位。GPS定位结果不会被缓存
-            isLocationCacheEnable = false
+            isLocationCacheEnable = true
         }
         mLocationClient?.setLocationOption(mLocationOption)
     }

@@ -1,6 +1,5 @@
 package com.example.profile.ui
 
-import android.Manifest
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -56,6 +55,10 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.GlideEngine
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
+import com.example.common.util.permissionUtil.ext.Constant.CAMERA
+import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
+import com.example.common.util.permissionUtil.ext.Constant.WRITE_EXTERNAL_STORAGE
 import com.example.common.util.startAcWithBundle
 import com.example.profile.R
 import com.example.profile.activity.CropImageActivity
@@ -275,12 +278,12 @@ private fun selectPicture(
     onResult: (ArrayList<LocalMedia>?) -> Unit
 ) {
     val permissions = mutableListOf<String>()
-    permissions.add(Manifest.permission.CAMERA)
+    permissions.add(CAMERA)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+        permissions.add(READ_MEDIA_IMAGES)
     } else {
-        permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        permissions.add(WRITE_EXTERNAL_STORAGE)
+        permissions.add(READ_EXTERNAL_STORAGE)
     }
     AllowPermissionUseCase.requestMultiPermission(context as FragmentActivity, permissions) {
         PictureSelector.create(context)

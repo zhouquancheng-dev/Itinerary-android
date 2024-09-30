@@ -6,6 +6,7 @@ import coil3.disk.DiskCache
 import coil3.disk.directory
 import coil3.memory.MemoryCache
 import coil3.util.DebugLogger
+import com.example.common.config.AppConfig
 
 fun getAsyncImageLoader(context: PlatformContext) =
     ImageLoader.Builder(context)
@@ -15,7 +16,13 @@ fun getAsyncImageLoader(context: PlatformContext) =
         .diskCache {
             newDiskCache(context)
         }
-        .logger(DebugLogger())
+        .logger(
+            if (AppConfig.IS_DEBUG) {
+                DebugLogger()
+            } else {
+                null
+            }
+        )
         .build()
 
 fun newMemoryCache(context: PlatformContext) =

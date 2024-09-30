@@ -15,7 +15,7 @@ data class Response<T>(
 )
 
 const val SUCCESS_STR = "success"
-
+const val SUCCESS_CODE_STR = "200"
 const val SUCCESS = 200
 
 const val FAILURE = 401
