@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     private val _locationInfo = MutableStateFlow<AMapLocation?>(null)
     val locationInfo = _locationInfo.asStateFlow()
 
-    private val _realtimeWeather = MutableStateFlow<RealtimeResponse.Now?>(null)
+    private val _realtimeWeather = MutableStateFlow<RealtimeResponse?>(null)
     val realtimeResponse = _realtimeWeather.asStateFlow()
 
     fun getLocation() {
@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
             try {
                 val response = networkApi.realtimeWeather(location)
                 if (response.code == SUCCESS_CODE_STR) {
-                    _realtimeWeather.value = response.now
+                    _realtimeWeather.value = response
                 }
             } catch (e: Exception) {
                 Log.e("realtimeWeather", "Error fetching weather data", e)

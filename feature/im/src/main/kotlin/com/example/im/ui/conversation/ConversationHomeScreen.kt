@@ -122,7 +122,7 @@ fun ConversationHomeScreen(ivm: IMViewModel) {
             ) {
                 ConversationList(
                     listState = listState,
-                    conversations =  conversations,
+                    conversations = conversations,
                     onChatUI = { conversationID, userId ->
                         ivm.cleanConversationUnreadMessageCount(conversationID)
                         val bundleExtra = bundleOf(

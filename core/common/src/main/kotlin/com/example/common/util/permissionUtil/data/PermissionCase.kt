@@ -28,52 +28,56 @@ object PermissionCase {
         return BaseApplication.getInstance().getString(resId)
     }
 
-    private val pDetails: Map<String, PermissionDetails> = mutableListOf(
-        PermissionDetails(
-            getString(R.string.p_storage_title),
-            getString(R.string.p_storage_desc),
-            R.drawable.ic_store,
-            listOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
-        ),
-        PermissionDetails(
-            getString(R.string.p_camera_title),
-            getString(R.string.p_camera_desc),
-            R.drawable.ic_camera,
-            listOf(CAMERA)
-        ),
-        PermissionDetails(
-            getString(R.string.p_microphone_title),
-            getString(R.string.p_microphone_desc),
-            R.drawable.ic_microphone,
-            listOf(RECORD_AUDIO)
-        ),
-        PermissionDetails(
-            getString(R.string.p_location_title),
-            getString(R.string.p_location_desc),
-            R.drawable.ic_orientation,
-            listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
-        ),
-        PermissionDetails(
-            getString(R.string.p_phone_title),
-            getString(R.string.p_phone_desc),
-            R.drawable.ic_telephone,
-            listOf(READ_PHONE_STATE)
-        ),
-        PermissionDetails(
-            getString(R.string.p_calendar_title),
-            getString(R.string.p_calendar_desc),
-            R.drawable.ic_calendar,
-            listOf(READ_CALENDAR)
-        ),
-        PermissionDetails(
-            getString(R.string.p_sensors_title),
-            getString(R.string.p_sensors_desc),
-            R.drawable.ic_sensor,
-            listOf(BODY_SENSORS)
+    private val pDetails: Map<String, PermissionDetails> = createPermissionDetails()
+
+    private fun createPermissionDetails(): Map<String, PermissionDetails> {
+        val permissionsList = mutableListOf(
+            PermissionDetails(
+                getString(R.string.p_storage_title),
+                getString(R.string.p_storage_desc),
+                R.drawable.ic_store,
+                listOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+            ),
+            PermissionDetails(
+                getString(R.string.p_camera_title),
+                getString(R.string.p_camera_desc),
+                R.drawable.ic_camera,
+                listOf(CAMERA)
+            ),
+            PermissionDetails(
+                getString(R.string.p_microphone_title),
+                getString(R.string.p_microphone_desc),
+                R.drawable.ic_microphone,
+                listOf(RECORD_AUDIO)
+            ),
+            PermissionDetails(
+                getString(R.string.p_location_title),
+                getString(R.string.p_location_desc),
+                R.drawable.ic_orientation,
+                listOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
+            ),
+            PermissionDetails(
+                getString(R.string.p_phone_title),
+                getString(R.string.p_phone_desc),
+                R.drawable.ic_telephone,
+                listOf(READ_PHONE_STATE)
+            ),
+            PermissionDetails(
+                getString(R.string.p_calendar_title),
+                getString(R.string.p_calendar_desc),
+                R.drawable.ic_calendar,
+                listOf(READ_CALENDAR)
+            ),
+            PermissionDetails(
+                getString(R.string.p_sensors_title),
+                getString(R.string.p_sensors_desc),
+                R.drawable.ic_sensor,
+                listOf(BODY_SENSORS)
+            )
         )
-    ).apply {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            add(
+            permissionsList.add(
                 PermissionDetails(
                     getString(R.string.p_storage_title),
                     getString(R.string.p_storage_desc),
@@ -82,8 +86,9 @@ object PermissionCase {
                 )
             )
         }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            add(
+            permissionsList.add(
                 PermissionDetails(
                     getString(R.string.p_photoalbum_title),
                     getString(R.string.p_photoalbum_desc),
@@ -91,7 +96,7 @@ object PermissionCase {
                     listOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO)
                 )
             )
-            add(
+            permissionsList.add(
                 PermissionDetails(
                     getString(R.string.p_sensors_title),
                     getString(R.string.p_sensors_desc),
@@ -99,7 +104,7 @@ object PermissionCase {
                     listOf(PERMISSION_BODY_SENSORS_BACKGROUND)
                 )
             )
-            add(
+            permissionsList.add(
                 PermissionDetails(
                     getString(R.string.p_notifications_title),
                     getString(R.string.p_notifications_desc),
@@ -108,11 +113,17 @@ object PermissionCase {
                 )
             )
         }
-    }.flatMap { detail ->
-        detail.permissions.map { p ->
-            p to detail
+
+        // 将列表中的每个权限映射到相应的 PermissionDetails，并放入 Map
+        val permissionDetailsMap = mutableMapOf<String, PermissionDetails>()
+        permissionsList.forEach { detail ->
+            detail.permissions.firstOrNull()?.let { permission ->
+                permissionDetailsMap[permission] = detail
+            }
         }
-    }.toMap()
+
+        return permissionDetailsMap
+    }
 
     @JvmStatic
     fun showPreviewDialog(context: Context, details: PermissionDetails, onConfirm: () -> Unit) {

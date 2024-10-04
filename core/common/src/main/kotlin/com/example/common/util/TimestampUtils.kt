@@ -4,28 +4,32 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
+import java.time.format.TextStyle
+import java.util.Locale
 
 object TimestampUtils {
 
     private val hourMinuteFormat = DateTimeFormatter.ofPattern("H:mm")
     private val monthDayFormat = DateTimeFormatter.ofPattern("M月d日")
     private val yearMonthDayFormat = DateTimeFormatter.ofPattern("yyyy年M月d日")
-    private val dayOfWeekArray = arrayOf("日", "一", "二", "三", "四", "五", "六")
 
     fun formatTimestamp(timestamp: Long): String {
         val now = LocalDateTime.now()
+        val nowDate = now.toLocalDate()
+
         // 将秒级时间戳转换为 Instant 对象
-        // 然后通过 atZone(ZoneId.systemDefault()) 转换为当前时区的 LocalDateTime
-        val targetDateTime = Instant.ofEpochSecond(timestamp).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val targetDateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
         val targetDate = targetDateTime.toLocalDate()
 
-        val daysDifference = ChronoUnit.DAYS.between(targetDate, now.toLocalDate())
+        val daysDifference = nowDate.toEpochDay() - targetDate.toEpochDay()
 
         return when {
             daysDifference == 0L -> targetDateTime.format(hourMinuteFormat)
             daysDifference == 1L -> "昨天"
-            daysDifference in 2..6 -> "周" + dayOfWeekArray[targetDate.dayOfWeek.value % 7]
+            daysDifference in 2..6 -> {
+                val dayOfWeek = targetDate.dayOfWeek.getDisplayName(TextStyle.NARROW_STANDALONE, Locale("zh", "CN"))
+                "周$dayOfWeek"
+            }
             targetDate.year == now.year -> targetDate.format(monthDayFormat)
             else -> targetDate.format(yearMonthDayFormat)
         }

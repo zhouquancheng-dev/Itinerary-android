@@ -58,7 +58,7 @@ import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.CAMERA
 import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
-import com.example.common.util.permissionUtil.ext.Constant.WRITE_EXTERNAL_STORAGE
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_VIDEO
 import com.example.common.util.startAcWithBundle
 import com.example.profile.R
 import com.example.profile.activity.CropImageActivity
@@ -282,7 +282,6 @@ private fun selectPicture(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         permissions.add(READ_MEDIA_IMAGES)
     } else {
-        permissions.add(WRITE_EXTERNAL_STORAGE)
         permissions.add(READ_EXTERNAL_STORAGE)
     }
     AllowPermissionUseCase.requestMultiPermission(context as FragmentActivity, permissions) {

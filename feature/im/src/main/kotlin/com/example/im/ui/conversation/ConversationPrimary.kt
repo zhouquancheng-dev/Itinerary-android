@@ -65,6 +65,8 @@ fun ConversationPrimary(
         }
     }
 
+    if (conversation.lastMessage == null) return
+
     val formatTimestamp = remember(conversation.lastMessage.timestamp) {
         formatTimestamp(conversation.lastMessage.timestamp)
     }

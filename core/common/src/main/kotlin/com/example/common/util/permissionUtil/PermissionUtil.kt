@@ -18,13 +18,13 @@ import com.example.common.R
 import com.example.common.config.AppConfig
 import com.example.common.util.permissionUtil.ext.Constant.MANAGE_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
-import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_AUDIO
 import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
 import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_VIDEO
 import com.example.common.util.permissionUtil.ext.Constant.WRITE_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.data.PermissionCase
 import com.example.common.util.permissionUtil.data.TimeDataSource
 import com.example.common.util.permissionUtil.dialog.ManageExternalPreviewDialog
+import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_AUDIO
 import com.example.common.util.permissionUtil.ext.requestPermission
 import com.example.common.util.permissionUtil.manage.PermissionPageManagement
 import com.hjq.toast.Toaster
@@ -165,7 +165,7 @@ object AllowPermissionUseCase {
         onPermissionGranted: () -> Unit
     ) {
         val p: String
-        val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             p = READ_MEDIA_IMAGES
             listOf(
                 READ_MEDIA_IMAGES,
@@ -173,10 +173,10 @@ object AllowPermissionUseCase {
                 READ_MEDIA_AUDIO
             )
         } else {
-            p = WRITE_EXTERNAL_STORAGE
-            listOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+            p = READ_EXTERNAL_STORAGE
+            listOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
         }
-        if (arePermissionsGranted(fragment.requireContext(), permissionsList)) {
+        if (arePermissionsGranted(fragment.requireContext(), permissions)) {
             onPermissionGranted.invoke()
             return
         }
@@ -185,7 +185,7 @@ object AllowPermissionUseCase {
                 PermissionCase.showPreviewDialog(fragment.requireContext(), p) {
                     if (it) {
                         PermissionX.init(fragment)
-                            .permissions(permissionsList)
+                            .permissions(permissions)
                             .request { allGranted, _, _ ->
                                 if (allGranted) {
                                     onPermissionGranted.invoke()
@@ -210,7 +210,7 @@ object AllowPermissionUseCase {
         onPermissionGranted: () -> Unit
     ) {
         val p: String
-        val permissionsList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             p = READ_MEDIA_IMAGES
             listOf(
                 READ_MEDIA_IMAGES,
@@ -218,10 +218,10 @@ object AllowPermissionUseCase {
                 READ_MEDIA_AUDIO
             )
         } else {
-            p = WRITE_EXTERNAL_STORAGE
-            listOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE)
+            p = READ_EXTERNAL_STORAGE
+            listOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
         }
-        if (arePermissionsGranted(activity, permissionsList)) {
+        if (arePermissionsGranted(activity, permissions)) {
             onPermissionGranted.invoke()
             return
         }
@@ -230,7 +230,7 @@ object AllowPermissionUseCase {
                 PermissionCase.showPreviewDialog(activity, p) {
                     if (it) {
                         PermissionX.init(activity)
-                            .permissions(permissionsList)
+                            .permissions(permissions)
                             .request { allGranted, _, _ ->
                                 if (allGranted) {
                                     onPermissionGranted.invoke()

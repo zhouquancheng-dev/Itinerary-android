@@ -2,6 +2,7 @@ package com.example.home.ui
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,7 +33,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.ACCESS_FINE_LOCATION
+import com.example.common.util.startAcWithBundle
 import com.example.home.R
+import com.example.home.activity.WeatherVebViewActivity
 import com.example.home.utils.getSky
 import com.example.home.vm.HomeViewModel
 import com.example.ui.components.noRippleClickable
@@ -116,21 +119,27 @@ fun HomeScreen(hvm: HomeViewModel) {
                     }
                 }
 
-                realtimeWeather?.let {
+                realtimeWeather?.let { realtime ->
                     Row(
                         modifier = Modifier
                             .padding(end = 16.dp)
-                            .align(Alignment.Bottom),
+                            .align(Alignment.Bottom)
+                            .noRippleClickable {
+                                val extra = Bundle().apply {
+                                    putString("url", realtime.fxLink)
+                                }
+                                startAcWithBundle<WeatherVebViewActivity>(context, extra)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start)
                     ) {
                         Image(
-                            painter = painterResource(getSky(it.icon).iconFill),
+                            painter = painterResource(getSky(realtime.now?.icon ?: "999").iconFill),
                             contentDescription = "weatherIcon",
                             modifier = Modifier.size(55.dp),
                             colorFilter = ColorFilter.tint(ColorFFFE8E4D)
                         )
                         Text(
-                            text = "${it.temp}°",
+                            text = "${realtime.now?.temp}°",
                             modifier = Modifier.align(Alignment.CenterVertically),
                             color = ColorFFFE8E4D,
                             fontSize = 18.sp,
