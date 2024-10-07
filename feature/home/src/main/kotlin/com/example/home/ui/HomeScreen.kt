@@ -35,7 +35,7 @@ import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.ACCESS_FINE_LOCATION
 import com.example.common.util.startAcWithBundle
 import com.example.home.R
-import com.example.home.activity.WeatherVebViewActivity
+import com.example.home.activity.QWeatherActivity
 import com.example.home.utils.getSky
 import com.example.home.vm.HomeViewModel
 import com.example.ui.components.noRippleClickable
@@ -126,9 +126,9 @@ fun HomeScreen(hvm: HomeViewModel) {
                             .align(Alignment.Bottom)
                             .noRippleClickable {
                                 val extra = Bundle().apply {
-                                    putString("url", realtime.fxLink)
+                                    putString("q_weather_url", realtime.fxLink)
                                 }
-                                startAcWithBundle<WeatherVebViewActivity>(context, extra)
+                                startAcWithBundle<QWeatherActivity>(context, extra)
                             },
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start)
                     ) {

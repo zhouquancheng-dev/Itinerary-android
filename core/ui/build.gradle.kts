@@ -129,4 +129,6 @@ dependencies {
     api(libs.glide.compose)
 
     api(libs.compose.placeholder.material3)
+
+    implementation(libs.composetheme)
 }

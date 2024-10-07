@@ -3,7 +3,7 @@
 
     <application>
         <activity
-            android:name=".activity.WeatherVebViewActivity"
+            android:name=".activity.QWeatherActivity"
             android:exported="false" />
     </application>
 

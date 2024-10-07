@@ -2,7 +2,9 @@ package com.example.ui.webview
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
+import android.view.View.LAYER_TYPE_HARDWARE
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -79,11 +81,17 @@ private fun setupWebViewSettings(webView: WebView) {
         loadsImagesAutomatically = true  // 自动加载图片
         blockNetworkImage = false  // 不阻塞图片加载
         javaScriptCanOpenWindowsAutomatically = true  // 允许 JS 打开窗口
+        allowFileAccess = false  // 禁止访问文件
+        allowContentAccess = false  // 禁止访问内容
     }
+    // 设置 WebChromeClient 以处理 JavaScript 对话框、进度条等功能
+    webView.webChromeClient = WebChromeClient()
+
+    webView.setLayerType(LAYER_TYPE_HARDWARE, null)
 }
 
 /**
- * 创建 WebViewClient 并处理页面加载、错误处理等回调
+ * 创建 WebViewClient
  */
 private fun createWebViewClient(
     onPageStarted: () -> Unit,
