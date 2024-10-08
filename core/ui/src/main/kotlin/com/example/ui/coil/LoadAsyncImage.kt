@@ -6,7 +6,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import coil3.annotation.ExperimentalCoilApi
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.compose.setSingletonImageLoaderFactory
@@ -18,7 +17,6 @@ import coil3.request.placeholder
 import coil3.size.Precision
 import com.example.ui.R
 
-@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun LoadAsyncImage(
     model: Any?,
