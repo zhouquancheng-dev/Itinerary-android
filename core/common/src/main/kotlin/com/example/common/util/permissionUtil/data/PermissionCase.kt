@@ -25,7 +25,7 @@ import com.example.common.util.permissionUtil.ext.Constant.WRITE_EXTERNAL_STORAG
 object PermissionCase {
 
     private fun getString(@StringRes resId: Int): String {
-        return BaseApplication.getInstance().getString(resId)
+        return BaseApplication.getApplication().getString(resId)
     }
 
     private val pDetails: Map<String, PermissionDetails> = createPermissionDetails()

@@ -13,7 +13,7 @@ import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.di.network.NetworkMonitor
 import com.example.common.util.RSADecrypt.decrypt
-import com.example.common.vm.BaseViewModel
+import com.example.common.base.vm.BaseViewModel
 import com.example.login.R
 import com.example.login.client.JiGuangClient
 import com.example.login.client.JiGuangClient.Companion.AUTH_CODE_SUCCESS

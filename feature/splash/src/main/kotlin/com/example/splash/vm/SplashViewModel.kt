@@ -38,7 +38,7 @@ class SplashViewModel @Inject constructor(
     networkMonitor: NetworkMonitor
 ) : ViewModel() {
 
-    private val bApplication by lazy { BaseApplication.getInstance() }
+    private val bApplication by lazy { BaseApplication.getApplication() }
 
     private val _eventChannel = Channel<Event>()
     val eventFlow = _eventChannel.receiveAsFlow()

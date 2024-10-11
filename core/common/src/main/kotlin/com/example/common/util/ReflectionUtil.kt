@@ -8,6 +8,8 @@ import java.lang.reflect.ParameterizedType
 
 object ReflectionUtil {
 
+    private val viewBindingCache = mutableMapOf<Class<*>, Method>()
+
     /**
      * 使用反射获取应用程序的 ApplicationContext
      *
@@ -55,8 +57,10 @@ object ReflectionUtil {
             // 获取 ViewBinding 类
             val clazzVB = type.actualTypeArguments[0] as Class<*>
 
-            // 获取 inflate 方法
-            val inflateMethod = clazzVB.getMethod("inflate", LayoutInflater::class.java)
+            // 使用缓存，避免重复反射
+            val inflateMethod = viewBindingCache.getOrPut(clazzVB) {
+                clazzVB.getMethod("inflate", LayoutInflater::class.java)
+            }
 
             // 调用 inflate 方法创建 ViewBinding 实例
             inflateMethod.invoke(null, layoutInflater) as VB
@@ -80,4 +84,5 @@ object ReflectionUtil {
             clazz.superclass.genericSuperclass as ParameterizedType
         }
     }
+
 }

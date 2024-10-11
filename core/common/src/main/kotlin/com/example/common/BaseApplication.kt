@@ -57,15 +57,17 @@ abstract class BaseApplication : Application() {
         /**
          * 全局context
          */
-        fun getInstance(): BaseApplication {
+        @JvmStatic
+        fun getApplication(): BaseApplication {
             return instance ?: throw IllegalStateException("Application is not created yet!")
         }
 
         /**
          * 获取当前是否为夜间模式
          */
+        @JvmStatic
         fun isModeNightYes(): Boolean {
-            val uiModeManager = getInstance().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+            val uiModeManager = getApplication().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
             return uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
         }
     }
@@ -107,16 +109,16 @@ abstract class BaseApplication : Application() {
      * 初始化数据
      */
     open fun initData() {
-        DataStoreUtils.init(getInstance())
+        DataStoreUtils.init(getApplication())
 
         LogUtils.getConfig().setLogSwitch(isDebug()).setLog2FileSwitch(false)
 
-        Toaster.init(getInstance())
+        Toaster.init(getApplication())
         Toaster.setView(if (isModeNightYes()) R.layout.toast_global_view_white else R.layout.toast_global_view_black)
 
-        MMKV.initialize(getInstance())
+        MMKV.initialize(getApplication())
 
-        LRouter.init(getInstance())
+        LRouter.init(getApplication())
         LRouter.setLogSwitch(isDebug())
     }
 
@@ -139,7 +141,7 @@ abstract class BaseApplication : Application() {
      * bug 上报
      */
     private fun initBugLy() {
-        CrashReport.initCrashReport(getInstance(), "1e43689b76", false)
+        CrashReport.initCrashReport(getApplication(), "1e43689b76", false)
     }
 
     /**
@@ -147,7 +149,7 @@ abstract class BaseApplication : Application() {
      */
     private fun initJG() {
         JVerificationInterface.setDebugMode(isDebug())
-        JVerificationInterface.init(getInstance()) { code, result ->
+        JVerificationInterface.init(getApplication()) { code, result ->
             Log.i(JG_TAG, if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result")
         }
     }
@@ -195,6 +197,6 @@ abstract class BaseApplication : Application() {
         // V2TIMSDKListener 事件监听器
         V2TIMManager.getInstance().addIMSDKListener(V2TIMSDKListener())
         // 初始化SDK
-        V2TIMManager.getInstance().initSDK(getInstance(), AppConfig.TENCENT_IM_APP_ID, config)
+        V2TIMManager.getInstance().initSDK(getApplication(), AppConfig.TENCENT_IM_APP_ID, config)
     }
 }

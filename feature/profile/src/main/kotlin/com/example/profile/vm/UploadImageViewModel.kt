@@ -11,7 +11,7 @@ import com.alibaba.sdk.android.oss.common.utils.DateUtil
 import com.example.common.data.Constants.TIM_TAG
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
-import com.example.common.vm.BaseViewModel
+import com.example.common.base.vm.BaseViewModel
 import com.example.model.SUCCESS
 import com.example.network.ItineraryNetwork
 import com.example.profile.client.AliYunOssClient

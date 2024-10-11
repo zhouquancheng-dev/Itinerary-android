@@ -97,7 +97,7 @@ dependencies {
     api(libs.androidx.lifecycle.runtime.ktx)
     api(libs.androidx.lifecycle.runtime.compose)
     api(libs.androidx.lifecycle.viewmodel.ktx)
-    api(libs.androidx.lifecycle.viewModel.compose)
+    api(libs.androidx.lifecycle.viewmodel.compose)
 
     // hilt不能引入模块使用，在需要使用hilt的模块单独引入依赖
     implementation(libs.dagger.hilt.android)

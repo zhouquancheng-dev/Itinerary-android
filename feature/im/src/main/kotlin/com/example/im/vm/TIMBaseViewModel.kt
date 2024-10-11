@@ -12,7 +12,7 @@ import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.flowbus.FlowBus
 import com.example.common.util.DataStoreUtils.getStringSync
-import com.example.common.vm.BaseViewModel
+import com.example.common.base.vm.BaseViewModel
 import com.example.common.listener.im.V2TIMListener
 import com.example.common.listener.im.ListenerManager
 import com.example.common.listener.im.conversation.TotalUnreadMessageCountChangedEvent

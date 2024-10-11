@@ -1,4 +1,4 @@
-package com.example.common.vm
+package com.example.common.base.vm
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
