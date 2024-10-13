@@ -55,7 +55,7 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
         if (Looper.myLooper() == Looper.getMainLooper()) {
             showToastInternal(message, duration)
         } else {
-            activity?.runOnUiThread {
+            requireActivity().runOnUiThread {
                 showToastInternal(message, duration)
             }
         }
