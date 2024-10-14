@@ -1,5 +1,6 @@
 package com.example.common.base.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
@@ -14,7 +15,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
-import com.example.common.BaseApplication
 import com.example.common.util.ReflectionUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import java.lang.reflect.ParameterizedType
 open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     private var _binding: VB? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     private lateinit var viewModel: VM
 
@@ -85,12 +85,12 @@ open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     private fun showToastInternal(message: String, duration: Int) {
         currentToast?.cancel()
-        currentToast = Toast.makeText(BaseApplication.getApplication(), message, duration)
+        currentToast = Toast.makeText(requireActivity(), message, duration)
         currentToast?.show()
     }
 
-    fun navigateTo(cls: Class<*>, bundle: Bundle? = null, flags: Int? = null) {
-        val intent = Intent(requireActivity(), cls).apply {
+    inline fun <reified T : Activity> navigateTo(bundle: Bundle? = null, flags: Int? = null) {
+        val intent = Intent(requireActivity(), T::class.java).apply {
             bundle?.let { putExtras(it) }
             flags?.let { this.flags = it }
         }

@@ -1,5 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
+activity-ktx = "1.9.2"
 agp = "8.8.0-alpha05"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha06"
@@ -113,6 +114,8 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 # https://mvnrepository.com/artifact/androidx.databinding/databinding-runtime
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding-runtime" }
 
+# https://maven.google.com/web/index.html?q=androidx.activity#androidx.activity:activity
+activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 # https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout-compose

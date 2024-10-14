@@ -1,5 +1,6 @@
 package com.example.common.base.fragment
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
@@ -15,7 +16,7 @@ import com.example.common.util.ReflectionUtil
 open class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     private var _binding: VB? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     private var currentToast: Toast? = null
 
@@ -67,8 +68,8 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
         currentToast?.show()
     }
 
-    fun navigateTo(cls: Class<*>, bundle: Bundle? = null, flags: Int? = null) {
-        val intent = Intent(requireActivity(), cls).apply {
+    inline fun <reified T : Activity> navigateTo(bundle: Bundle? = null, flags: Int? = null) {
+        val intent = Intent(requireActivity(), T::class.java).apply {
             bundle?.let { putExtras(it) }
             flags?.let { this.flags = it }
         }

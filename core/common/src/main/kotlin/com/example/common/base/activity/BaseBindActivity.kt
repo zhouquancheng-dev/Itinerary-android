@@ -1,18 +1,18 @@
 package com.example.common.base.activity
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
-import com.example.common.BaseApplication
 import com.example.common.util.ReflectionUtil
 
 open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private var _binding: VB? = null
-    private val binding get() = _binding!!
+    protected val binding get() = _binding!!
 
     private var currentToast: Toast? = null
 
@@ -47,12 +47,12 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private fun showToastInternal(message: String, duration: Int) {
         currentToast?.cancel()
-        currentToast = Toast.makeText(BaseApplication.getApplication(), message, duration)
+        currentToast = Toast.makeText(this, message, duration)
         currentToast?.show()
     }
 
-    fun navigateTo(cls: Class<*>, bundle: Bundle? = null, flags: Int? = null) {
-        val intent = Intent(this, cls).apply {
+    inline fun <reified T : Activity> navigateTo(bundle: Bundle? = null, flags: Int? = null) {
+        val intent = Intent(this, T::class.java).apply {
             bundle?.let { putExtras(it) }
             flags?.let { this.flags = it }
         }

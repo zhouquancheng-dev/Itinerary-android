@@ -62,6 +62,8 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
+    implementation(libs.activity.ktx)
+
     api(libs.androidx.databinding.runtime)
 
     api(libs.androidx.constraintlayout.compose)
