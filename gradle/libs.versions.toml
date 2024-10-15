@@ -1,7 +1,7 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
 activity-ktx = "1.9.2"
-agp = "8.8.0-alpha05"
+agp = "8.8.0-alpha06"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha06"
 androidx-test-ext-junit = "1.2.1"
