@@ -78,6 +78,20 @@ fun resolveColorResource(dayColorRes: Int, nightColorRes: Int): Color {
     }
 }
 
+private const val MIN_CLICK_DELAY_TIME = 300
+private var lastClickTime: Long = 0
+
+val isFastClick
+    get(): Boolean {
+        var flag = false
+        val curClickTime = System.currentTimeMillis()
+        if (curClickTime - lastClickTime <= MIN_CLICK_DELAY_TIME) {
+            flag = true
+        }
+        lastClickTime = curClickTime
+        return flag
+    }
+
 inline fun Modifier.click(
     enabled: Boolean = true,
     onClickLabel: String? = null,
@@ -86,7 +100,6 @@ inline fun Modifier.click(
     bounded: Boolean = true,
     radius: Dp = Dp.Unspecified,
     rippleColor: Color = Color.Unspecified,
-    debounce: Boolean = false,
     crossinline onClick: () -> Unit
 ) = composed {
     clickable(
@@ -96,7 +109,7 @@ inline fun Modifier.click(
         role = role,
         onClickLabel = onClickLabel
     ) {
-        if (!debounce || !isFastClick()) {
+        if (!isFastClick) {
             onClick()
         }
     }
@@ -112,7 +125,9 @@ inline fun Modifier.noRippleClickable(crossinline onClick: () -> Unit): Modifier
         interactionSource = remember { MutableInteractionSource() },
         indication = null
     ) {
-        onClick()
+        if (!isFastClick) {
+            onClick()
+        }
     }
 }
 
