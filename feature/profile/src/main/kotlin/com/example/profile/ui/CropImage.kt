@@ -46,7 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.common.util.ClickUtils.isFastClick
+import com.example.common.util.ext.ClickExt.isFastClick
 import com.example.profile.R
 import com.example.profile.state.DialogType
 import com.example.profile.vm.UploadImageViewModel

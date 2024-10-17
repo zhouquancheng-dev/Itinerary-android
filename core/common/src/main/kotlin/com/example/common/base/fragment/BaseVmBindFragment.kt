@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -97,13 +99,26 @@ open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
         startActivity(intent)
     }
 
+    inline fun <reified T : Activity> startActivityForResult(
+        extras: Bundle? = null,
+        crossinline onResult: (ActivityResult) -> Unit
+    ) {
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            onResult(result)
+        }
+        val intent = Intent(requireContext(), T::class.java).apply {
+            extras?.let { putExtras(it) }
+        }
+        launcher.launch(intent)
+    }
+
     // 扩展函数，方便收集 Flow 数据
     protected fun <T> collectFlow(
         flow: Flow<T>,
         minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
         collector: suspend (T) -> Unit
     ) {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(minActiveState) {
                 flow.collect(collector)
             }

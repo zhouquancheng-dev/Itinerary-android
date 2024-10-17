@@ -1,6 +1,6 @@
-package com.example.common.util
+package com.example.common.util.ext
 
-object ClickUtils {
+object ClickExt {
     private const val MIN_DELAY: Long = 300
     private var lastClickTime: Long = 0
 

@@ -1,4 +1,4 @@
-package com.example.common.util
+package com.example.common.util.sp
 
 import android.content.Context
 import androidx.datastore.core.DataStore

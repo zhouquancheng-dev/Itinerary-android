@@ -1,9 +1,9 @@
 package com.example.network.provider
 
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.common.util.DataStoreUtils.getStringFlow
-import com.example.common.util.DataStoreUtils.putString
-import com.example.common.util.DataStoreUtils.remove
+import com.example.common.util.sp.DataStoreUtils.getStringFlow
+import com.example.common.util.sp.DataStoreUtils.putString
+import com.example.common.util.sp.DataStoreUtils.remove
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext

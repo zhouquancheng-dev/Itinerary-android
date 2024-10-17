@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.common.util.TimestampUtils.formatTimestamp
+import com.example.common.util.other.TimestampUtils.formatTimestamp
 import com.example.im.R
 import com.example.im.ui.ColorFFFA5151
 import com.example.im.utils.getLastMessageContent

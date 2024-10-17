@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import com.example.common.R
-import com.example.common.util.getColorCompat
+import com.example.common.util.ext.getColorCompat
 import com.example.common.util.permissionUtil.data.PermissionDetails
 
 class PermissionPreviewDialog(

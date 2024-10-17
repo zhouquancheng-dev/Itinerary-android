@@ -53,13 +53,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.common.util.GlideEngine
+import com.example.common.util.glide.GlideEngine
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.CAMERA
 import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
-import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_VIDEO
-import com.example.common.util.startAcWithBundle
+import com.example.common.util.ext.startAcWithBundle
 import com.example.profile.R
 import com.example.profile.activity.CropImageActivity
 import com.example.profile.vm.ProfileViewModel

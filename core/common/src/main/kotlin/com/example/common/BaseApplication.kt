@@ -19,8 +19,8 @@ import com.example.common.config.AppConfig
 import com.example.common.data.Constants.JG_TAG
 import com.example.common.data.DatastoreKey.IS_PRIVACY_AGREE
 import com.example.common.listener.im.sdk.V2TIMSDKListener
-import com.example.common.util.DataStoreUtils
-import com.example.common.util.DataStoreUtils.getBooleanSync
+import com.example.common.util.sp.DataStoreUtils
+import com.example.common.util.sp.DataStoreUtils.getBooleanSync
 import com.hjq.toast.Toaster
 import com.tencent.bugly.crashreport.CrashReport
 import com.tencent.imsdk.v2.V2TIMLogListener

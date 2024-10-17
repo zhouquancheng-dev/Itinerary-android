@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import com.example.common.util.Lunar
+import com.example.common.util.other.Lunar
 import java.util.*
 
 /**

@@ -1,4 +1,4 @@
-package com.example.common.util
+package com.example.common.util.glide
 
 import android.content.Context
 import android.widget.ImageView
