@@ -8,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -74,6 +76,19 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
             flags?.let { this.flags = it }
         }
         startActivity(intent)
+    }
+
+    inline fun <reified T : Activity> startActivityForResult(
+        extras: Bundle? = null,
+        crossinline onResult: (ActivityResult) -> Unit
+    ) {
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            onResult(result)
+        }
+        val intent = Intent(requireContext(), T::class.java).apply {
+            extras?.let { putExtras(it) }
+        }
+        launcher.launch(intent)
     }
 
     fun <T : View?> findViewById(@IdRes id: Int): T {

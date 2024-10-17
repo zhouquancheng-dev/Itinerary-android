@@ -34,8 +34,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.common.util.startAcWithBundle
-import com.example.common.util.startActivity
+import com.example.common.util.ext.startAcWithBundle
+import com.example.common.util.ext.startActivity
 import com.example.im.activity.ContactsActivity
 import com.example.im.components.FloatingButton
 import com.example.im.ui.Color4285F4

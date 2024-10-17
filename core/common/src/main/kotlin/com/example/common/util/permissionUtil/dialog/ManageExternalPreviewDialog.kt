@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.View
 import com.example.common.R
 import com.example.common.databinding.DialogPermissionBinding
-import com.example.common.util.getColorCompat
+import com.example.common.util.ext.getColorCompat
 import com.example.common.util.permissionUtil.data.PermissionDetails
 import com.permissionx.guolindev.dialog.RationaleDialog
 

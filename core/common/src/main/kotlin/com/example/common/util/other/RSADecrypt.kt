@@ -1,4 +1,4 @@
-package com.example.common.util
+package com.example.common.util.other
 
 import java.security.InvalidKeyException
 import java.security.KeyFactory

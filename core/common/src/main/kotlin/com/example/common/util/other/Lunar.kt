@@ -1,4 +1,4 @@
-package com.example.common.util
+package com.example.common.util.other
 
 import java.text.ParseException
 import java.text.SimpleDateFormat

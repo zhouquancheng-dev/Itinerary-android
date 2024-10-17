@@ -52,7 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aleyn.router.LRouter
 import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
-import com.example.common.util.ClickUtils.isFastClick
+import com.example.common.util.ext.ClickExt.isFastClick
 import com.example.ui.utils.ToasterUtil.ToastStatus.WARN
 import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.example.login.R

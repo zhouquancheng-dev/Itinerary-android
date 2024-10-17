@@ -46,10 +46,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aleyn.router.LRouter
 import com.aleyn.router.util.navigator
-import com.example.common.util.ClickUtils.isFastClick
+import com.example.common.util.ext.ClickExt.isFastClick
 import com.example.common.data.DatastoreKey.IS_FIRST_TIME_LAUNCH
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
-import com.example.common.util.DataStoreUtils.putBoolean
+import com.example.common.util.sp.DataStoreUtils.putBoolean
 import com.example.ui.components.indicator.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.theme.JetItineraryTheme

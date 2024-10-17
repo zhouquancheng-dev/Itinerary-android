@@ -1,4 +1,4 @@
-package com.example.common.util
+package com.example.common.util.sp
 
 import com.tencent.mmkv.MMKV
 

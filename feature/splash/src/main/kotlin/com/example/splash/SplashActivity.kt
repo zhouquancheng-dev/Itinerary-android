@@ -27,7 +27,7 @@ import com.aleyn.router.LRouter
 import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
-import com.example.common.util.startAcWithIntent
+import com.example.common.util.ext.startAcWithIntent
 import com.example.splash.vm.Event
 import com.example.splash.vm.SplashViewModel
 import com.example.ui.dialog.AcceptPrivacyDialog

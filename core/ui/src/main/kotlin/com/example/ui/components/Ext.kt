@@ -38,8 +38,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import com.example.common.util.ClickUtils.isFastClick
-import com.example.common.util.isDarkMode
+import com.example.common.util.ext.ClickExt.isFastClick
+import com.example.common.util.ext.isDarkMode
 import com.example.ui.theme.DarkGreenGray95
 import com.eygraber.compose.placeholder.PlaceholderHighlight
 import com.eygraber.compose.placeholder.material3.placeholder

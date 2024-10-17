@@ -9,8 +9,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.example.common.util.StatusBarColorLifecycleObserver
-import com.example.common.util.findActivity
+import com.example.common.util.ext.StatusBarColorLifecycleObserver
+import com.example.common.util.ext.findActivity
 
 @Composable
 fun StatusBarColorUpdateEffect(color: Color) {

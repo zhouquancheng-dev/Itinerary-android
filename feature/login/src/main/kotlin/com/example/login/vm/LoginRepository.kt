@@ -5,8 +5,8 @@ import com.example.common.data.DatastoreKey.TIM_USER_ID
 import com.example.common.data.DatastoreKey.TIM_USER_SIG
 import com.example.common.di.AppDispatchers.*
 import com.example.common.di.Dispatcher
-import com.example.common.util.DataStoreUtils.getStringSync
-import com.example.common.util.DataStoreUtils.putStringSync
+import com.example.common.util.sp.DataStoreUtils.getStringSync
+import com.example.common.util.sp.DataStoreUtils.putStringSync
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 import javax.inject.Inject

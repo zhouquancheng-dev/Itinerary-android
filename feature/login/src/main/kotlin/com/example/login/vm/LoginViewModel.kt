@@ -12,7 +12,7 @@ import com.example.common.data.LoginState
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.example.common.di.network.NetworkMonitor
-import com.example.common.util.RSADecrypt.decrypt
+import com.example.common.util.other.RSADecrypt.decrypt
 import com.example.common.base.vm.BaseViewModel
 import com.example.login.R
 import com.example.login.client.JiGuangClient

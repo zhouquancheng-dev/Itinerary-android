@@ -13,7 +13,7 @@ import com.example.common.navigation.Home
 import com.example.common.navigation.Message
 import com.example.common.navigation.Profile
 import com.example.common.navigation.ScenicSpot
-import com.example.common.util.startActivity
+import com.example.common.util.ext.startActivity
 import com.example.home.ui.HomeScreen
 import com.example.home.vm.HomeViewModel
 import com.example.im.ui.conversation.ConversationHomeScreen

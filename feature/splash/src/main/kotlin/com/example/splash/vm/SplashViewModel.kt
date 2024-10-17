@@ -12,9 +12,9 @@ import com.example.common.data.DatastoreKey.TIM_USER_ID
 import com.example.common.data.DatastoreKey.TIM_USER_SIG
 import com.example.common.data.LoginState
 import com.example.common.di.network.NetworkMonitor
-import com.example.common.util.DataStoreUtils.getBooleanFlow
-import com.example.common.util.DataStoreUtils.getStringSync
-import com.example.common.util.DataStoreUtils.putBoolean
+import com.example.common.util.sp.DataStoreUtils.getBooleanFlow
+import com.example.common.util.sp.DataStoreUtils.getStringSync
+import com.example.common.util.sp.DataStoreUtils.putBoolean
 import com.hjq.toast.Toaster
 import com.tencent.imsdk.BaseConstants.ERR_SVR_ACCOUNT_USERSIG_EXPIRED
 import com.tencent.imsdk.BaseConstants.ERR_USER_SIG_EXPIRED

@@ -33,7 +33,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.ACCESS_FINE_LOCATION
-import com.example.common.util.startAcWithBundle
+import com.example.common.util.ext.startAcWithBundle
 import com.example.home.R
 import com.example.home.activity.QWeatherActivity
 import com.example.home.utils.getSky
