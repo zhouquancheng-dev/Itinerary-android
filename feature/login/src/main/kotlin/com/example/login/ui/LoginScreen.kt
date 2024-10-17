@@ -203,7 +203,7 @@ fun LoginScreen(
                     modifier = Modifier
                         .size(55.dp)
                         .clip(CircleShape)
-                        .click(debounce = true) {
+                        .click {
                             loginViewModel.loginAuth(context) {
                                 LRouter.navigator(ROUTER_MAIN_ACTIVITY)
                             }
@@ -217,7 +217,7 @@ fun LoginScreen(
                         .size(55.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .click(debounce = true) {
+                        .click {
                             showCustomToaster("暂未接入", WARN)
                         }
                 )
