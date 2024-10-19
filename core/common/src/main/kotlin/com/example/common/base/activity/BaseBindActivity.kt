@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
@@ -62,12 +63,9 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
     }
 
     inline fun <reified T : Activity> startActivityForResult(
-        extras: Bundle? = null,
-        crossinline onResult: (ActivityResult) -> Unit
+        launcher: ActivityResultLauncher<Intent>,
+        extras: Bundle? = null
     ) {
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            onResult(result)
-        }
         val intent = Intent(this, T::class.java).apply {
             extras?.let { putExtras(it) }
         }

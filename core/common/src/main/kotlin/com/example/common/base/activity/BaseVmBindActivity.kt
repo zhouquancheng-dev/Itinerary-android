@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -112,6 +113,16 @@ open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActiv
                 flow.collect(collector)
             }
         }
+    }
+
+    inline fun <reified T : Activity> startActivityForResult(
+        launcher: ActivityResultLauncher<Intent>,
+        extras: Bundle? = null
+    ) {
+        val intent = Intent(this, T::class.java).apply {
+            extras?.let { putExtras(it) }
+        }
+        launcher.launch(intent)
     }
 
 }

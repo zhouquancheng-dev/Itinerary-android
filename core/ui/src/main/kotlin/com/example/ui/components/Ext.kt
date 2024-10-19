@@ -155,34 +155,32 @@ fun Modifier.bounceScrollEffect(
     maxOffsetY: Float = 500f,
     coroutineScope: CoroutineScope,
     animatedOffsetY: Animatable<Float, AnimationVector1D>
-): Modifier = composed {
-    nestedScroll(object : NestedScrollConnection {
-        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-            val delta = available.y
-            val newOffsetY = animatedOffsetY.value + delta
+): Modifier = nestedScroll(object : NestedScrollConnection {
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        val delta = available.y
+        val newOffsetY = animatedOffsetY.value + delta
 
-            // 仅在偏移量在 [-maxOffsetY, maxOffsetY] 范围内时更新
-            return if (newOffsetY in -maxOffsetY..maxOffsetY) {
-                coroutineScope.launch {
-                    animatedOffsetY.snapTo(newOffsetY)
-                }
-                Offset(0f, delta)
-            } else {
-                Offset.Zero
-            }
-        }
-
-        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+        // 仅在偏移量在 [-maxOffsetY, maxOffsetY] 范围内时更新
+        return if (newOffsetY in -maxOffsetY..maxOffsetY) {
             coroutineScope.launch {
-                animatedOffsetY.animateTo(
-                    targetValue = 0f,
-                    animationSpec = spring()
-                )
+                animatedOffsetY.snapTo(newOffsetY)
             }
-            return super.onPostFling(consumed, available)
+            Offset(0f, delta)
+        } else {
+            Offset.Zero
         }
-    })
-}
+    }
+
+    override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+        coroutineScope.launch {
+            animatedOffsetY.animateTo(
+                targetValue = 0f,
+                animationSpec = spring()
+            )
+        }
+        return super.onPostFling(consumed, available)
+    }
+})
 
 @Composable
 fun BounceScrollableContent(

@@ -21,8 +21,6 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-
-        resourceConfigurations.addAll(listOf("en", "zh-rCN"))
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

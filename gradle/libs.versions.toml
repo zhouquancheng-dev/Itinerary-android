@@ -1,9 +1,8 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-activity-ktx = "1.9.3"
-agp = "8.8.0-alpha06"
+agp = "8.8.0-alpha07"
 appcompat = "1.7.0"
-android-material = "1.13.0-alpha06"
+android-material = "1.13.0-alpha07"
 androidx-test-ext-junit = "1.2.1"
 activity-compose = "1.9.3"
 androidx-metrics = "1.0.0-beta01"
@@ -59,7 +58,7 @@ lrouter = "1.0.6"
 mmkv = "1.3.9"
 permissionx = "1.8.1"
 pictureselector = "v3.11.2"
-reorderable = "2.4.0-beta01"
+reorderable = "2.4.0"
 threetenabp = "1.4.7"
 toaster = "12.6"
 utilcodex = "1.31.1"
@@ -114,8 +113,6 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 # https://mvnrepository.com/artifact/androidx.databinding/databinding-runtime
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding-runtime" }
 
-# https://maven.google.com/web/index.html?q=androidx.activity#androidx.activity:activity
-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activity-ktx" }
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 # https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout-compose
