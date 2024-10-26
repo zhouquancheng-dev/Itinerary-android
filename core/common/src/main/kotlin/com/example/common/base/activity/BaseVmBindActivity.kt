@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,6 +33,7 @@ open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActiv
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        enableEdgeToEdge()
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]

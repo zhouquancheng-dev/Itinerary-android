@@ -8,12 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.example.common.util.ReflectionUtil
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 open class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
@@ -34,6 +40,7 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().enableEdgeToEdge()
         initViews()
         initListeners()
         initData()
@@ -93,5 +100,17 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     fun <T : View?> findViewById(@IdRes id: Int): T {
         return requireView().findViewById(id)
+    }
+
+    protected fun <T> collectFlow(
+        flow: Flow<T>,
+        minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+        collector: suspend (T) -> Unit
+    ) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(minActiveState) {
+                flow.collect(collector)
+            }
+        }
     }
 }

@@ -5,12 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
-import androidx.activity.result.ActivityResult
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.example.common.util.ReflectionUtil
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         // 调用 inflate 方法，创建 ViewBinding
         _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        enableEdgeToEdge()
         setContentView(binding.root)
         initViews()
         initListeners()
@@ -70,6 +75,19 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
             extras?.let { putExtras(it) }
         }
         launcher.launch(intent)
+    }
+
+    // 扩展函数，方便收集 Flow 数据
+    protected fun <T> collectFlow(
+        flow: Flow<T>,
+        minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+        collector: suspend (T) -> Unit
+    ) {
+        lifecycleScope.launch {
+            repeatOnLifecycle(minActiveState) {
+                flow.collect(collector)
+            }
+        }
     }
 
 }
