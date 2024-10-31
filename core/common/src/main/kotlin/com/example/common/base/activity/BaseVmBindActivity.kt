@@ -21,38 +21,40 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
-open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
+abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
 
     private var _binding: VB? = null
-    protected val binding get() = _binding!!
+    protected val binding: VB
+        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
 
-    private lateinit var viewModel: VM
+    protected lateinit var viewModel: VM
 
     private var currentToast: Toast? = null
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
         enableEdgeToEdge()
         setContentView(binding.root)
-
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]
-
+        initActivityResultLauncher()
         initViews()
         initListeners()
         initData()
-        observeViewModel()
+        observeVM()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        currentToast = null
     }
 
     @Suppress("UNCHECKED_CAST")
     protected open fun getViewModelClass(): Class<VM> {
         val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[1]
         return type as Class<VM>
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
     }
 
     // 初始化视图
@@ -65,7 +67,16 @@ open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActiv
     protected open fun initListeners() {}
 
     // 观察 ViewModel 的变化
-    protected open fun observeViewModel() {}
+    protected open fun observeVM() {}
+
+    // 处理 ActivityResult 回调
+    protected open fun handleActivityResult(result: ActivityResult) {}
+
+    private fun initActivityResultLauncher() {
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            handleActivityResult(result)
+        }
+    }
 
     fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -91,20 +102,16 @@ open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActiv
         startActivity(intent)
     }
 
-    inline fun <reified T : Activity> startActivityForResult(
+    private inline fun <reified T : Activity> startActivityForResult(
         extras: Bundle? = null,
         crossinline onResult: (ActivityResult) -> Unit
     ) {
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            onResult(result)
-        }
         val intent = Intent(this, T::class.java).apply {
             extras?.let { putExtras(it) }
         }
-        launcher.launch(intent)
+        activityResultLauncher.launch(intent)
     }
 
-    // 扩展函数，方便收集 Flow 数据
     protected fun <T> collectFlow(
         flow: Flow<T>,
         minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
@@ -115,16 +122,6 @@ open class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActiv
                 flow.collect(collector)
             }
         }
-    }
-
-    inline fun <reified T : Activity> startActivityForResult(
-        launcher: ActivityResultLauncher<Intent>,
-        extras: Bundle? = null
-    ) {
-        val intent = Intent(this, T::class.java).apply {
-            extras?.let { putExtras(it) }
-        }
-        launcher.launch(intent)
     }
 
 }

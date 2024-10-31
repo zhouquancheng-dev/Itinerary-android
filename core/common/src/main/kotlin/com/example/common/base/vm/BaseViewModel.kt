@@ -3,6 +3,7 @@ package com.example.common.base.vm
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.alibaba.sdk.android.oss.common.OSSLog.logError
 import com.example.common.di.AppDispatchers.IO
 import com.example.common.di.Dispatcher
 import com.hjq.toast.Toaster
@@ -30,11 +31,8 @@ open class BaseViewModel @Inject constructor(
 
     protected fun launch(block: suspend () -> Unit) {
         viewModelScope.launch(ioDispatcher) {
-            runCatching {
-                block()
-            }.onFailure { e ->
-                Log.e(TAG, "launch onFailure: ", e)
-            }
+            runCatching { block() }
+                .onFailure { e -> logError("launch onFailure", e) }
         }
     }
 
@@ -42,27 +40,22 @@ open class BaseViewModel @Inject constructor(
         emit(block())
     }.catch { e ->
         handleError(e)
-        throw Throwable(e)
+        throw e
     }.flowOn(ioDispatcher)
 
     private fun handleError(e: Throwable) {
-        when (e) {
-            is ConnectException -> {
-                Toaster.show("Unable to connect to the server, please check your network connection.")
-            }
-            is TimeoutException -> {
-                Toaster.show("Request timed out, please try again.")
-            }
-            is UnknownHostException -> {
-                Toaster.show("Unable to resolve host, please check your network connection.")
-            }
-            is IOException -> {
-                Toaster.show("Network error, please check your connection.")
-            }
-            else -> {
-                Log.e(TAG, "Network data request exception: $e")
-            }
+        val message = when (e) {
+            is ConnectException, is UnknownHostException -> "Unable to connect to the server, please check your network connection."
+            is TimeoutException -> "Request timed out, please try again."
+            is IOException -> "Network error, please check your connection."
+            else -> "An unexpected error occurred."
         }
+        Toaster.show(message)
+        logError("Network data request exception", e)
+    }
+
+    private fun logError(message: String, throwable: Throwable) {
+        Log.e(TAG, "$message: $throwable", throwable)
     }
 
 }

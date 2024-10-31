@@ -6,7 +6,9 @@ import android.os.Bundle
 import android.os.Looper
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,12 +18,14 @@ import com.example.common.util.ReflectionUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
+abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private var _binding: VB? = null
-    protected val binding get() = _binding!!
+    protected val binding: VB
+        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
 
     private var currentToast: Toast? = null
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,19 +33,35 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
         enableEdgeToEdge()
         setContentView(binding.root)
-        initViews()
+        initActivityResultLauncher()
+        initViews(savedInstanceState)
         initListeners()
         initData()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        _binding = null
+        currentToast = null
+    }
+
     // 初始化视图
-    protected open fun initViews() {}
+    protected open fun initViews(savedInstanceState: Bundle?) {}
 
     // 初始化数据
     protected open fun initData() {}
 
     // 初始化监听器
     protected open fun initListeners() {}
+
+    // 处理 ActivityResult 回调
+    protected open fun handleActivityResult(result: ActivityResult) {}
+
+    private fun initActivityResultLauncher() {
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            handleActivityResult(result)
+        }
+    }
 
     fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -67,17 +87,16 @@ open class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         startActivity(intent)
     }
 
-    inline fun <reified T : Activity> startActivityForResult(
-        launcher: ActivityResultLauncher<Intent>,
-        extras: Bundle? = null
+    private inline fun <reified T : Activity> startActivityForResult(
+        extras: Bundle? = null,
+        crossinline onResult: (ActivityResult) -> Unit
     ) {
         val intent = Intent(this, T::class.java).apply {
             extras?.let { putExtras(it) }
         }
-        launcher.launch(intent)
+        activityResultLauncher.launch(intent)
     }
 
-    // 扩展函数，方便收集 Flow 数据
     protected fun <T> collectFlow(
         flow: Flow<T>,
         minActiveState: Lifecycle.State = Lifecycle.State.STARTED,

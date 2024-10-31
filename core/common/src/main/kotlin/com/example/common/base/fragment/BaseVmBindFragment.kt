@@ -9,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
@@ -23,10 +21,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
-open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
+abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
 
     private var _binding: VB? = null
-    protected val binding get() = _binding!!
+    protected val binding: VB
+        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
 
     private lateinit var viewModel: VM
 
@@ -45,18 +44,17 @@ open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         requireActivity().enableEdgeToEdge()
-
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]
-
         initViews()
         initListeners()
         initData()
-        observeViewModel()
+        observeVM()
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        currentToast = null
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -75,7 +73,7 @@ open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
     protected open fun initListeners() {}
 
     // 观察 ViewModel 的变化
-    protected open fun observeViewModel() {}
+    protected open fun observeVM() {}
 
     fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -101,20 +99,6 @@ open class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
         startActivity(intent)
     }
 
-    inline fun <reified T : Activity> startActivityForResult(
-        extras: Bundle? = null,
-        crossinline onResult: (ActivityResult) -> Unit
-    ) {
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            onResult(result)
-        }
-        val intent = Intent(requireContext(), T::class.java).apply {
-            extras?.let { putExtras(it) }
-        }
-        launcher.launch(intent)
-    }
-
-    // 扩展函数，方便收集 Flow 数据
     protected fun <T> collectFlow(
         flow: Flow<T>,
         minActiveState: Lifecycle.State = Lifecycle.State.STARTED,

@@ -9,8 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.ActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -21,10 +19,11 @@ import com.example.common.util.ReflectionUtil
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-open class BaseBindFragment<VB : ViewBinding> : Fragment() {
+abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     private var _binding: VB? = null
-    protected val binding get() = _binding!!
+    protected val binding: VB
+        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
 
     private var currentToast: Toast? = null
 
@@ -33,7 +32,6 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // 使用反射创建 ViewBinding 实例
         _binding = ReflectionUtil.newViewBinding(layoutInflater, this.javaClass)
         return binding.root
     }
@@ -48,8 +46,8 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // 清理 ViewBinding 防止内存泄漏
         _binding = null
+        currentToast = null
     }
 
     // 初始化视图
@@ -83,19 +81,6 @@ open class BaseBindFragment<VB : ViewBinding> : Fragment() {
             flags?.let { this.flags = it }
         }
         startActivity(intent)
-    }
-
-    inline fun <reified T : Activity> startActivityForResult(
-        extras: Bundle? = null,
-        crossinline onResult: (ActivityResult) -> Unit
-    ) {
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            onResult(result)
-        }
-        val intent = Intent(requireContext(), T::class.java).apply {
-            extras?.let { putExtras(it) }
-        }
-        launcher.launch(intent)
     }
 
     fun <T : View?> findViewById(@IdRes id: Int): T {

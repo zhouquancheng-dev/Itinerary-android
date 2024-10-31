@@ -70,8 +70,7 @@ inline fun <reified VB : ViewBinding> inflateBinding(
     ) as VB
 
 
-inline fun <reified VB : ViewBinding> binding() =
-    FragmentBindingDelegate(VB::class.java)
+inline fun <reified VB : ViewBinding> binding() = FragmentBindingDelegate(VB::class.java)
 
 class FragmentBindingDelegate<VB : ViewBinding>(
     private val clazz: Class<VB>
