@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.8.0-alpha08"
+agp = "8.8.0-alpha09"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha07"
 androidx-test-ext-junit = "1.2.1"
@@ -19,7 +19,7 @@ coil-bom = "2.7.0"
 coil3-bom = "3.0.0-rc02"
 cameraX = "1.5.0-alpha03"
 dataStore = "1.1.1"
-databinding-runtime = "8.7.1"
+databinding-runtime = "8.7.2"
 desugar-jdk-libs = "2.1.2"
 espresso-core = "3.6.1"
 glide = "5.0.0-rc01"

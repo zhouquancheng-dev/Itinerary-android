@@ -104,7 +104,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
 
     private inline fun <reified T : Activity> startActivityForResult(
         extras: Bundle? = null,
-        crossinline onResult: (ActivityResult) -> Unit
+        crossinline onResult: (ActivityResult) -> Unit = {}
     ) {
         val intent = Intent(this, T::class.java).apply {
             extras?.let { putExtras(it) }

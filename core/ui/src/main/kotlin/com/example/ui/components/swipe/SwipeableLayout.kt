@@ -228,23 +228,25 @@ fun SwipeRowLayout(
         val childConstraints = constraints.copy(minWidth = 0, maxWidth = constraints.maxWidth)
         val childPlaceable = subcompose("child") {
             childContent(draggableState)
-        }.first().measure(childConstraints)
+        }.firstOrNull()?.measure(childConstraints)
 
-        childWidthState.floatValue = childPlaceable.width.toFloat()
+        if (childPlaceable != null) {
+            childWidthState.floatValue = childPlaceable.width.toFloat()
+        }
 
         val primaryPlaceable = subcompose("primary") {
             primaryContent(draggableState)
-        }.first().measure(constraints)
+        }.firstOrNull()?.measure(constraints)
 
         layout(constraints.minWidth, constraints.minHeight) {
             val offsetX = draggableState.offset.dp.value.takeIf { !it.isNaN() }?.roundToInt() ?: 0
 
-            primaryPlaceable.placeRelative(offsetX, 0)
+            primaryPlaceable?.placeRelative(offsetX, 0)
 
             if (swipeStyle == SwipeStyle.EndToStart) {
-                childPlaceable.placeRelative(constraints.maxWidth + offsetX, 0)
+                childPlaceable?.placeRelative(constraints.maxWidth + offsetX, 0)
             } else {
-                childPlaceable.placeRelative(offsetX - childPlaceable.width, 0)
+                childPlaceable?.placeRelative(offsetX - childPlaceable.width, 0)
             }
         }
     }
