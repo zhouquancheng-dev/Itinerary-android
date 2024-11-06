@@ -58,7 +58,7 @@ fun AppNavGraph(
             ProfileHomeScreen(
                 profileVm = profileVm,
                 onProfileInfo = {
-                    startActivity<ProfileInfoActivity>(context)
+                   context.startActivity<ProfileInfoActivity>()
                 }
             )
         }

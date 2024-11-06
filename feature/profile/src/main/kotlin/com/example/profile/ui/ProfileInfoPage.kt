@@ -2,7 +2,6 @@ package com.example.profile.ui
 
 import android.content.Context
 import android.os.Build
-import android.os.Bundle
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,18 +46,19 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.common.util.ext.startActivity
 import com.example.common.util.glide.GlideEngine
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.CAMERA
 import com.example.common.util.permissionUtil.ext.Constant.READ_EXTERNAL_STORAGE
 import com.example.common.util.permissionUtil.ext.Constant.READ_MEDIA_IMAGES
-import com.example.common.util.ext.startAcWithBundle
 import com.example.profile.R
 import com.example.profile.activity.CropImageActivity
 import com.example.profile.vm.ProfileViewModel
@@ -141,10 +141,8 @@ fun ProfileInfoPage(
                 InfoItem(
                     onClick = {
                         selectPicture(context) { result ->
-                            val extra = Bundle().apply {
-                                putString("compressPath", result?.firstOrNull()?.compressPath)
-                            }
-                            startAcWithBundle<CropImageActivity>(context, extra)
+                            val extra = bundleOf("compressPath" to result?.firstOrNull()?.compressPath)
+                            context.startActivity<CropImageActivity>(extras = extra)
                         }
                     },
                     label = "头像",

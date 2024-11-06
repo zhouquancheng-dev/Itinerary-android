@@ -29,11 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.common.util.ext.startActivity
 import com.example.common.util.permissionUtil.AllowPermissionUseCase
 import com.example.common.util.permissionUtil.ext.Constant.ACCESS_FINE_LOCATION
-import com.example.common.util.ext.startAcWithBundle
 import com.example.home.R
 import com.example.home.activity.QWeatherActivity
 import com.example.home.utils.getSky
@@ -125,10 +126,8 @@ fun HomeScreen(hvm: HomeViewModel) {
                             .padding(end = 16.dp)
                             .align(Alignment.Bottom)
                             .noRippleClickable {
-                                val extra = Bundle().apply {
-                                    putString("q_weather_url", realtime.fxLink)
-                                }
-                                startAcWithBundle<QWeatherActivity>(context, extra)
+                                val extra = bundleOf("q_weather_url" to realtime.fxLink)
+                                context.startActivity<QWeatherActivity>(extras = extra)
                             },
                         horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start)
                     ) {

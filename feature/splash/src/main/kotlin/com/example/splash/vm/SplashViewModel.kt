@@ -84,7 +84,7 @@ class SplashViewModel @Inject constructor(
     }
 
     private fun navigateToActivity() {
-        viewModelScope.launch(Dispatchers.Main) {
+        viewModelScope.launch {
             when {
                 // 为首次安装打开应用的情况，欢迎页
                 isFirstTimeLaunch() -> {

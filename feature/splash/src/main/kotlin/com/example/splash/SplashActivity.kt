@@ -1,8 +1,8 @@
 package com.example.splash
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
@@ -16,9 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,15 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aleyn.router.LRouter
-import com.aleyn.router.util.navigator
 import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
 import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
-import com.example.common.util.ext.startAcWithIntent
+import com.example.common.util.ext.setExitOnBackPressedCallback
+import com.example.common.util.ext.startActivity
 import com.example.splash.vm.Event
 import com.example.splash.vm.SplashViewModel
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
@@ -48,22 +46,28 @@ class SplashActivity : ComponentActivity() {
             JetItineraryTheme {
                 val vm = viewModel<SplashViewModel>()
                 val showDialog by vm.showDialog.collectAsStateWithLifecycle()
-                var backHandlingEnabled by remember { mutableStateOf(true) }
 
                 LaunchedEffect(Unit) {
                     vm.initPrivacyState()
-                    backHandlingEnabled = false
+                    delay(500)
                     vm.eventFlow.collect { event ->
                         when (event) {
                             is Event.FinishAc -> finish()
                             is Event.StartWelcome -> {
-                                startAcWithIntent<WelcomeActivity>()
+                                startActivity<WelcomeActivity>()
+                                finish()
                             }
                             is Event.StartMain -> {
-                                LRouter.navigator(ROUTER_MAIN_ACTIVITY)
+                                LRouter.build(ROUTER_MAIN_ACTIVITY)
+                                    .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                    .navigation()
                             }
                             is Event.StartLogin -> {
-                                LRouter.navigator(ROUTER_LOGIN_ACTIVITY)
+                                LRouter.build(ROUTER_LOGIN_ACTIVITY)
+                                    .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                    .navigation()
                             }
                         }
                     }
@@ -74,14 +78,12 @@ class SplashActivity : ComponentActivity() {
                     onAcceptRequest = vm::acceptPrivacy,
                     onRejectRequest = vm::rejectPrivacy
                 )
-
-                BackHandler(backHandlingEnabled) {
-
-                }
             }
         }
-    }
 
+        // 禁用Splash页返回键
+        setExitOnBackPressedCallback()
+    }
 }
 
 @Composable

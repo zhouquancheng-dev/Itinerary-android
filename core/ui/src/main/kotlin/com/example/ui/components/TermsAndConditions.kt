@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
@@ -41,7 +42,10 @@ fun TermsAndConditions(
         addLink(
             LinkAnnotation.Url(
                 url = AppConfig.PRIVACY_URL,
-                styles = linkStyle
+                styles = linkStyle,
+                linkInteractionListener = {
+
+                }
             ),
             start = firstTagStart,
             end = firstTagEnd
@@ -52,7 +56,10 @@ fun TermsAndConditions(
         addLink(
             LinkAnnotation.Url(
                 url = AppConfig.USER_PROTOCOL_URL,
-                styles = linkStyle
+                styles = linkStyle,
+                linkInteractionListener = {
+
+                }
             ),
             start = secondTagStart,
             end = secondTagEnd

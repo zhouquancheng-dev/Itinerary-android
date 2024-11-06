@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
@@ -154,4 +156,22 @@ fun AppCompatActivity.addStatusBarColorUpdate(@ColorRes colorRes: Int) {
             getColor(colorRes),
         )
     )
+}
+
+fun ComponentActivity.setExitOnBackPressedCallback(action: (() -> Unit)? = null) {
+    onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            action?.invoke()
+            return
+        }
+    })
+}
+
+fun AppCompatActivity.setExitOnBackPressedCallback(action: (() -> Unit)? = null) {
+    onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            action?.invoke()
+            return
+        }
+    })
 }

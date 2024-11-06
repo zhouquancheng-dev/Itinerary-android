@@ -34,7 +34,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.common.util.ext.startAcWithBundle
 import com.example.common.util.ext.startActivity
 import com.example.im.activity.ContactsActivity
 import com.example.im.components.FloatingButton
@@ -97,7 +96,7 @@ fun ConversationHomeScreen(ivm: IMViewModel) {
         modifier = Modifier.fillMaxSize(),
         floatingActionButton = {
             FloatingButton {
-                startActivity<ContactsActivity>(context)
+                context.startActivity<ContactsActivity>()
             }
         }
     ) { paddingValues ->
@@ -129,7 +128,7 @@ fun ConversationHomeScreen(ivm: IMViewModel) {
                             TUIConstants.TUIChat.CHAT_TYPE to V2TIMConversation.V2TIM_C2C,
                             TUIConstants.TUIChat.CHAT_ID to userId
                         )
-                        startAcWithBundle<TUIC2CChatMinimalistActivity>(context, bundleExtra)
+                        context.startActivity<TUIC2CChatMinimalistActivity>(extras = bundleExtra)
                     },
                     onPinned = { conversationID, isPinned ->
                         ivm.pinConversation(conversationID, isPinned)
