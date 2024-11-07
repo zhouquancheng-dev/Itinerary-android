@@ -49,7 +49,6 @@ class SplashActivity : ComponentActivity() {
 
                 LaunchedEffect(Unit) {
                     vm.initPrivacyState()
-                    delay(500)
                     vm.eventFlow.collect { event ->
                         when (event) {
                             is Event.FinishAc -> finish()

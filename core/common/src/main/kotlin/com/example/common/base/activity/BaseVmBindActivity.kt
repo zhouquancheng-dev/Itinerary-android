@@ -30,7 +30,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
     protected lateinit var viewModel: VM
 
     private var currentToast: Toast? = null
-    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +102,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
         startActivity(intent)
     }
 
-    private inline fun <reified T : Activity> startActivityForResult(
+    protected inline fun <reified T : Activity> startActivityForResult(
         extras: Bundle? = null,
         crossinline onResult: (ActivityResult) -> Unit = {}
     ) {

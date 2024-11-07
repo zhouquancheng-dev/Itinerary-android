@@ -25,7 +25,7 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
 
     private var currentToast: Toast? = null
-    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,7 +87,7 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private inline fun <reified T : Activity> startActivityForResult(
+    protected inline fun <reified T : Activity> startActivityForResult(
         extras: Bundle? = null,
         crossinline onResult: (ActivityResult) -> Unit = {}
     ) {

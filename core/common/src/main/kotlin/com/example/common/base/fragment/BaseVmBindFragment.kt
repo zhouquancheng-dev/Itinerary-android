@@ -43,7 +43,6 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().enableEdgeToEdge()
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]
         initViews()
         initListeners()

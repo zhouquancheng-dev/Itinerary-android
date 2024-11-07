@@ -38,7 +38,6 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().enableEdgeToEdge()
         initViews()
         initListeners()
         initData()
