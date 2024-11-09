@@ -37,6 +37,8 @@ android {
             useSupportLibrary = true
         }
 
+        resourceConfigurations.addAll(listOf("en", "zh-rCN"))
+
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
@@ -56,10 +58,6 @@ android {
         buildConfigField("String", "FILING_NO", "\"${autoConfig["FILING_NO"]}\"")
         buildConfigField("String", "JIGUANG_APPKEY", "\"${autoConfig["JIGUANG_APPKEY"]}\"")
         buildConfigField("String", "TENCENT_IM_APP_ID", "\"${autoConfig["TENCENT_IM_APP_ID"]}\"")
-    }
-
-    androidResources {
-        localeFilters.addAll(listOf("en", "zh-rCN"))
     }
 
     signingConfigs {

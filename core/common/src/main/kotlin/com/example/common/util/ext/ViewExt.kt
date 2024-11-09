@@ -98,6 +98,17 @@ fun goneViews(vararg views: View?) {
     }
 }
 
+fun View.setOnDebouncedClickListener(interval: Long = 500L, onClick: (View) -> Unit) {
+    var lastClickTime = 0L
+    setOnClickListener {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastClickTime >= interval) {
+            lastClickTime = currentTime
+            onClick(it)
+        }
+    }
+}
+
 /**
  * 获取当前是否为深色模式
  * 深色模式的值为: 0x21
