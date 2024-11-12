@@ -1,6 +1,8 @@
 package com.example.common.util.ext
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.graphics.drawable.Drawable
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -145,29 +147,9 @@ val Context.inputMethodManager
 fun Context.getDrawableCompat(@DrawableRes drawable: Int): Drawable =
     requireNotNull(ContextCompat.getDrawable(this, drawable))
 
-fun Context.getColorCompat(@ColorRes color: Int) =
-    ContextCompat.getColor(this, color)
+fun Context.getColorCompat(@ColorRes color: Int) = ContextCompat.getColor(this, color)
 
-fun TextView.setTextColorRes(@ColorRes color: Int) =
-    setTextColor(context.getColorCompat(color))
-
-fun Fragment.addStatusBarColorUpdate(@ColorRes colorRes: Int) {
-    view?.findViewTreeLifecycleOwner()?.lifecycle?.addObserver(
-        StatusBarColorLifecycleObserver(
-            requireActivity(),
-            requireContext().getColorCompat(colorRes),
-        )
-    )
-}
-
-fun AppCompatActivity.addStatusBarColorUpdate(@ColorRes colorRes: Int) {
-    lifecycle.addObserver(
-        StatusBarColorLifecycleObserver(
-            this,
-            getColor(colorRes),
-        )
-    )
-}
+fun TextView.setTextColorRes(@ColorRes color: Int) = setTextColor(context.getColorCompat(color))
 
 fun ComponentActivity.setExitOnBackPressedCallback(action: (() -> Unit)? = null) {
     onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -185,4 +167,13 @@ fun AppCompatActivity.setExitOnBackPressedCallback(action: (() -> Unit)? = null)
             return
         }
     })
+}
+
+fun Context.findActivity(): Activity {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    throw IllegalStateException("No activity found")
 }

@@ -54,9 +54,5 @@ inline fun <reified T> subscribe(
             job?.cancel()
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
-
-        onDispose {
-
-        }
     }
 }
