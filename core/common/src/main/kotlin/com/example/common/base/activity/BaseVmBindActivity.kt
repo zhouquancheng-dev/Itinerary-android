@@ -10,15 +10,10 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.example.common.util.ReflectionUtil
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 import java.lang.reflect.ParameterizedType
 
 abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
@@ -39,10 +34,10 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
         setContentView(binding.root)
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]
         initActivityResultLauncher()
-        initViews()
-        initListeners()
+        initViews(savedInstanceState)
         initData()
-        observeVM()
+        initListeners()
+        setupObservers()
     }
 
     override fun onDestroy() {
@@ -58,7 +53,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
     }
 
     // 初始化视图
-    protected open fun initViews() {}
+    protected open fun initViews(savedInstanceState: Bundle?) {}
 
     // 初始化数据
     protected open fun initData() {}
@@ -67,7 +62,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
     protected open fun initListeners() {}
 
     // 观察 ViewModel 的变化
-    protected open fun observeVM() {}
+    protected open fun setupObservers() {}
 
     // 处理 ActivityResult 回调
     protected open fun handleActivityResult(result: ActivityResult) {}
@@ -110,18 +105,6 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
             extras?.let { putExtras(it) }
         }
         activityResultLauncher.launch(intent)
-    }
-
-    protected fun <T> collectFlow(
-        flow: Flow<T>,
-        minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-        collector: suspend (T) -> Unit
-    ) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(minActiveState) {
-                flow.collect(collector)
-            }
-        }
     }
 
 }

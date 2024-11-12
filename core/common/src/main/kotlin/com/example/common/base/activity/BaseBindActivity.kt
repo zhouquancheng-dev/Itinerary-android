@@ -10,13 +10,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.example.common.util.ReflectionUtil
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
 
 abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -29,14 +24,13 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 调用 inflate 方法，创建 ViewBinding
         _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
         enableEdgeToEdge()
         setContentView(binding.root)
         initActivityResultLauncher()
         initViews(savedInstanceState)
-        initListeners()
         initData()
+        initListeners()
     }
 
     override fun onDestroy() {
@@ -95,18 +89,6 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
             extras?.let { putExtras(it) }
         }
         activityResultLauncher.launch(intent)
-    }
-
-    protected fun <T> collectFlow(
-        flow: Flow<T>,
-        minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-        collector: suspend (T) -> Unit
-    ) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(minActiveState) {
-                flow.collect(collector)
-            }
-        }
     }
 
 }
