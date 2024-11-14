@@ -72,13 +72,15 @@ inline fun <reified VB : ViewBinding> inflateBinding(
 
 inline fun <reified VB : ViewBinding> binding() = FragmentBindingDelegate(VB::class.java)
 
+@Suppress("UNCHECKED_CAST")
 class FragmentBindingDelegate<VB : ViewBinding>(
     private val clazz: Class<VB>
 ) : ReadOnlyProperty<Fragment, VB> {
 
     private var isInitialized = false
     private var _binding: VB? = null
-    private val binding: VB get() = _binding!!
+    private val binding: VB
+        get() = _binding ?: throw IllegalStateException("Binding has not been initialized or is empty.")
 
     override fun getValue(thisRef: Fragment, property: KProperty<*>): VB {
         if (!isInitialized) {
@@ -87,8 +89,14 @@ class FragmentBindingDelegate<VB : ViewBinding>(
                     _binding = null
                 }
             })
-            _binding = clazz.getMethod("bind", View::class.java)
-                .invoke(null, thisRef.requireView()) as VB
+
+            _binding = runCatching {
+                clazz.getMethod("bind", View::class.java)
+                    .invoke(null, thisRef.requireView()) as? VB
+            }.getOrElse {
+                throw IllegalStateException("Unable to create binding object: ${it.message}", it)
+            }
+
             isInitialized = true
         }
         return binding
