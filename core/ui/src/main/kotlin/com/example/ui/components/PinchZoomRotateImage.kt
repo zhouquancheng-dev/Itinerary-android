@@ -19,10 +19,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.util.lerp
 import coil3.annotation.ExperimentalCoilApi
-import coil3.compose.LocalPlatformContext
 import coil3.compose.rememberAsyncImagePainter
-import coil3.compose.setSingletonImageLoaderFactory
-import com.example.ui.coil.getAsyncImageLoader
 
 @OptIn(ExperimentalCoilApi::class)
 @Composable
@@ -30,10 +27,6 @@ fun PinchZoomRotateImage(
     imageModel: Any,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalPlatformContext.current
-    setSingletonImageLoaderFactory {
-        getAsyncImageLoader(context)
-    }
     val imagePainter = rememberAsyncImagePainter(model = imageModel)
 
     val maxScale = 5f // 最大缩放比例

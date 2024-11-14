@@ -101,4 +101,10 @@ dependencies {
     api(libs.lucksiege.camerax)
 
     api(libs.glide)
+
+    api(libs.coil3.compose)
+    api(libs.coil3.network.okhttp)
+    api(libs.coil3.gif)
+    api(libs.coil3.svg)
+    api(libs.coil3.video)
 }

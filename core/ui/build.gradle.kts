@@ -66,6 +66,8 @@ dependencies {
 
     api(libs.androidx.constraintlayout.compose)
 
+    api(libs.androidx.activity)
+
     api(libs.androidx.activity.compose)
     api(platform(libs.androidx.compose.bom))
     androidTestApi(platform(libs.androidx.compose.bom))
@@ -108,23 +110,6 @@ dependencies {
     androidTestApi(libs.androidx.navigation.testing)
 
     api(libs.lottie.compose)
-
-//    api(platform(libs.coil.bom))
-//    api(libs.coil)
-//    api(libs.coil.compose)
-//    api(libs.coil.gif)
-//    api(libs.coil.video)
-//    api(libs.coil.svg)
-
-    api(platform(libs.coil3.bom))
-    api(libs.coil3)
-    api(libs.coil3.core)
-    api(libs.coil3.compose)
-    api(libs.coil3.compose.core)
-    api(libs.coil3.network.okhttp)
-    api(libs.coil3.gif)
-    api(libs.coil3.video)
-    api(libs.coil3.svg)
 
     api(libs.glide.compose)
 

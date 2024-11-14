@@ -4,6 +4,7 @@ agp = "8.7.2"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha07"
 androidx-test-ext-junit = "1.2.1"
+activity = "1.9.3"
 activity-compose = "1.9.3"
 androidx-metrics = "1.0.0-beta01"
 androidx-profileinstaller = "1.4.1"
@@ -15,8 +16,7 @@ constraintlayout = "2.2.0"
 constraintlayout-compose = "1.1.0"
 compose-bom = "2024.11.00"
 coroutines-android = "1.9.0"
-coil-bom = "2.7.0"
-coil3-bom = "3.0.2"
+coil3 = "3.0.2"
 cameraX = "1.5.0-alpha03"
 dataStore = "1.1.1"
 databinding-runtime = "8.7.2"
@@ -113,6 +113,7 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 # https://mvnrepository.com/artifact/androidx.databinding/databinding-runtime
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding-runtime" }
 
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 # https://mvnrepository.com/artifact/androidx.constraintlayout/constraintlayout-compose
@@ -189,25 +190,12 @@ androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profi
 # https://central.sonatype.com/artifact/org.bouncycastle/bcprov-jdk15on
 bcprov-jdk15on = { module = "org.bouncycastle:bcprov-jdk15on", version.ref = "bcprov-jdk15on" }
 
-# https://mvnrepository.com/artifact/io.coil-kt/coil-bom
-coil-bom = { group = "io.coil-kt", name = "coil-bom", version.ref = "coil-bom" }
-coil = { group = "io.coil-kt", name = "coil" }
-coil-compose = { group = "io.coil-kt", name = "coil-compose" }
-coil-gif = { group = "io.coil-kt", name = "coil-gif" }
-coil-svg = { group = "io.coil-kt", name = "coil-svg" }
-coil-video = { group = "io.coil-kt", name = "coil-video" }
-coil-test = { group = "io.coil-kt", name = "coil-test" }
-
-# https://central.sonatype.com/artifact/io.coil-kt.coil3/coil-bom
-coil3-bom = { group = "io.coil-kt.coil3", name = "coil-bom", version.ref = "coil3-bom" }
-coil3 = { group = "io.coil-kt.coil3", name = "coil" }
-coil3-core = { group = "io.coil-kt.coil3", name = "coil-core" }
-coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose" }
-coil3-compose-core = { group = "io.coil-kt.coil3", name = "coil-compose-core" }
-coil3-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp" }
-coil3-gif = { group = "io.coil-kt.coil3", name = "coil-gif" }
-coil3-video = { group = "io.coil-kt.coil3", name = "coil-video" }
-coil3-svg = { group = "io.coil-kt.coil3", name = "coil-svg" }
+# https://github.com/coil-kt/coil
+coil3-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil3" }
+coil3-network-okhttp = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil3" }
+coil3-video = { module = "io.coil-kt.coil3:coil-video", version.ref = "coil3" }
+coil3-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil3" }
+coil3-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coil3" }
 
 # https://mvnrepository.com/artifact/com.android.tools/desugar_jdk_libs
 desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }

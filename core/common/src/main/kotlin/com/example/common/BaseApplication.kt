@@ -2,7 +2,6 @@ package com.example.common
 
 import android.app.Application
 import android.app.UiModeManager
-import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
@@ -32,12 +31,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 abstract class BaseApplication : Application() {
 
-    private val applicationScope by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
+    private val appJob by lazy { CoroutineScope(SupervisorJob() + Dispatchers.IO) }
 
     abstract fun isDebug(): Boolean
 
@@ -45,9 +43,12 @@ abstract class BaseApplication : Application() {
     abstract fun getSystemNightMode(): Int
 
     inner class ApplicationLifecycleObserver : DefaultLifecycleObserver {
-        override fun onDestroy(owner: LifecycleOwner) {
-            super.onDestroy(owner)
-            applicationScope.cancel()
+        override fun onStart(owner: LifecycleOwner) {
+            // 应用进入前台
+        }
+
+        override fun onStop(owner: LifecycleOwner) {
+            // 应用进入后台
         }
     }
 
@@ -67,7 +68,7 @@ abstract class BaseApplication : Application() {
          */
         @JvmStatic
         fun isModeNightYes(): Boolean {
-            val uiModeManager = getApplication().getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
+            val uiModeManager = getApplication().getSystemService(UI_MODE_SERVICE) as UiModeManager
             return uiModeManager.nightMode == UiModeManager.MODE_NIGHT_YES
         }
     }
@@ -80,7 +81,7 @@ abstract class BaseApplication : Application() {
         observeLifecycle()
 
         // 并行初始化各个方法
-        applicationScope.launch {
+        appJob.launch {
             initData()
 
             val initJobs = mutableListOf(
@@ -109,16 +110,16 @@ abstract class BaseApplication : Application() {
      * 初始化数据
      */
     open fun initData() {
-        DataStoreUtils.init(getApplication())
-
+        // DataStore
+        DataStoreUtils.init(this)
         LogUtils.getConfig().setLogSwitch(isDebug()).setLog2FileSwitch(false)
-
-        Toaster.init(getApplication())
+        // Toaster
+        Toaster.init(this)
         Toaster.setView(if (isModeNightYes()) R.layout.toast_global_view_white else R.layout.toast_global_view_black)
-
-        MMKV.initialize(getApplication())
-
-        LRouter.init(getApplication())
+        // MmKv
+        MMKV.initialize(this)
+        // LRouter
+        LRouter.init(this)
         LRouter.setLogSwitch(isDebug())
     }
 
@@ -141,7 +142,7 @@ abstract class BaseApplication : Application() {
      * bug 上报
      */
     private fun initBugLy() {
-        CrashReport.initCrashReport(getApplication(), "1e43689b76", false)
+        CrashReport.initCrashReport(this, "1e43689b76", false)
     }
 
     /**
@@ -149,7 +150,7 @@ abstract class BaseApplication : Application() {
      */
     private fun initJG() {
         JVerificationInterface.setDebugMode(isDebug())
-        JVerificationInterface.init(getApplication()) { code, result ->
+        JVerificationInterface.init(this) { code, result ->
             Log.i(JG_TAG, if (code == 8000) "极光SDK初始化成功" else "返回码: $code 信息: $result")
         }
     }
@@ -158,7 +159,7 @@ abstract class BaseApplication : Application() {
      * 初始化阿里云 https dns 加速
      */
     private fun initAliHttpDNS() {
-        //初始化配置，调用即可，不必处理返回值。
+        // 初始化配置，调用即可，不必处理返回值。
         val config = InitConfig.Builder()
             // 配置是否启用https，默认http
             .setEnableHttps(true)
@@ -197,6 +198,6 @@ abstract class BaseApplication : Application() {
         // V2TIMSDKListener 事件监听器
         V2TIMManager.getInstance().addIMSDKListener(V2TIMSDKListener())
         // 初始化SDK
-        V2TIMManager.getInstance().initSDK(getApplication(), AppConfig.TENCENT_IM_APP_ID, config)
+        V2TIMManager.getInstance().initSDK(this, AppConfig.TENCENT_IM_APP_ID, config)
     }
 }
