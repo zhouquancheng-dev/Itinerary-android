@@ -1,6 +1,5 @@
 package com.example.splash
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -24,17 +23,16 @@ import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.aleyn.router.LRouter
-import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
-import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
+import com.example.common.data.Constants.LOGIN_DEEP_LINK
+import com.example.common.data.Constants.MAIN_DEEP_LINK
 import com.example.common.util.ext.setExitOnBackPressedCallback
 import com.example.common.util.ext.startActivity
+import com.example.common.util.ext.startDeepLink
 import com.example.splash.vm.Event
 import com.example.splash.vm.SplashViewModel
 import com.example.ui.dialog.AcceptPrivacyDialog
 import com.example.ui.theme.JetItineraryTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 
 @AndroidEntryPoint
 class SplashActivity : ComponentActivity() {
@@ -57,16 +55,12 @@ class SplashActivity : ComponentActivity() {
                                 finish()
                             }
                             is Event.StartMain -> {
-                                LRouter.build(ROUTER_MAIN_ACTIVITY)
-                                    .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    .navigation()
+                                startDeepLink(MAIN_DEEP_LINK)
+                                finish()
                             }
                             is Event.StartLogin -> {
-                                LRouter.build(ROUTER_LOGIN_ACTIVITY)
-                                    .withFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                    .navigation()
+                                startDeepLink(LOGIN_DEEP_LINK)
+                                finish()
                             }
                         }
                     }

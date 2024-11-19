@@ -5,13 +5,11 @@
         <activity
             android:name=".WelcomeActivity"
             android:exported="false"
-            android:noHistory="true"
             android:theme="@style/Theme.ItineraryAndroid"/>
 
         <activity
             android:name=".SplashActivity"
             android:exported="true"
-            android:noHistory="true"
             android:theme="@style/Theme.ItineraryAndroid">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

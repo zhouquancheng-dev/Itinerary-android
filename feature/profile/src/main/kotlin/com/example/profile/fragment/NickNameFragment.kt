@@ -21,12 +21,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.profile.R
@@ -55,8 +51,6 @@ class NickNameFragment : AbstractComposeFragment() {
                 topBar = {
                     StandardCenterTopAppBar(
                         title = stringResource(R.string.nickName_fg_title),
-                        textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
-                        iconSize = DpSize(21.dp, 21.dp),
                         actions = {
                             Button(
                                 onClick = {

@@ -1,6 +1,6 @@
 package com.example.profile.ui
 
-import android.content.Intent
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +29,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aleyn.router.LRouter
-import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
+import com.example.common.data.Constants.LOGIN_DEEP_LINK
+import com.example.common.util.ext.startDeepLink
 import com.example.profile.R
 import com.example.profile.vm.ProfileViewModel
 import com.example.ui.coil.LoadAsyncImage
@@ -100,10 +100,8 @@ fun ProfileHomeScreen(
             Button(
                 onClick = {
                     profileVm.logout {
-                        LRouter.build(ROUTER_LOGIN_ACTIVITY)
-                            .withFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            .navigation(context)
+                        context.startDeepLink(LOGIN_DEEP_LINK)
+                        (context as Activity).finish()
                     }
                 }
             ) {

@@ -1,5 +1,6 @@
 package com.example.login.ui
 
+import android.app.Activity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,9 +40,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.aleyn.router.LRouter
-import com.aleyn.router.util.navigator
-import com.example.common.data.Router.ROUTER_MAIN_ACTIVITY
+import com.example.common.data.Constants.MAIN_DEEP_LINK
+import com.example.common.util.ext.startDeepLink
 import com.example.ui.utils.ToasterUtil.ToastStatus.*
 import com.example.ui.utils.ToasterUtil.showCustomToaster
 import com.example.login.R
@@ -53,7 +53,8 @@ import com.example.ui.components.StandardCenterTopAppBar
 import com.example.ui.components.VerticalSpacer
 import com.example.ui.dialog.IndicatorDialog
 import kotlinx.coroutines.ObsoleteCoroutinesApi
-import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 
 @OptIn(ExperimentalMaterial3Api::class, ObsoleteCoroutinesApi::class)
 @Composable
@@ -69,13 +70,12 @@ fun VerifyCodeScreen(
 
     var timerTotalSeconds by rememberSaveable { mutableIntStateOf(60) }
     LaunchedEffect(Unit) {
-        val ticker = ticker(delayMillis = 1000, initialDelayMillis = 0)
-        for (tick in ticker) {
-            if (timerTotalSeconds > 0) {
-                timerTotalSeconds--
-            }
+        val endTime = System.currentTimeMillis() + (timerTotalSeconds * 1000L)
+        while (isActive && timerTotalSeconds > 0) {
+            val remainingSeconds = ((endTime - System.currentTimeMillis()) / 1000L).toInt()
+            timerTotalSeconds = remainingSeconds.coerceAtLeast(0)
+            delay(1000)
         }
-        ticker.cancel()
     }
 
     val onVerify: () -> Unit = {
@@ -83,7 +83,8 @@ fun VerifyCodeScreen(
             context, phoneNumber, codeValue,
             onFailure = { codeValue = "" },
             onSuccess = {
-                LRouter.navigator(ROUTER_MAIN_ACTIVITY)
+                context.startDeepLink(MAIN_DEEP_LINK)
+                (context as Activity).finish()
             }
         )
     }

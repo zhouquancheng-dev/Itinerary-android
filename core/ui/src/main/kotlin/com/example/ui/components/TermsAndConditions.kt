@@ -6,19 +6,22 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.LinkInteractionListener
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.core.os.bundleOf
 import com.example.common.config.AppConfig
+import com.example.common.util.ext.startActivity
 import com.example.ui.theme.ColorFF6195F9
 import com.example.ui.theme.ColorFFFA5151
 import com.example.ui.theme.JetItineraryTheme
+import com.example.ui.webview.WebViewActivity
 
 @Composable
 fun TermsAndConditions(
@@ -26,6 +29,7 @@ fun TermsAndConditions(
     firstTag: String,
     secondTag: String
 ) {
+    val context = LocalContext.current
     val linkStyle = TextLinkStyles(
         style = SpanStyle(color = ColorFF6195F9, fontWeight = FontWeight.SemiBold),
         focusedStyle = null,
@@ -40,11 +44,15 @@ fun TermsAndConditions(
         val firstTagStart = fullText.indexOf(firstTag)
         val firstTagEnd = firstTagStart + firstTag.length
         addLink(
-            LinkAnnotation.Url(
-                url = AppConfig.PRIVACY_URL,
+            LinkAnnotation.Clickable(
+                tag = AppConfig.PRIVACY_URL,
                 styles = linkStyle,
                 linkInteractionListener = {
-
+                    val extra = bundleOf(
+                        "url" to AppConfig.PRIVACY_URL,
+                        "title" to "隐私政策"
+                    )
+                    context.startActivity<WebViewActivity>(extras = extra)
                 }
             ),
             start = firstTagStart,
@@ -54,11 +62,15 @@ fun TermsAndConditions(
         val secondTagStart = fullText.indexOf(secondTag)
         val secondTagEnd = secondTagStart + secondTag.length
         addLink(
-            LinkAnnotation.Url(
-                url = AppConfig.USER_PROTOCOL_URL,
+            LinkAnnotation.Clickable(
+                tag = AppConfig.USER_PROTOCOL_URL,
                 styles = linkStyle,
                 linkInteractionListener = {
-
+                    val extra = bundleOf(
+                        "url" to AppConfig.USER_PROTOCOL_URL,
+                        "title" to "服务条款"
+                    )
+                    context.startActivity<WebViewActivity>(extras = extra)
                 }
             ),
             start = secondTagStart,

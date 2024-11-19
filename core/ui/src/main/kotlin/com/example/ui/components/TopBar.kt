@@ -9,7 +9,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
@@ -17,10 +16,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.ui.components.symbols.AppIcons
 import com.example.ui.theme.JetItineraryTheme
 
@@ -28,8 +29,8 @@ import com.example.ui.theme.JetItineraryTheme
 @Composable
 fun StandardTopAppBar(
     title: String,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    iconSize: DpSize = DpSize(24.dp, 24.dp),
+    textStyle: TextStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+    iconSize: DpSize = DpSize(21.dp, 21.dp),
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     colors: @Composable () -> TopAppBarColors = { TopAppBarDefaults.topAppBarColors() },
@@ -59,8 +60,8 @@ fun StandardTopAppBar(
 @Composable
 fun StandardCenterTopAppBar(
     title: String,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    iconSize: DpSize = DpSize(24.dp, 24.dp),
+    textStyle: TextStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
+    iconSize: DpSize = DpSize(21.dp, 21.dp),
     showBackButton: Boolean = true,
     actions: @Composable RowScope.() -> Unit = {},
     colors: @Composable () -> TopAppBarColors = { TopAppBarDefaults.topAppBarColors() },

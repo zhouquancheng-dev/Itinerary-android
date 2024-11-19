@@ -2,7 +2,6 @@ package com.example.home.ui
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.os.Bundle
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +43,6 @@ import com.example.ui.components.noRippleClickable
 @Composable
 fun HomeScreen(hvm: HomeViewModel) {
     val context = LocalContext.current
-//    val density = LocalDensity.current
     val locationInfo by hvm.locationInfo.collectAsStateWithLifecycle()
     var shouldLocationPermission by remember { mutableStateOf(shouldLocationPermission(context)) }
 
@@ -71,21 +69,6 @@ fun HomeScreen(hvm: HomeViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .drawWithCache {
-//                    val pxValue = with(density) { 350.dp.toPx() }
-//                    val brush = Brush.verticalGradient(
-//                        colorStops = homeBgBrush.toTypedArray(),
-//                        startY = 0f,
-//                        endY = pxValue
-//                    )
-//                    onDrawBehind {
-//                        drawRect(
-//                            brush = brush,
-//                            size = Size(size.width, pxValue),
-//                            alpha = 1f
-//                        )
-//                    }
-//                }
                 .padding(paddingValues)
         ) {
             Row(

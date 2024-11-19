@@ -1,5 +1,6 @@
 package com.example.splash
 
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
@@ -35,6 +36,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -44,11 +46,10 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.aleyn.router.LRouter
-import com.aleyn.router.util.navigator
+import com.example.common.data.Constants.LOGIN_DEEP_LINK
 import com.example.common.util.ext.ClickExt.isFastClick
 import com.example.common.data.DatastoreKey.IS_FIRST_TIME_LAUNCH
-import com.example.common.data.Router.ROUTER_LOGIN_ACTIVITY
+import com.example.common.util.ext.startDeepLink
 import com.example.common.util.sp.DataStoreUtils.putBoolean
 import com.example.ui.components.indicator.HorizontalPagerIndicator
 import com.example.ui.components.VerticalSpacer
@@ -70,6 +71,7 @@ class WelcomeActivity : ComponentActivity() {
 
 @Composable
 private fun WelcomeScreen() {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
 
@@ -85,7 +87,8 @@ private fun WelcomeScreen() {
     val navigateToMain: () -> Unit = {
         scope.launch {
             putBoolean(IS_FIRST_TIME_LAUNCH, false)
-            LRouter.navigator(ROUTER_LOGIN_ACTIVITY)
+            context.startDeepLink(LOGIN_DEEP_LINK)
+            (context as Activity).finish()
         }
     }
 

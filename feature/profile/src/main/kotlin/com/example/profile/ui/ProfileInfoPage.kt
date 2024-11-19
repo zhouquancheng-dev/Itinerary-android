@@ -36,12 +36,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewLightDark
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -111,8 +108,6 @@ fun ProfileInfoPage(
         topBar = {
             StandardCenterTopAppBar(
                 title = stringResource(R.string.profile_info_title),
-                textStyle = TextStyle(fontSize = 19.sp, fontWeight = FontWeight.Bold),
-                iconSize = DpSize(21.dp, 21.dp),
                 colors = {
                     TopAppBarDefaults.topAppBarColors(
                         containerColor = resolveColor(navigationBarLightColor, navigationBarDarkColor),
