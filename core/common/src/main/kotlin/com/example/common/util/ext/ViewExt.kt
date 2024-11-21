@@ -100,7 +100,7 @@ fun goneViews(vararg views: View?) {
     }
 }
 
-fun View.setOnDebouncedClickListener(interval: Long = 500L, onClick: (View) -> Unit) {
+fun View.setOnDebouncedClickListener(interval: Long = 300L, onClick: (View) -> Unit) {
     var lastClickTime = 0L
     setOnClickListener {
         val currentTime = System.currentTimeMillis()
