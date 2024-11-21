@@ -8,6 +8,8 @@ val navigationBarDarkColor = Color(0xFF111111)
 val tableLightColor = Color(0xFFFFFFFF)
 val tableDarkColor = Color(0xFF191919)
 
+val PhotoGridSelectedColor = Color(0xFFB2A8F8)
+
 val ColorFF576B95 = Color(0xFF576B95)
 val ColorFF7D90A9 = Color(0xFF7D90A9)
 val ColorFFF2F2F2 = Color(0xFFF2F2F2)
