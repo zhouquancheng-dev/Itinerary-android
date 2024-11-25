@@ -20,7 +20,9 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
 
     private var _binding: VB? = null
     protected val binding: VB
-        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
+        get() = checkNotNull(_binding) {
+            "ViewBinding is null. Please ensure you're not accessing binding before super.onCreate() or after super.onDestroy()"
+        }
 
     protected lateinit var viewModel: VM
 
@@ -29,7 +31,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        initBinding()
         enableEdgeToEdge()
         setContentView(binding.root)
         viewModel = ViewModelProvider(this, defaultViewModelProviderFactory)[getViewModelClass()]
@@ -40,10 +42,17 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
         setupObservers()
     }
 
+    private fun initBinding() {
+        if (_binding == null) {
+            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        }
+    }
+
     override fun onDestroy() {
-        super.onDestroy()
         _binding = null
+        currentToast?.cancel()
         currentToast = null
+        super.onDestroy()
     }
 
     @Suppress("UNCHECKED_CAST")

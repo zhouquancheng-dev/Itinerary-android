@@ -19,7 +19,9 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
 
     private var _binding: VB? = null
     protected val binding: VB
-        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
+        get() = checkNotNull(_binding) {
+            "ViewBinding is null. Please ensure you're not accessing binding before super.onCreateView() or after super.onDestroyView()"
+        }
 
     private lateinit var viewModel: VM
 
@@ -45,9 +47,10 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        currentToast?.cancel()
         currentToast = null
+        super.onDestroyView()
     }
 
     @Suppress("UNCHECKED_CAST")

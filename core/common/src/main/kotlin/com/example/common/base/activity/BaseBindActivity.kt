@@ -42,10 +42,10 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         _binding = null
         currentToast?.cancel()
         currentToast = null
+        super.onDestroy()
     }
 
     // 初始化视图
