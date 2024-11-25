@@ -17,14 +17,16 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private var _binding: VB? = null
     protected val binding: VB
-        get() = _binding ?: throw IllegalStateException("ViewBinding is not initialized")
+        get() = checkNotNull(_binding) {
+            "ViewBinding is null. Please ensure you're not accessing binding before super.onCreate() or after super.onDestroy()"
+        }
 
     private var currentToast: Toast? = null
     protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        initBinding()
         enableEdgeToEdge()
         setContentView(binding.root)
         initActivityResultLauncher()
@@ -33,9 +35,16 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         initListeners()
     }
 
+    private fun initBinding() {
+        if (_binding == null) {
+            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+        currentToast?.cancel()
         currentToast = null
     }
 
