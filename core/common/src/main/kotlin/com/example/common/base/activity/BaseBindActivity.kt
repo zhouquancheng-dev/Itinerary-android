@@ -10,6 +10,8 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
 import com.example.common.util.ReflectionUtil
 
@@ -18,10 +20,12 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
     private var _binding: VB? = null
     protected val binding: VB
         get() = checkNotNull(_binding) {
-            "ViewBinding is null. Please ensure you're not accessing binding before super.onCreate() or after super.onDestroy()"
+            "ViewBinding is null. Ensure that you're accessing binding only between onCreate() and onDestroy(). " +
+                    "If you're accessing it in onDestroy(), ensure it is before super.onDestroy() is called."
         }
 
     private var currentToast: Toast? = null
+    protected open val needSystemBarsPadding: Boolean = true
     protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,16 +33,11 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         initBinding()
         enableEdgeToEdge()
         setContentView(binding.root)
+        setupSystemBarsPadding()
         initActivityResultLauncher()
         initViews(savedInstanceState)
         initData()
         initListeners()
-    }
-
-    private fun initBinding() {
-        if (_binding == null) {
-            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
-        }
     }
 
     override fun onDestroy() {
@@ -48,8 +47,32 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         super.onDestroy()
     }
 
+    private fun initBinding() {
+        if (_binding == null) {
+            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+        }
+    }
+
+    private fun setupSystemBarsPadding() {
+        if (needSystemBarsPadding) {
+            ViewCompat.setOnApplyWindowInsetsListener(findViewById(rootLayoutId)) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+                insets
+            }
+        }
+    }
+
+    private fun initActivityResultLauncher() {
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            handleActivityResult(result)
+        }
+    }
+
+    protected abstract val rootLayoutId: Int
+
     // 初始化视图
-    protected open fun initViews(savedInstanceState: Bundle?) {}
+    protected abstract fun initViews(savedInstanceState: Bundle?)
 
     // 初始化数据
     protected open fun initData() {}
@@ -59,12 +82,6 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     // 处理 ActivityResult 回调
     protected open fun handleActivityResult(result: ActivityResult) {}
-
-    private fun initActivityResultLauncher() {
-        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            handleActivityResult(result)
-        }
-    }
 
     fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
@@ -90,10 +107,7 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
         startActivity(intent)
     }
 
-    protected inline fun <reified T : Activity> startActivityForResult(
-        extras: Bundle? = null,
-        crossinline onResult: (ActivityResult) -> Unit = {}
-    ) {
+    protected inline fun <reified T : Activity> startActivityForResult(extras: Bundle? = null) {
         val intent = Intent(this, T::class.java).apply {
             extras?.let { putExtras(it) }
         }

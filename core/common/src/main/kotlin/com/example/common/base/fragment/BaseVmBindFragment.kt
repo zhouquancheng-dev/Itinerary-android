@@ -20,7 +20,8 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
     private var _binding: VB? = null
     protected val binding: VB
         get() = checkNotNull(_binding) {
-            "ViewBinding is null. Please ensure you're not accessing binding before super.onCreateView() or after super.onDestroyView()"
+            "ViewBinding is null. Ensure that you're accessing binding only between onViewCreated() and onDestroyView(). " +
+                    "If you're accessing it in onDestroyView(), ensure it is before super.onDestroyView() is called."
         }
 
     private lateinit var viewModel: VM
@@ -60,7 +61,7 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
     }
 
     // 初始化视图
-    protected open fun initViews(savedInstanceState: Bundle?) {}
+    protected abstract fun initViews(savedInstanceState: Bundle?)
 
     // 初始化数据
     protected open fun initData() {}
