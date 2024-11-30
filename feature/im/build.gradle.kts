@@ -52,7 +52,9 @@ composeCompiler {
     // 在生成的代码中包含成分跟踪标记，Compose编译器可以将额外的跟踪信息注入到字节码中
     includeTraceMarkers = true
     // 稳定性配置文件
-    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("compose_compiler_config.conf")
+    stabilityConfigurationFiles.set(
+        listOf(rootProject.layout.projectDirectory.file("compose_compiler_config.conf"))
+    )
 }
 
 dependencies {

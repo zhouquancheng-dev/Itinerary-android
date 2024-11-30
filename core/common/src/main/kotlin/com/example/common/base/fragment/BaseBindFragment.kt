@@ -8,6 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -23,6 +26,12 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
         }
 
     private var currentToast: Toast? = null
+    protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        initActivityResultLauncher()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -47,6 +56,12 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
         super.onDestroyView()
     }
 
+    private fun initActivityResultLauncher() {
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            handleActivityResult(result)
+        }
+    }
+
     // 初始化视图
     protected abstract fun initViews(savedInstanceState: Bundle?)
 
@@ -55,6 +70,9 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     // 初始化监听器
     protected open fun initListeners() {}
+
+    // 处理 ActivityResult 回调
+    protected open fun handleActivityResult(result: ActivityResult) {}
 
     fun showToast(message: String, duration: Int = Toast.LENGTH_SHORT) {
         if (Looper.myLooper() == Looper.getMainLooper()) {
