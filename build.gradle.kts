@@ -8,6 +8,7 @@ buildscript {
     }
 
     dependencies {
+        classpath(libs.gradle)
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.kotlin.serialization)
         classpath(libs.lrouter.plugin)

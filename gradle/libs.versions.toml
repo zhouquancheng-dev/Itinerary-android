@@ -1,6 +1,6 @@
 # alphabetization   Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj Kk Ll Mm Nn Oo Pp Qq Rr Ss Tt Uu Vv Ww Xx Yy Zz
 [versions]
-agp = "8.7.2"
+agp = "8.7.3"
 appcompat = "1.7.0"
 android-material = "1.13.0-alpha08"
 androidx-test-ext-junit = "1.2.1"
@@ -19,16 +19,17 @@ coroutines-android = "1.9.0"
 coil3 = "3.0.4"
 cameraX = "1.5.0-alpha03"
 dataStore = "1.1.1"
-databinding-runtime = "8.7.2"
+databinding-runtime = "8.7.3"
 desugar-jdk-libs = "2.1.3"
 espresso-core = "3.6.1"
+gradle = "8.7.3"
 glide = "5.0.0-rc01"
 glide-compose = "1.0.0-beta01"
 gridlayout = "1.1.0-beta01"
 google-accompanist = "0.34.0"
 graphics-shapes = "1.0.1"
 hilt-navigation-compose = "1.2.0"
-hilt-android = "2.52"
+hilt-android = "2.53"
 junit = "4.13.2"
 junit-jupiter-api = "5.10.3"
 kotlin = "2.1.0"
@@ -36,9 +37,9 @@ ksp = "2.1.0-1.0.29"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-collections-immutable = "0.3.8"
 kotlinx-datetime = "0.6.1"
-lottie = "6.6.0"
+lottie = "6.6.1"
 lifecycle-common = "2.8.7"
-moshi = "1.15.1"
+moshi = "1.15.2"
 navigation-compose = "2.8.4"
 okhttp3 = "5.0.0-alpha.14"
 room = "2.6.1"
@@ -48,13 +49,13 @@ splashscreen = "1.2.0-alpha02"
 # github open source library
 composetheme = "1.2.0-alpha"
 capturable = "3.0.0"
-calendar-compose = "2.6.0"
+calendar-compose = "2.6.1"
 compose-placeholder = "1.0.8"
 compose-cropper = "0.4.0"
 compose-image-crop = "3.0.1"
 itextCore = "9.0.0"
 jiaozivideoplayer = "7.7.2.3300"
-lrouter = "1.0.7"
+lrouter = "1.0.8"
 mmkv = "2.0.1"
 permissionx = "1.8.1"
 pictureselector = "v3.11.2"
@@ -69,9 +70,9 @@ zip4j = "2.11.5"
 alicloud-httpdns = "2.5.0"
 amap-location = "6.4.7"
 bugly = "4.1.9.3"
-jiguang-jverification = "3.2.9"
-ossAndroidSdk = "2.9.19"
-tencent-imsdk-plus = "8.2.6325"
+jiguang-jverification = "3.3.0"
+ossAndroidSdk = "2.9.21"
+tencent-imsdk-plus = "8.3.6498"
 
 # 私有仓库
 aliyun-captcha = "1.8.3.1-20240506"
@@ -203,6 +204,8 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 # https://central.sonatype.com/artifact/com.google.dagger/hilt-android
 dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-android" }
 dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt-android" }
+
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 
 # https://central.sonatype.com/artifact/com.github.bumptech.glide/glide
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }

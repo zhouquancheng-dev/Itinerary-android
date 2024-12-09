@@ -98,6 +98,13 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
         startActivity(intent)
     }
 
+    protected inline fun <reified T : Activity> startActivityForResult(extras: Bundle? = null) {
+        val intent = Intent(requireActivity(), T::class.java).apply {
+            extras?.let { putExtras(it) }
+        }
+        activityResultLauncher.launch(intent)
+    }
+
     fun <T : View?> findViewById(@IdRes id: Int): T {
         return requireView().findViewById(id)
     }
