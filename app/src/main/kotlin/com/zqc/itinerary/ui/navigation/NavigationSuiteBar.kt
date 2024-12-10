@@ -22,7 +22,7 @@ fun NavigationSuiteScope.navigationSuiteBar(
         item(
             selected = selected,
             onClick = {
-                if (currentDestination != null && !currentDestination.isSameRoute(topLevelRoute)) {
+                if (currentDestination != null) {
                     onNavigateToDestination(topLevelRoute)
                 }
             },

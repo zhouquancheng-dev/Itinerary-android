@@ -61,7 +61,7 @@ fun ItineraryBottomBar(
             NavigationBarItem(
                 selected = selected,
                 onClick = {
-                    if (currentDestination != null && !currentDestination.isSameRoute(screen)) {
+                    if (currentDestination != null) {
                         onNavigateToDestination(screen)
                     }
                 },

@@ -95,7 +95,7 @@ class ItineraryAppState(
             restoreState = true
         }
 
-        when (topLevelRoute) {
+        when (topLevelRoute.route) {
             Home -> navController.navigateToHome(topLevelNavOptions)
             ScenicSpot -> navController.navigateToScenicSpot(topLevelNavOptions)
             Message -> navController.navigateToMessage(topLevelNavOptions)
