@@ -414,14 +414,15 @@ private fun ContentResolver.queryMediaImage28(imagePath: String): Uri? {
  * 将视频保存到系统相册
  * @param context 上下文
  * @param videoFile 视频文件路径
+ * @param deleteSource 是否删除源文件，默认为true删除
  * @return 成功返回true，失败返回false
  */
-fun saveVideoToGallery(context: Context, videoFile: String): Boolean {
+fun saveVideoToGallery(context: Context, videoFile: String, deleteSource: Boolean = true): Boolean {
     Log.d(TAG, "saveVideoToAlbum() videoFile = [$videoFile]")
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        saveVideoToAlbumBeforeQ(context, videoFile)
+        saveVideoToAlbumBeforeQ(context, videoFile, deleteSource)
     } else {
-        saveVideoToAlbumAfterQ(context, videoFile)
+        saveVideoToAlbumAfterQ(context, videoFile, deleteSource)
     }
 }
 
@@ -429,10 +430,11 @@ fun saveVideoToGallery(context: Context, videoFile: String): Boolean {
  * 保存视频到系统相册（适配Android Q及以上版本）
  * @param context 上下文
  * @param videoFile 视频文件路径
+ * @param deleteSource 是否删除源文件
  * @return 成功返回true，失败返回false
  */
 @Suppress("DEPRECATION")
-private fun saveVideoToAlbumAfterQ(context: Context, videoFile: String): Boolean {
+private fun saveVideoToAlbumAfterQ(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
     return try {
         val contentResolver = context.contentResolver
         val tempFile = File(videoFile)
@@ -440,7 +442,7 @@ private fun saveVideoToAlbumAfterQ(context: Context, videoFile: String): Boolean
         val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
 
         // 拷贝文件到新Uri
-        copyFileAfterQ(context, contentResolver, tempFile, uri)
+        copyFileAfterQ(context, contentResolver, tempFile, uri, deleteSource)
 
         // 更新Uri状态为可见
         contentValues.clear()
@@ -460,9 +462,10 @@ private fun saveVideoToAlbumAfterQ(context: Context, videoFile: String): Boolean
  * 保存视频到系统相册（适配Android Q以下版本）
  * @param context 上下文
  * @param videoFile 视频文件路径
+ * @param deleteSource 是否删除源文件
  * @return 成功返回true，失败返回false
  */
-private fun saveVideoToAlbumBeforeQ(context: Context, videoFile: String): Boolean {
+private fun saveVideoToAlbumBeforeQ(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
     val picDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
     val tempFile = File(videoFile)
     val destFile = File(picDir, "${context.packageName}${File.separator}${tempFile.name}")
@@ -478,6 +481,14 @@ private fun saveVideoToAlbumBeforeQ(context: Context, videoFile: String): Boolea
                 }
             }
         }
+
+        // 删除源文件
+        if (deleteSource) {
+            if (tempFile.exists()) {
+                tempFile.delete()
+            }
+        }
+
         // 通知媒体库更新
         MediaScannerConnection.scanFile(context, arrayOf(destFile.absolutePath), arrayOf("video/*")) { path, uri ->
             Log.d(TAG, "saveVideoToAlbum: $path $uri")
@@ -495,12 +506,14 @@ private fun saveVideoToAlbumBeforeQ(context: Context, videoFile: String): Boolea
  * @param localContentResolver 内容解析器
  * @param tempFile 临时文件
  * @param localUri 保存位置的Uri
+ * @param deleteSource 是否删除源文件
  */
 private fun copyFileAfterQ(
     context: Context,
     localContentResolver: ContentResolver,
     tempFile: File,
-    localUri: Uri?
+    localUri: Uri?,
+    deleteSource: Boolean
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
         context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.Q
@@ -510,7 +523,11 @@ private fun copyFileAfterQ(
             localContentResolver.openOutputStream(it)?.use { outputStream ->
                 Files.copy(tempFile.toPath(), outputStream)
             }
-            tempFile.delete() // 删除临时文件
+            if (deleteSource) {
+                if (tempFile.exists()) {
+                    tempFile.delete() // 删除临时文件
+                }
+            }
         }
     }
 }
