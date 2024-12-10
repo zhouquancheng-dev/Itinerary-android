@@ -5,6 +5,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -13,15 +14,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
 import com.example.common.di.network.NetworkMonitor
 import com.example.common.di.timezone.TimeZoneMonitor
-import com.zqc.itinerary.nav.Screen
-import com.zqc.itinerary.nav.Screen.HomeScreen
-import com.zqc.itinerary.nav.Screen.MessageScreen
-import com.zqc.itinerary.nav.Screen.ProfileScreen
-import com.zqc.itinerary.nav.Screen.ScenicSpotScreen
+import com.example.common.navigation.Home
+import com.example.common.navigation.Message
+import com.example.common.navigation.Profile
+import com.example.common.navigation.ScenicSpot
+import com.zqc.itinerary.nav.TopLevelRoute
 import com.zqc.itinerary.nav.navigateToHome
 import com.zqc.itinerary.nav.navigateToScenicSpot
 import com.zqc.itinerary.nav.navigateToMessage
 import com.zqc.itinerary.nav.navigateToProfile
+import com.zqc.itinerary.nav.topLevelRoutes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
@@ -56,7 +58,7 @@ class ItineraryAppState(
     networkMonitor: NetworkMonitor,
     timeZoneMonitor: TimeZoneMonitor
 ) {
-    val bottomNavItems = listOf(HomeScreen, ScenicSpotScreen, MessageScreen, ProfileScreen)
+    val bottomNavItems = topLevelRoutes
 
     val currentDestinationAsState: NavDestination?
         @Composable get() = navController
@@ -82,9 +84,9 @@ class ItineraryAppState(
      * only one copy of the destination of the back stack, and save and restore state whenever you
      * navigate to and from it.
      *
-     * @param topLevelDestination: The destination the app needs to navigate to.
+     * @param topLevelRoute: The destination the app needs to navigate to.
      */
-    fun navigateToTopLevelDestination(topLevelDestination: Screen<*>) {
+    fun navigateToTopLevelDestination(topLevelRoute : TopLevelRoute<*>) {
         val topLevelNavOptions = navOptions {
             popUpTo(navController.graph.findStartDestination().id) {
                 saveState = true
@@ -93,30 +95,28 @@ class ItineraryAppState(
             restoreState = true
         }
 
-        when (topLevelDestination) {
-            HomeScreen -> navController.navigateToHome(topLevelNavOptions)
-            ScenicSpotScreen -> navController.navigateToScenicSpot(topLevelNavOptions)
-            MessageScreen -> navController.navigateToMessage(topLevelNavOptions)
-            ProfileScreen -> navController.navigateToProfile(topLevelNavOptions)
+        when (topLevelRoute) {
+            Home -> navController.navigateToHome(topLevelNavOptions)
+            ScenicSpot -> navController.navigateToScenicSpot(topLevelNavOptions)
+            Message -> navController.navigateToMessage(topLevelNavOptions)
+            Profile -> navController.navigateToProfile(topLevelNavOptions)
         }
     }
 }
 
-internal fun NavDestination?.isTopLevelDestinationInHierarchy(destination: Screen<*>): Boolean {
-    return this?.hierarchy?.any {
-        it.route == destination.route!!::class.qualifiedName
-    } == true
+internal fun NavDestination?.isTopLevelDestinationInHierarchy(topLevelRoute: TopLevelRoute<*>): Boolean {
+    return this?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true
 }
 
-internal fun NavDestination?.isSameRoute(screen: Screen<*>): Boolean {
-    return this?.route == screen.route!!::class.qualifiedName ||
-            this?.hierarchy?.any { it.route == screen.route::class.qualifiedName } == true
+internal fun NavDestination?.isSameRoute(topLevelRoute: TopLevelRoute<*>): Boolean {
+    return this?.route == topLevelRoute.route::class.qualifiedName ||
+            this?.hierarchy?.any { it.hasRoute(topLevelRoute.route::class) } == true
 }
 
-internal fun NavDestination?.shouldShowBottomBar(bottomNavItems: List<Screen<*>>): Boolean {
+internal fun NavDestination?.shouldShowBottomBar(bottomNavItems: List<TopLevelRoute<*>>): Boolean {
     return this?.route?.let { route ->
         bottomNavItems.any { screen ->
-            route == screen.route!!::class.qualifiedName
+            route == screen.route::class.qualifiedName
         }
     } == true
 }

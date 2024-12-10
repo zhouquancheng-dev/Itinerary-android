@@ -23,19 +23,16 @@ import com.example.ui.theme.JetItineraryTheme
 import com.example.ui.utils.subscribe
 import com.tencent.imsdk.v2.V2TIMManager
 import com.tencent.imsdk.v2.V2TIMValueCallback
-import com.zqc.itinerary.nav.Screen
-import com.zqc.itinerary.nav.Screen.HomeScreen
-import com.zqc.itinerary.nav.Screen.MessageScreen
-import com.zqc.itinerary.nav.Screen.ProfileScreen
-import com.zqc.itinerary.nav.Screen.ScenicSpotScreen
+import com.zqc.itinerary.nav.TopLevelRoute
+import com.zqc.itinerary.nav.topLevelRoutes
 import com.zqc.itinerary.ui.isSameRoute
 import com.zqc.itinerary.ui.isTopLevelDestinationInHierarchy
 
 @Composable
 fun ItineraryBottomBar(
     modifier: Modifier = Modifier,
-    destinations: List<Screen<*>>,
-    onNavigateToDestination: (Screen<*>) -> Unit,
+    destinations: List<TopLevelRoute<*>>,
+    onNavigateToDestination: (TopLevelRoute<*>) -> Unit,
     currentDestination: NavDestination?
 ) {
     var totalUnreadCount by remember { mutableLongStateOf(0L) }
@@ -59,7 +56,7 @@ fun ItineraryBottomBar(
     }
 
     NavigationBar(modifier = modifier) {
-        destinations.forEachIndexed { itemIndex, screen: Screen<*> ->
+        destinations.forEachIndexed { itemIndex, screen: TopLevelRoute<*> ->
             val selected = currentDestination.isTopLevelDestinationInHierarchy(screen)
             NavigationBarItem(
                 selected = selected,
@@ -86,10 +83,9 @@ fun ItineraryBottomBar(
 @PreviewLightDark
 @Composable
 fun BottomBarPreview() {
-    val bottomNavItems = listOf(HomeScreen, ScenicSpotScreen, MessageScreen, ProfileScreen)
     JetItineraryTheme {
         ItineraryBottomBar(
-            destinations = bottomNavItems,
+            destinations = topLevelRoutes,
             onNavigateToDestination = {},
             currentDestination = null
         )
