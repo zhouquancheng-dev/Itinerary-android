@@ -26,6 +26,7 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
         }
 
     private var currentToast: Toast? = null
+    protected open val shouldClearBinding: Boolean = true
     protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +51,9 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
     }
 
     override fun onDestroyView() {
-        _binding = null
+        if (shouldClearBinding) {
+            _binding = null
+        }
         currentToast?.cancel()
         currentToast = null
         super.onDestroyView()
@@ -107,6 +110,13 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
     fun <T : View?> findViewById(@IdRes id: Int): T {
         return requireView().findViewById(id)
+    }
+
+    /**
+     * 手动清除 binding
+     */
+    protected open fun clearBinding() {
+        _binding = null
     }
 
 }

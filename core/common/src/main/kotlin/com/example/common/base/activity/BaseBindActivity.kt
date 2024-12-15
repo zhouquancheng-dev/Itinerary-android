@@ -26,6 +26,7 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private var currentToast: Toast? = null
     protected open val needSystemBarsPadding: Boolean = true
+    protected open val shouldClearBinding: Boolean = true
     protected lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +42,9 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        _binding = null
+        if (shouldClearBinding) {
+            _binding = null
+        }
         currentToast?.cancel()
         currentToast = null
         super.onDestroy()
@@ -112,6 +115,13 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
             extras?.let { putExtras(it) }
         }
         activityResultLauncher.launch(intent)
+    }
+
+    /**
+     * 手动清除 binding
+     */
+    protected open fun clearBinding() {
+        _binding = null
     }
 
 }

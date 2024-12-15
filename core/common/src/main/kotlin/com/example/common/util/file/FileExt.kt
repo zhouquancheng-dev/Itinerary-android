@@ -64,7 +64,7 @@ val Uri.fileName: String
     get() = Uri.decode(path).toString().substringAfterLast("/")
 
 /**
- * 共享Uri文件
+ * 分享Uri文件
  * @param context 上下文
  * @param cacheFile 缓存文件
  * @param packageName 目标应用的包名（可选）
@@ -81,7 +81,7 @@ fun Uri.share(context: Context, cacheFile: File, packageName: String? = null) {
 }
 
 /**
- * 共享文件
+ * 分享文件
  * @param context 上下文
  * @param packageName 目标应用的包名（可选）
  */
@@ -111,7 +111,7 @@ fun Context.openFile(path: String) {
 }
 
 /**
- * 批量共享图片文件
+ * 批量分享图片文件
  */
 fun List<File>.sharePicFile(context: Context, packageName: String? = null) {
     val uriList = map {
@@ -127,7 +127,7 @@ fun List<File>.sharePicFile(context: Context, packageName: String? = null) {
 }
 
 /**
- * 批量共享图片Uri
+ * 批量分享图片Uri
  */
 fun List<Uri>.sharePicUri(context: Context, packageName: String? = null) {
     val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
