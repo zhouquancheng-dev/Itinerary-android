@@ -2,7 +2,7 @@
 [versions]
 agp = "8.7.3"
 appcompat = "1.7.0"
-android-material = "1.13.0-alpha08"
+android-material = "1.13.0-alpha09"
 androidx-test-ext-junit = "1.2.1"
 activity = "1.9.3"
 activity-compose = "1.9.3"
@@ -15,29 +15,28 @@ core-ktx = "1.15.0"
 constraintlayout = "2.2.0"
 constraintlayout-compose = "1.1.0"
 compose-bom = "2024.12.01"
-coroutines-android = "1.9.0"
+coroutines-android = "1.10.1"
 coil3 = "3.0.4"
 cameraX = "1.5.0-alpha04"
 dataStore = "1.1.1"
 databinding-runtime = "8.7.3"
-desugar-jdk-libs = "2.1.3"
+desugar-jdk-libs = "2.1.4"
 espresso-core = "3.6.1"
-gradle = "8.7.3"
 glide = "5.0.0-rc01"
 glide-compose = "1.0.0-beta01"
 gridlayout = "1.1.0-beta01"
-google-accompanist = "0.34.0"
+google-accompanist = "0.37.0"
 graphics-shapes = "1.0.1"
 hilt-navigation-compose = "1.2.0"
-hilt-android = "2.53.1"
+hilt-android = "2.54"
 junit = "4.13.2"
-junit-jupiter-api = "5.10.3"
+junit-jupiter-api = "5.11.4"
 kotlin = "2.1.0"
 ksp = "2.1.0-1.0.29"
 kotlinx-serialization-json = "1.7.3"
 kotlinx-collections-immutable = "0.3.8"
 kotlinx-datetime = "0.6.1"
-lottie = "6.6.1"
+lottie = "6.6.2"
 lifecycle-common = "2.8.7"
 moshi = "1.15.2"
 navigation-compose = "2.8.5"
@@ -48,7 +47,7 @@ splashscreen = "1.2.0-alpha02"
 
 # github open source library
 composetheme = "1.2.0-alpha"
-capturable = "3.0.0"
+capturable = "3.0.1"
 calendar-compose = "2.6.1"
 compose-placeholder = "1.0.8"
 compose-cropper = "0.4.0"
@@ -59,7 +58,7 @@ lrouter = "1.0.8"
 mmkv = "2.0.1"
 permissionx = "1.8.1"
 pictureselector = "v3.11.2"
-reorderable = "2.4.0"
+reorderable = "2.4.2"
 threetenabp = "1.4.8"
 toaster = "12.6"
 utilcodex = "1.31.1"
@@ -68,7 +67,7 @@ zip4j = "2.11.5"
 
 # 第三方平台服务
 alicloud-httpdns = "2.5.0"
-amap-location = "6.4.7"
+amap-location = "6.4.8"
 bugly = "4.1.9.3"
 jiguang-jverification = "3.3.0"
 ossAndroidSdk = "2.9.21"
@@ -114,6 +113,7 @@ androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version
 # https://mvnrepository.com/artifact/androidx.databinding/databinding-runtime
 androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databinding-runtime" }
 
+# https://maven.google.com/web/index.html?q=androidx#androidx.activity
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 # https://mvnrepository.com/artifact/androidx.activity/activity-compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
@@ -204,8 +204,6 @@ desugar-jdk-libs = { group = "com.android.tools", name = "desugar_jdk_libs", ver
 # https://central.sonatype.com/artifact/com.google.dagger/hilt-android
 dagger-hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt-android" }
 dagger-hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt-android" }
-
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
 
 # https://central.sonatype.com/artifact/com.github.bumptech.glide/glide
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
