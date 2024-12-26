@@ -20,7 +20,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 object FlowBus {
-    val TAG: String = FlowBus::class.java.simpleName
+    const val TAG: String = "FlowBus"
 
     val events = ConcurrentHashMap<Class<*>, MutableSharedFlow<Any>>()
     val stickyEvents = ConcurrentHashMap<Class<*>, MutableSharedFlow<Any>>()
@@ -34,9 +34,9 @@ object FlowBus {
     var errorHandler: ((Throwable) -> Unit)? = null
 
     init {
-        // 定时清理未使用的事件
+        // 定时清理未使用的事件，每半小时执行一次清理任务
         scheduledExecutorService.scheduleWithFixedDelay(
-            { cleanUp() }, 1, 1, TimeUnit.HOURS
+            { cleanUp() }, 1, 30, TimeUnit.MINUTES
         )
     }
 
@@ -49,6 +49,7 @@ object FlowBus {
 
     /**
      * 清理未使用的事件流。
+     * 定时清理已无订阅者的事件流。
      */
     private fun cleanUp() {
         cleanMap(events)
@@ -60,17 +61,19 @@ object FlowBus {
      * @param eventMap 事件映射
      */
     private fun cleanMap(eventMap: ConcurrentHashMap<Class<*>, MutableSharedFlow<Any>>) {
-        eventMap.entries.removeIf { it.value.subscriptionCount.value == 0 }
+        eventMap.entries.removeIf {
+            it.value.subscriptionCount.value == 0
+        }
     }
 
     /**
-     * 发布单个事件
+     * 发布单个事件。
      * @param event 要发布的事件
      * @param sticky 是否为粘性事件，默认为 false
      */
     inline fun <reified T : Any> post(event: T, sticky: Boolean = false) {
         val flow = getOrCreateFlow<T>(sticky)
-        if (AppConfig.IS_DEBUG) {
+        if (AppConfig.DEBUG) {
             Log.d(TAG, "Posting event: ${T::class.java.simpleName}, sticky: $sticky")
         }
         executorService.execute {
@@ -83,7 +86,7 @@ object FlowBus {
     }
 
     /**
-     * 批量发布多个事件
+     * 批量发布多个事件。
      * @param events 要发布的事件列表
      * @param sticky 是否为粘性事件，默认为 false
      */
@@ -107,7 +110,7 @@ object FlowBus {
         }
 
         val flow = getOrCreateFlow<T>(sticky)
-        if (AppConfig.IS_DEBUG) {
+        if (AppConfig.DEBUG) {
             Log.d(TAG, "Posting event: ${T::class.java.simpleName}, sticky: $sticky")
         }
         executorService.execute {
@@ -118,41 +121,6 @@ object FlowBus {
                 errorHandler?.invoke(e) ?: Log.e(TAG, "Error posting event: ${T::class.java.simpleName}", e)
             }
         }
-    }
-
-    /**
-     * 订阅事件。
-     * @param owner LifecycleOwner，事件订阅的生命周期所有者
-     * @param sticky 是否订阅粘性事件，默认为 false
-     * @param dispatcher 协程调度器，默认为 [Dispatchers.Default]
-     * @param singleEvent 是否为一次性订阅，默认为 false
-     * @param filter 事件过滤器，默认为 true
-     * @param onEvent 事件处理函数
-     */
-    inline fun <reified T : Any> subscribe(
-        owner: LifecycleOwner,
-        sticky: Boolean = false,
-        dispatcher: CoroutineDispatcher = Dispatchers.Default,
-        singleEvent: Boolean = false,
-        noinline filter: (T) -> Boolean = { true },
-        crossinline onEvent: (T) -> Unit
-    ): Job {
-        val flow = getOrCreateFlow<T>(sticky).asSharedFlow()
-        val scope = owner.lifecycleScope
-
-        val job = scope.launch(dispatcher) {
-            flow.filterIsInstance<T>()
-                .filter { filter(it) }
-                .collect { event ->
-                    if (AppConfig.IS_DEBUG) {
-                        Log.d(TAG, "Receiving event: ${T::class.java.simpleName}")
-                    }
-                    onEvent(event)
-                    if (singleEvent) cancel()
-                }
-        }
-        job.bindToLifecycle(owner.lifecycle)
-        return job
     }
 
     /**
@@ -171,13 +139,49 @@ object FlowBus {
     }
 
     /**
+     * 订阅事件。
+     * @param owner LifecycleOwner，事件订阅的生命周期所有者
+     * @param sticky 是否订阅粘性事件，默认为 false
+     * @param dispatcher 协程调度器，默认为 [Dispatchers.Default]
+     * @param singleEvent 是否为一次性订阅，默认为 false
+     * @param filter 事件过滤器，默认为 { true }
+     * @param onEvent 事件处理函数
+     * @return 返回一个 Job，用于管理该订阅的生命周期
+     */
+    inline fun <reified T : Any> subscribe(
+        owner: LifecycleOwner,
+        sticky: Boolean = false,
+        dispatcher: CoroutineDispatcher = Dispatchers.Default,
+        singleEvent: Boolean = false,
+        noinline filter: (T) -> Boolean = { true },
+        crossinline onEvent: (T) -> Unit
+    ): Job {
+        val flow = getOrCreateFlow<T>(sticky).asSharedFlow()
+        val scope = owner.lifecycleScope
+
+        val job = scope.launch(dispatcher) {
+            flow.filterIsInstance<T>()
+                .filter { filter(it) }
+                .collect { event ->
+                    if (AppConfig.DEBUG) {
+                        Log.d(TAG, "Receiving event: ${T::class.java.simpleName}")
+                    }
+                    onEvent(event)
+                    if (singleEvent) cancel()  // 如果是一次性事件，收集后取消订阅
+                }
+        }
+        job.bindToLifecycle(owner.lifecycle)  // 绑定生命周期
+        return job
+    }
+
+    /**
      * 获取事件历史记录。
      * @param sticky 是否获取粘性事件的历史记录，默认为 false
-     * @return 事件的历史记录列表
+     * @return 返回该类型事件的历史记录列表
      */
     inline fun <reified T : Any> getEventHistory(sticky: Boolean = false): List<T> {
         val flow = getOrCreateFlow<T>(sticky)
-        return flow.replayCache.filterIsInstance<T>()
+        return flow.replayCache.filterIsInstance<T>()  // 获取已缓存的事件历史
     }
 
     /**
@@ -187,4 +191,5 @@ object FlowBus {
     fun setGlobalErrorHandler(handler: (Throwable) -> Unit) {
         errorHandler = handler
     }
+
 }

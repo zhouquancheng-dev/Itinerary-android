@@ -67,7 +67,7 @@ class MyApplication : BaseApplication(), SingletonImageLoader.Factory {
             .memoryCachePolicy(CachePolicy.ENABLED)
             .diskCachePolicy(CachePolicy.ENABLED)
             .logger(
-                if (AppConfig.IS_DEBUG) {
+                if (AppConfig.DEBUG) {
                     DebugLogger()
                 } else {
                     null
@@ -94,7 +94,7 @@ class MyApplication : BaseApplication(), SingletonImageLoader.Factory {
      * 初始化App的配置信息
      */
     private fun initAppConfig() {
-        AppConfig.IS_DEBUG = BuildConfig.DEBUG
+        AppConfig.DEBUG = BuildConfig.DEBUG
         AppConfig.APP_NAME = BuildConfig.APP_NAME
         AppConfig.APPLICATION_ID = BuildConfig.APPLICATION_ID
         AppConfig.PRIVACY_URL = BuildConfig.PRIVACY_URL

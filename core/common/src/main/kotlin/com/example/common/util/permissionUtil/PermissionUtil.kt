@@ -564,7 +564,7 @@ object AllowPermissionUseCase {
     private suspend fun shouldShowPermissionRequest(context: Context, tag: String): Boolean {
         val lastRequestTime = TimeDataSource.getTime(context, tag)
         val currentTime = System.currentTimeMillis()
-        val minIntervalTime = if (AppConfig.IS_DEBUG) 60 * 1000 else 24 * 60 * 60 * 1000
+        val minIntervalTime = if (AppConfig.DEBUG) 60 * 1000 else 24 * 60 * 60 * 1000
         val shouldShow = currentTime - lastRequestTime > minIntervalTime
         LogUtils.d(
             "最后拒绝时间: $lastRequestTime",

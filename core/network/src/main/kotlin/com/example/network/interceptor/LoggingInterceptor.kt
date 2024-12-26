@@ -6,7 +6,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 fun loggingInterceptor(): Interceptor {
     val logging = HttpLoggingInterceptor()
-    logging.level = if (AppConfig.IS_DEBUG) {
+    logging.level = if (AppConfig.DEBUG) {
         HttpLoggingInterceptor.Level.BODY
     } else  {
         HttpLoggingInterceptor.Level.NONE

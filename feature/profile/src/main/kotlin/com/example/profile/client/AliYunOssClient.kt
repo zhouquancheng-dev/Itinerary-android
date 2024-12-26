@@ -50,7 +50,7 @@ class AliYunOssClient @Inject constructor(@ApplicationContext private val contex
         securityToken: String
     ): OSSClient? {
         // 开启日志记录, 将一些日志信息记录在本地, 手机内置sd卡路径\OSSLog\logs.csv下写入日志文件
-        if (AppConfig.IS_DEBUG) {
+        if (AppConfig.DEBUG) {
             OSSLog.enableLog()
         }
 
