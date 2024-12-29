@@ -16,26 +16,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlin.math.roundToInt
-import android.util.SparseArray
-import android.animation.ValueAnimator
 import android.graphics.*
+import com.example.common.util.rv.RecyclerViewDecoration.Edge.Companion.computeEdge
+import kotlin.math.ceil
 
 /**
- * Versatile RecyclerView Divider Decoration
+ * RecyclerView分割线工具
  *
- * Features:
- * 1. Image-based dividers
- * 2. Color-based dividers
- * 3. Adjustable spacing and margins
- * 4. Conditional divider visibility via callbacks
- * 5. Optional display of dividers at edges
- * 6. Type-specific divider visibility
- * 7. Support for all LayoutManagers (Linear, Grid, StaggeredGrid)
- * 8. Enhanced support for evenly spaced grid dividers
- * 9. Group-specific divider customization
- * 10. Animated, clickable, and dynamic dividers
- * 11. Auto Dark Mode support
- * 12. Customizable dashed or solid line styles
+ * 1. 分隔图片
+ * 2. 分隔颜色
+ * 3. 分隔间距
+ * 4. 回调函数判断间隔
+ * 5. 首尾是否显示分隔线, 可以展示表格效果
+ * 6. 类型池来指定是否显示分割线
+ * 7. 支持全部的LayoutManager, 竖向、横向、网格分割线
+ * 8. 支持均布网格分隔物
+ * 9. 支持分组条目的分割线
  */
 class RecyclerViewDecoration(private val context: Context) : RecyclerView.ItemDecoration() {
 
@@ -57,48 +53,20 @@ class RecyclerViewDecoration(private val context: Context) : RecyclerView.ItemDe
             isEndVisible = value
         }
 
-    /** Show dividers for expanded items */
-    var isExpandVisible = false
+    /**
+     * 展开分组条目后该条目是否显示分割线
+     */
+    var expandVisible = false
 
-    /** Orientation of dividers */
     var orientation = DividerOrientation.VERTICAL
 
-    private var dividerSize = 1
+    private var size = 1
     private var marginStart = 0
     private var marginEnd = 0
-    private var dividerDrawable: Drawable? = null
+    private var divider: Drawable? = null
 
     /** Allowed types for divider visibility */
     private var typePool: MutableList<Int>? = null
-
-    /** Dynamic visibility toggle */
-    var isEnabled: Boolean = true
-
-    /** Divider click listener */
-    var onDividerClickListener: ((Int) -> Unit)? = null
-
-    /** Custom draw strategy */
-    var customDrawStrategy: ((Canvas, RecyclerView, Int) -> Unit)? = null
-
-    /** Animated alpha for dividers */
-    var alpha: Int = 255
-
-    /** Dynamic divider size */
-    var dividerSizeCallback: ((Int) -> Int)? = null
-
-    /** ViewType-specific divider styles */
-    private val viewTypeDividerMap = mutableMapOf<Int, Drawable>()
-
-    /** Group divider logic */
-    var isGroupDividerEnabled: Boolean = false
-    var groupCallback: ((Int) -> Boolean)? = null
-
-    /** Cached offsets for performance */
-    private val offsetCache = SparseArray<Rect>()
-
-    /** Reusable objects for performance */
-    private val reusableRect = Rect()
-    private val reusablePaint = Paint()
 
     /** Add types for which dividers should be visible */
     fun addTypes(@LayoutRes vararg types: Int) {
@@ -106,86 +74,119 @@ class RecyclerViewDecoration(private val context: Context) : RecyclerView.ItemDe
         typePool?.addAll(types.toList())
     }
 
-    /** Set a drawable as the divider */
-    fun setDividerDrawable(drawable: Drawable) {
-        dividerDrawable = drawable
+    /**
+     * 将图片作为分割线, 图片宽高即分割线宽高
+     */
+    fun setDrawable(drawable: Drawable) {
+        divider = drawable
     }
 
-    /** Set a drawable resource as the divider */
-    fun setDividerDrawable(@DrawableRes drawableRes: Int) {
-        dividerDrawable = ContextCompat.getDrawable(context, drawableRes)
-            ?: throw IllegalArgumentException("Drawable resource not found")
-    }
-
-    /** Set a solid color as the divider */
-    fun setDividerColor(@ColorInt color: Int) {
-        dividerDrawable = ColorDrawable(color)
-    }
-
-    /** Set a color resource as the divider */
-    fun setDividerColorRes(@ColorRes colorRes: Int) {
-        dividerDrawable = ColorDrawable(ContextCompat.getColor(context, colorRes))
-    }
-
-    /** Set the background color for dividers */
-    fun setDividerBackground(@ColorInt color: Int) {
-        reusablePaint.color = color
-    }
-
-    /** Set divider size in pixels or dp */
-    fun setDividerSize(size: Int, isDp: Boolean = false) {
-        dividerSize = if (isDp) {
-            (size * context.resources.displayMetrics.density).roundToInt()
-        } else {
-            size
-        }
-    }
-
-    /** Set margins for the divider */
-    fun setDividerMargin(start: Int, end: Int, isDp: Boolean = true) {
-        val density = context.resources.displayMetrics.density
-        marginStart = if (isDp) (start * density).roundToInt() else start
-        marginEnd = if (isDp) (end * density).roundToInt() else end
-    }
-
-    /** Add ViewType-specific dividers */
-    fun addViewTypeDivider(viewType: Int, drawable: Drawable) {
-        viewTypeDividerMap[viewType] = drawable
-    }
-
-    fun addViewTypeDivider(viewType: Int, @DrawableRes drawableRes: Int) {
+    /**
+     * 将图片作为分割线, 图片宽高即分割线宽高
+     */
+    fun setDrawable(@DrawableRes drawableRes: Int) {
         val drawable = ContextCompat.getDrawable(context, drawableRes)
-            ?: throw IllegalArgumentException("Drawable resource not found")
-        viewTypeDividerMap[viewType] = drawable
+            ?: throw IllegalArgumentException("Drawable cannot be find")
+        divider = drawable
     }
 
-    /** Dynamic divider style */
-    fun setDividerStyle(color: Int, strokeWidth: Float, dashEffect: FloatArray? = null) {
-        reusablePaint.apply {
-            this.color = color
-            this.style = Paint.Style.STROKE
-            this.strokeWidth = strokeWidth
-            this.pathEffect = dashEffect?.let { DashPathEffect(it, 0f) }
+    /**
+     * 设置分割线颜色, 如果不设置分割线宽度[setDivider]则分割线宽度默认为1px
+     * 所谓分割线宽度指的是分割线的粗细, 而非水平宽度
+     */
+    fun setColor(@ColorInt color: Int) {
+        divider = ColorDrawable(color)
+    }
+
+    /**
+     * 设置分割线颜色, 如果不设置分割线宽度[setDivider]则分割线宽度默认为1px
+     * 所谓分割线宽度指的是分割线的粗细, 而非水平宽度
+     *
+     * @param color 16进制的颜色值字符串
+     */
+    fun setColor(color: String) {
+        val parseColor = Color.parseColor(color)
+        divider = ColorDrawable(parseColor)
+    }
+
+    /**
+     * 设置分割线颜色, 如果不设置分割线宽度[setDivider]则分割线宽度默认为1px
+     * 所谓分割线宽度指的是分割线的粗细, 而非水平宽度
+     *
+     * @param color 颜色资源Id
+     */
+    fun setColorRes(@ColorRes color: Int) {
+        val colorRes = ContextCompat.getColor(context, color)
+        divider = ColorDrawable(colorRes)
+    }
+
+    private var background = Color.TRANSPARENT
+
+    /**
+     * 分割线背景色
+     * 分割线有时候会存在间距(例如配置[setMargin])或属于虚线, 这个时候暴露出来的是RecyclerView的背景色, 所以我们可以设置一个背景色来调整
+     * 可以设置背景色解决不统一的问题, 默认为透明[Color.TRANSPARENT]
+     */
+    fun setBackground(@ColorInt color: Int) {
+        background = color
+    }
+
+    /**
+     * 分割线背景色
+     * 分割线有时候会存在间距(例如配置[setMargin])或属于虚线, 这个时候暴露出来的是RecyclerView的背景色, 所以我们可以设置一个背景色来调整
+     * 可以设置背景色解决不统一的问题, 默认为透明[Color.TRANSPARENT]
+     *
+     * @param colorString 颜色的16进制字符串
+     */
+    fun setBackground(colorString: String) {
+        try {
+            background = Color.parseColor(colorString)
+        } catch (e: Exception) {
+            throw IllegalArgumentException("Unknown color: $colorString")
         }
     }
 
-    /** Dynamic divider animation */
-    fun setDividerAnimation(parent: RecyclerView, startColor: Int, endColor: Int, duration: Long) {
-        val animator = ValueAnimator.ofArgb(startColor, endColor).apply {
-            this.duration = duration
-            addUpdateListener { animation ->
-                reusablePaint.color = animation.animatedValue as Int
-                parent.invalidateItemDecorations() // 刷新分割线
-            }
-        }
-        animator.start()
+    /**
+     * 分割线背景色
+     * 分割线有时候会存在间距(例如配置[setMargin])或属于虚线, 这个时候暴露出来的是RecyclerView的背景色, 所以我们可以设置一个背景色来调整
+     * 可以设置背景色解决不统一的问题, 默认为透明[Color.TRANSPARENT]
+     *
+     */
+    fun setBackgroundRes(@ColorRes color: Int) {
+        background = ContextCompat.getColor(context, color)
     }
 
-    /** Auto adjust divider color for Dark Mode */
-    fun setAutoDarkModeSupport(lightColor: Int, darkColor: Int) {
-        val uiMode = context.resources.configuration.uiMode
-        val isDarkMode = (uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-        setDividerColor(if (isDarkMode) darkColor else lightColor)
+    /**
+     * 设置分割线宽度
+     * 如果使用[setDrawable]则无效
+     * @param width 分割线的尺寸 (分割线垂直时为宽, 水平时为高 )
+     * @param dp 是否单位为dp, 默认为false即使用像素单位
+     */
+    fun setDivider(width: Int = 1, dp: Boolean = false) {
+        if (!dp) {
+            this.size = width
+        } else {
+            val density = context.resources.displayMetrics.density
+            this.size = (density * width).roundToInt()
+        }
+    }
+
+    /**
+     * 设置分隔左右或上下间距, 依据分割线为垂直或者水平决定具体方向间距
+     *
+     * @param start 分割线为水平则是左间距, 垂直则为上间距
+     * @param end 分割线为水平则是右间距, 垂直则为下间距
+     * @param dp 是否单位为dp, 默认为true即使用dp单位
+     */
+    fun setMargin(start: Int = 0, end: Int = 0, dp: Boolean = true) {
+        if (!dp) {
+            this.marginStart = start
+            this.marginEnd = end
+        } else {
+            val density = context.resources.displayMetrics.density
+            this.marginStart = (start * density).roundToInt()
+            this.marginEnd = (end * density).roundToInt()
+        }
     }
 
     override fun getItemOffsets(
@@ -194,176 +195,527 @@ class RecyclerViewDecoration(private val context: Context) : RecyclerView.ItemDe
         parent: RecyclerView,
         state: RecyclerView.State
     ) {
-        if (!isEnabled) return
-
-        val position = parent.getChildAdapterPosition(view)
-        if (offsetCache[position] == null) {
-            val rect = Rect()
-            calculateOffsets(position, rect, parent)
-            offsetCache.put(position, rect)
-        }
-        outRect.set(offsetCache[position])
-    }
-
-    private fun calculateOffsets(position: Int, rect: Rect, parent: RecyclerView) {
         val layoutManager = parent.layoutManager ?: return
-        val edge = Edge.calculate(position, layoutManager)
+        val position = parent.getChildAdapterPosition(view)
 
-        val height = dividerSizeCallback?.invoke(position)
-            ?: dividerDrawable?.intrinsicHeight?.takeIf { it > 0 } ?: dividerSize
-        val width = dividerSizeCallback?.invoke(position)
-            ?: dividerDrawable?.intrinsicWidth?.takeIf { it > 0 } ?: dividerSize
+        val height = when {
+            divider == null -> size
+            divider?.intrinsicHeight != -1 -> divider!!.intrinsicHeight
+            divider?.intrinsicWidth != -1 -> divider!!.intrinsicWidth
+            else -> size
+        }
+        val width = when {
+            divider == null -> size
+            divider?.intrinsicWidth != -1 -> divider!!.intrinsicWidth
+            divider?.intrinsicHeight != -1 -> divider!!.intrinsicHeight
+            else -> size
+        }
 
+        val edge = computeEdge(position, layoutManager)
         adjustOrientation(layoutManager)
 
         when (orientation) {
             DividerOrientation.HORIZONTAL -> {
-                val top = if (isStartVisible && edge.isTop) height else 0
-                val bottom = if (isEndVisible || !edge.isBottom) height else 0
-                rect.set(0, top, 0, bottom)
+                val top = if (isStartVisible && edge.top) height else 0
+                val bottom = if ((isEndVisible && edge.bottom) || !edge.bottom) height else 0
+                outRect.set(0, top, 0, bottom)
             }
+
             DividerOrientation.VERTICAL -> {
-                val left = if (isStartVisible && edge.isLeft) width else 0
-                val right = if (isEndVisible || !edge.isRight) width else 0
-                rect.set(left, 0, right, 0)
+                val left = if (isStartVisible && edge.left) width else 0
+                val right = if ((isEndVisible && edge.right) || !edge.right) width else 0
+                outRect.set(left, 0, right, 0)
             }
-            DividerOrientation.GRID -> applyGridOffsets(rect, position, layoutManager, parent, width, height)
+
+            DividerOrientation.GRID -> {
+                val spanCount = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.spanCount
+                    is StaggeredGridLayoutManager -> layoutManager.spanCount
+                    else -> 1
+                }
+
+                val spanGroupCount = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.spanSizeLookup.getSpanGroupIndex(
+                        state.itemCount - 1,
+                        spanCount
+                    ) + 1
+                    is StaggeredGridLayoutManager -> ceil(state.itemCount / spanCount.toFloat()).toInt()
+                    else -> 1
+                }
+
+                val spanIndex = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.spanSizeLookup.getSpanIndex(
+                        position,
+                        spanCount
+                    )
+                    is StaggeredGridLayoutManager -> (layoutManager.findViewByPosition(position)!!.layoutParams as StaggeredGridLayoutManager.LayoutParams).spanIndex
+                    else -> 0
+                }
+
+                val spanGroupIndex = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.spanSizeLookup.getSpanGroupIndex(
+                        position,
+                        spanCount
+                    )
+                    is StaggeredGridLayoutManager -> ceil((position + 1) / spanCount.toFloat()).toInt() - 1
+                    else -> 0
+                }
+
+                val spanSize = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.spanSizeLookup.getSpanSize(position)
+                    else -> 1
+                }
+
+                val orientation = when (layoutManager) {
+                    is GridLayoutManager -> layoutManager.orientation
+                    is StaggeredGridLayoutManager -> layoutManager.orientation
+                    else -> RecyclerView.VERTICAL
+                }
+
+                val left = when {
+                    isEndVisible && orientation == RecyclerView.VERTICAL -> width - spanIndex * width / spanCount
+                    isStartVisible && orientation == RecyclerView.HORIZONTAL -> width - spanIndex * width / spanCount
+                    else -> spanIndex * width / spanCount
+                }
+
+                val right = when {
+                    isEndVisible && orientation == RecyclerView.VERTICAL -> (spanIndex + spanSize) * width / spanCount
+                    isStartVisible && orientation == RecyclerView.HORIZONTAL -> (spanIndex + spanSize) * width / spanCount
+                    else -> width - (spanIndex + spanSize) * width / spanCount
+                }
+
+                val top = when {
+                    layoutManager is StaggeredGridLayoutManager -> {
+                        if (orientation == RecyclerView.VERTICAL) {
+                            if (edge.top) if (isStartVisible) height else 0 else 0
+                        } else {
+                            if (edge.left) if (isEndVisible) width else 0 else 0
+                        }
+                    }
+                    (isStartVisible || isEndVisible) && orientation == RecyclerView.VERTICAL -> height - spanGroupIndex * height / spanGroupCount
+                    else -> spanGroupIndex * height / spanGroupCount
+                }
+
+
+                val bottom = when {
+                    layoutManager is StaggeredGridLayoutManager -> {
+                        if (orientation == RecyclerView.VERTICAL) {
+                            if (edge.bottom) if (isStartVisible) height else 0 else height
+                        } else {
+                            if (edge.right) if (isEndVisible) width else 0 else height
+                        }
+                    }
+
+                    isStartVisible && orientation == RecyclerView.VERTICAL && layoutManager is StaggeredGridLayoutManager -> if (spanGroupIndex == 0) height else 0
+                    (isStartVisible || isEndVisible) && orientation == RecyclerView.VERTICAL -> (spanGroupIndex + 1) * height / spanGroupCount
+                    else -> height - (spanGroupIndex + 1) * height / spanGroupCount
+                }
+
+                if (orientation == RecyclerView.VERTICAL) {
+                    outRect.set(left, top, right, bottom)
+                } else outRect.set(top, left, bottom, right)
+            }
         }
     }
 
-    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
-        if (!isEnabled) return
 
-        val layoutManager = parent.layoutManager ?: return
+    override fun onDraw(canvas: Canvas, parent: RecyclerView, state: RecyclerView.State) {
+        val layoutManager = parent.layoutManager
+        if (layoutManager == null || divider == null) return
+
         adjustOrientation(layoutManager)
 
         when (orientation) {
-            DividerOrientation.HORIZONTAL -> drawHorizontalDividers(canvas, parent)
-            DividerOrientation.VERTICAL -> drawVerticalDividers(canvas, parent)
-            DividerOrientation.GRID -> drawGridDividers(canvas, parent)
+            DividerOrientation.HORIZONTAL -> drawHorizontal(canvas, parent)
+            DividerOrientation.VERTICAL -> drawVertical(canvas, parent)
+            DividerOrientation.GRID -> drawGrid(canvas, parent)
         }
     }
 
+    /**
+     * 自动调整不同布局管理器应该对应的[orientation]
+     */
     private fun adjustOrientation(layoutManager: RecyclerView.LayoutManager) {
-        orientation = when (layoutManager) {
-            is GridLayoutManager, is StaggeredGridLayoutManager -> DividerOrientation.GRID
-            is LinearLayoutManager -> if (layoutManager.orientation == RecyclerView.VERTICAL) {
-                DividerOrientation.HORIZONTAL
-            } else {
-                DividerOrientation.VERTICAL
-            }
-            else -> orientation
+        if (layoutManager !is GridLayoutManager && layoutManager is LinearLayoutManager) {
+            orientation =
+                if ((layoutManager as? LinearLayoutManager)?.orientation == RecyclerView.VERTICAL) DividerOrientation.HORIZONTAL else DividerOrientation.VERTICAL
+        } else if (layoutManager is StaggeredGridLayoutManager) {
+            orientation = DividerOrientation.GRID
         }
     }
 
-    private fun applyGridOffsets(
-        outRect: Rect,
-        position: Int,
-        layoutManager: RecyclerView.LayoutManager,
-        parent: RecyclerView,
-        width: Int,
-        height: Int
-    ) {
-        val spanCount = when (layoutManager) {
-            is GridLayoutManager -> layoutManager.spanCount
-            is StaggeredGridLayoutManager -> layoutManager.spanCount
-            else -> 1
+    /**
+     * 绘制水平分割线
+     */
+    private fun drawHorizontal(canvas: Canvas, parent: RecyclerView) {
+        canvas.save()
+        val left: Int
+        val right: Int
+
+        if (parent.clipToPadding) {
+            left = parent.paddingLeft + this.marginStart
+            right = parent.width - parent.paddingRight - marginEnd
+        } else {
+            left = 0 + this.marginStart
+            right = parent.width - marginEnd
         }
 
-        val isFirstRow = position < spanCount
-        val isLastRow = position >= parent.adapter!!.itemCount - spanCount
-
-        outRect.set(
-            if (isStartVisible) width else 0,
-            if (isFirstRow && isStartVisible) height else 0,
-            if (isEndVisible) width else 0,
-            if (isLastRow && isEndVisible) height else 0
-        )
-    }
-
-    private fun drawHorizontalDividers(canvas: Canvas, parent: RecyclerView) {
-        val left = parent.paddingLeft + marginStart
-        val right = parent.width - parent.paddingRight - marginEnd
-        for (i in 0 until parent.childCount) {
+        loop@ for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
-            parent.getDecoratedBoundsWithMargins(child, reusableRect)
-            val viewType = parent.adapter?.getItemViewType(i) ?: -1
-            val drawable = viewTypeDividerMap[viewType] ?: dividerDrawable
 
-            drawable?.apply {
-                alpha = this@RecyclerViewDecoration.alpha
-                setBounds(left, reusableRect.bottom - dividerSize, right, reusableRect.bottom)
+            val position = parent.getChildAdapterPosition(child)
+            val layoutManager = parent.layoutManager ?: return
+            val edge = computeEdge(position, layoutManager)
+
+            if (orientation != DividerOrientation.GRID && !isEndVisible && edge.bottom) {
+                continue@loop
+            }
+
+            divider?.apply {
+                val decoratedBounds = Rect()
+                parent.getDecoratedBoundsWithMargins(child, decoratedBounds)
+
+                val firstBottom =
+                    if (intrinsicHeight == -1) decoratedBounds.top + size else decoratedBounds.top + intrinsicHeight
+                val firstTop = decoratedBounds.top
+
+                val bottom = decoratedBounds.bottom
+                val top = if (intrinsicHeight == -1) bottom - size else bottom - intrinsicHeight
+
+                if (background != Color.TRANSPARENT) {
+                    val paint = Paint()
+                    paint.color = background
+                    paint.style = Paint.Style.FILL
+
+                    if (isStartVisible && edge.top) {
+                        val firstRect = Rect(
+                            parent.paddingLeft,
+                            firstTop,
+                            parent.width - parent.paddingRight,
+                            firstBottom
+                        )
+                        canvas.drawRect(firstRect, paint)
+                    }
+
+                    val rect =
+                        Rect(parent.paddingLeft, top, parent.width - parent.paddingRight, bottom)
+                    canvas.drawRect(rect, paint)
+                }
+
+                if (isStartVisible && edge.top) {
+                    setBounds(left, firstTop, right, firstBottom)
+                    draw(canvas)
+                }
+
+                setBounds(left, top, right, bottom)
                 draw(canvas)
-            } ?: reusablePaint.apply {
-                canvas.drawLine(
-                    left.toFloat(),
-                    reusableRect.bottom.toFloat(),
-                    right.toFloat(),
-                    reusableRect.bottom.toFloat(),
-                    this
-                )
             }
         }
+        canvas.restore()
     }
 
-    private fun drawVerticalDividers(canvas: Canvas, parent: RecyclerView) {
-        val top = parent.paddingTop + marginStart
-        val bottom = parent.height - parent.paddingBottom - marginEnd
-        for (i in 0 until parent.childCount) {
-            val child = parent.getChildAt(i)
-            parent.getDecoratedBoundsWithMargins(child, reusableRect)
-            val viewType = parent.adapter?.getItemViewType(i) ?: -1
-            val drawable = viewTypeDividerMap[viewType] ?: dividerDrawable
+    /**
+     * 绘制垂直分割线
+     */
+    private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
+        canvas.save()
+        val top: Int
+        val bottom: Int
 
-            drawable?.apply {
-                alpha = this@RecyclerViewDecoration.alpha
-                setBounds(reusableRect.right - dividerSize, top, reusableRect.right, bottom)
-                draw(canvas)
-            } ?: reusablePaint.apply {
-                canvas.drawLine(
-                    reusableRect.right.toFloat(),
-                    top.toFloat(),
-                    reusableRect.right.toFloat(),
-                    bottom.toFloat(),
-                    this
-                )
-            }
-        }
-    }
-
-    private fun drawGridDividers(canvas: Canvas, parent: RecyclerView) {
-        customDrawStrategy?.let { strategy ->
-            for (i in 0 until parent.childCount) {
-                strategy.invoke(canvas, parent, i)
-            }
-            return
+        if (parent.clipToPadding) {
+            top = parent.paddingTop + marginStart
+            bottom = parent.height - parent.paddingBottom - marginEnd
+        } else {
+            top = 0 + marginStart
+            bottom = parent.height - marginEnd
         }
 
         val childCount = parent.childCount
-        for (i in 0 until childCount) {
-            val child = parent.getChildAt(i)
-            parent.getDecoratedBoundsWithMargins(child, reusableRect)
-            val viewType = parent.adapter?.getItemViewType(i) ?: -1
-            val drawable = viewTypeDividerMap[viewType] ?: dividerDrawable
 
-            drawable?.apply {
-                alpha = this@RecyclerViewDecoration.alpha
-                setBounds(reusableRect.left, reusableRect.top, reusableRect.right, reusableRect.bottom)
+        loop@ for (i in 0 until childCount) {
+            val child = parent.getChildAt(i)
+
+            val position = parent.getChildAdapterPosition(child)
+            val layoutManager = parent.layoutManager ?: return
+            val edge = computeEdge(position, layoutManager)
+
+            if (orientation != DividerOrientation.GRID && !isEndVisible && edge.right) {
+                continue@loop
+            }
+
+            divider?.apply {
+                val decoratedBounds = Rect()
+                parent.getDecoratedBoundsWithMargins(child, decoratedBounds)
+
+                val firstRight =
+                    if (intrinsicWidth == -1) decoratedBounds.left + size else decoratedBounds.left + intrinsicWidth
+                val firstLeft = decoratedBounds.left
+
+                val right = (decoratedBounds.right + child.translationX).roundToInt()
+                val left = if (intrinsicWidth == -1) right - size else right - intrinsicWidth
+
+                if (background != Color.TRANSPARENT) {
+                    val paint = Paint()
+                    paint.color = background
+                    paint.style = Paint.Style.FILL
+
+                    if (isStartVisible && edge.left) {
+                        val firstRect = Rect(
+                            firstLeft,
+                            parent.paddingTop,
+                            firstRight,
+                            parent.height - parent.paddingBottom
+                        )
+                        canvas.drawRect(firstRect, paint)
+                    }
+
+                    val rect =
+                        Rect(left, parent.paddingTop, right, parent.height - parent.paddingBottom)
+                    canvas.drawRect(rect, paint)
+                }
+
+                if (isStartVisible && edge.left) {
+                    setBounds(firstLeft, top, firstRight, bottom)
+                    draw(canvas)
+                }
+
+                setBounds(left, top, right, bottom)
                 draw(canvas)
-            } ?: reusablePaint.apply {
-                canvas.drawRect(reusableRect, this)
             }
         }
+        canvas.restore()
     }
 
-    data class Edge(val isLeft: Boolean, val isTop: Boolean, val isRight: Boolean, val isBottom: Boolean) {
+    /**
+     * 绘制网格分割线
+     */
+    private fun drawGrid(canvas: Canvas, parent: RecyclerView) {
+        canvas.save()
+
+        val childCount = parent.childCount
+
+        loop@ for (i in 0 until childCount) {
+            val child = parent.getChildAt(i)
+
+            val position = parent.getChildAdapterPosition(child)
+            val layoutManager = parent.layoutManager ?: return
+            val edge = computeEdge(position, layoutManager)
+
+            val height = when {
+                divider == null -> size
+                divider?.intrinsicHeight != -1 -> divider!!.intrinsicHeight
+                divider?.intrinsicWidth != -1 -> divider!!.intrinsicWidth
+                else -> size
+            }
+
+            val width = when {
+                divider == null -> size
+                divider?.intrinsicWidth != -1 -> divider!!.intrinsicWidth
+                divider?.intrinsicHeight != -1 -> divider!!.intrinsicHeight
+                else -> size
+            }
+
+            divider?.apply {
+                val layoutParams = child.layoutParams as RecyclerView.LayoutParams
+                val bounds = Rect(
+                    child.left + layoutParams.leftMargin,
+                    child.top + layoutParams.topMargin,
+                    child.right + layoutParams.rightMargin,
+                    child.bottom + layoutParams.bottomMargin
+                )
+
+                // top
+                if (!isEndVisible && edge.right) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.top - height,
+                        bounds.right - marginEnd,
+                        bounds.top
+                    )
+                    draw(canvas)
+                } else if (!isEndVisible && !edge.top && edge.left) {
+                    setBounds(
+                        bounds.left + marginStart,
+                        bounds.top - height,
+                        bounds.right + width,
+                        bounds.top
+                    )
+                    draw(canvas)
+                } else if (!edge.top || (isStartVisible && edge.top)) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.top - height,
+                        bounds.right + width,
+                        bounds.top
+                    )
+                    draw(canvas)
+                }
+
+                // bottom
+                if (!isEndVisible && edge.right) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.bottom,
+                        bounds.right - marginEnd,
+                        bounds.bottom + height
+                    )
+                    draw(canvas)
+                } else if (!isEndVisible && !edge.bottom && edge.left) {
+                    setBounds(
+                        bounds.left + marginStart,
+                        bounds.bottom,
+                        bounds.right + width,
+                        bounds.bottom + height
+                    )
+                    draw(canvas)
+                } else if (!edge.bottom || (isStartVisible && edge.bottom)) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.bottom,
+                        bounds.right + width,
+                        bounds.bottom + height
+                    )
+                    draw(canvas)
+                }
+
+                // left
+                if (edge.top && !isEndVisible && !edge.left) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.top + marginStart,
+                        bounds.left,
+                        bounds.bottom
+                    )
+                    draw(canvas)
+                } else if (edge.bottom && !isEndVisible && !edge.left) {
+                    setBounds(
+                        bounds.left - width,
+                        bounds.top,
+                        bounds.left,
+                        bounds.bottom - marginEnd
+                    )
+                    draw(canvas)
+                } else if (!edge.left || (isEndVisible && edge.left)) {
+                    setBounds(bounds.left - width, bounds.top, bounds.left, bounds.bottom)
+                    draw(canvas)
+                }
+
+                // right
+                if (edge.top && !isEndVisible && !edge.right) {
+                    setBounds(
+                        bounds.right,
+                        bounds.top + marginStart,
+                        bounds.right + width,
+                        bounds.bottom
+                    )
+                    draw(canvas)
+                } else if (edge.bottom && !isEndVisible && !edge.right) {
+                    setBounds(
+                        bounds.right,
+                        bounds.top,
+                        bounds.right + width,
+                        bounds.bottom - marginEnd
+                    )
+                    draw(canvas)
+                } else if (!edge.right || (isEndVisible && edge.right)) {
+                    setBounds(bounds.right, bounds.top, bounds.right + width, bounds.bottom)
+                    draw(canvas)
+                }
+            }
+        }
+
+        canvas.restore()
+    }
+
+    /**
+     * 列表条目是否靠近边缘的结算结果
+     *
+     * @param left 是否靠左
+     * @param right 是否靠左
+     * @param top 是否靠顶
+     * @param bottom 是否靠底
+     */
+    data class Edge(
+        var left: Boolean = false,
+        var top: Boolean = false,
+        var right: Boolean = false,
+        var bottom: Boolean = false
+    ) {
         companion object {
-            fun calculate(position: Int, layoutManager: RecyclerView.LayoutManager): Edge {
-                val isLeft = true
-                val isTop = position == 0
-                val isRight = true
-                val isBottom = position == layoutManager.itemCount - 1
-                return Edge(isLeft, isTop, isRight, isBottom)
+
+            /**
+             * 计算指定条目的边缘位置
+             * @param position 指定计算的Item索引
+             * @param layoutManager 当前列表的LayoutManager
+             */
+            fun computeEdge(position: Int, layoutManager: RecyclerView.LayoutManager): Edge {
+                val index = position + 1
+                val itemCount = layoutManager.itemCount
+                return Edge()
+                    .apply {
+                        when (layoutManager) {
+                            is StaggeredGridLayoutManager -> {
+                                val spanCount = layoutManager.spanCount
+                                val spanIndex =
+                                    (layoutManager.findViewByPosition(position)!!.layoutParams
+                                            as StaggeredGridLayoutManager.LayoutParams).spanIndex + 1
+
+                                if (layoutManager.orientation == RecyclerView.VERTICAL) {
+                                    left = spanIndex == 1
+                                    right = spanIndex == spanCount
+                                    top = index <= spanCount
+                                    bottom = index > itemCount - spanCount
+                                } else {
+                                    left = index <= spanCount
+                                    right = index > itemCount - spanCount
+                                    top = spanIndex == 1
+                                    bottom = spanIndex == spanCount
+                                }
+                            }
+
+                            is GridLayoutManager -> {
+                                val spanSizeLookup = layoutManager.spanSizeLookup
+                                val spanCount = layoutManager.spanCount
+                                val spanGroupIndex =
+                                    spanSizeLookup.getSpanGroupIndex(position, spanCount)
+                                val maxSpanGroupIndex =
+                                    ceil(itemCount / spanCount.toFloat()).toInt()
+                                val spanIndex = spanSizeLookup.getSpanIndex(position, spanCount) + 1
+                                val spanSize = spanSizeLookup.getSpanSize(position)
+
+                                if (layoutManager.orientation == RecyclerView.VERTICAL) {
+                                    left = spanIndex == 1
+                                    right = spanIndex + spanSize - 1 == spanCount
+                                    top =
+                                        index <= spanCount && spanGroupIndex == spanSizeLookup.getSpanGroupIndex(
+                                            position - 1,
+                                            spanCount
+                                        )
+                                    bottom = spanGroupIndex == maxSpanGroupIndex - 1
+
+                                } else {
+                                    left = spanGroupIndex == 0
+                                    right = spanGroupIndex == maxSpanGroupIndex - 1
+                                    top = spanIndex == 1
+                                    bottom = spanIndex + spanSize - 1 == spanCount
+                                }
+                            }
+
+                            is LinearLayoutManager -> {
+                                if (layoutManager.orientation == RecyclerView.VERTICAL) {
+                                    left = true
+                                    right = true
+                                    top = index == 1
+                                    bottom = index == itemCount
+                                } else {
+                                    left = index == 1
+                                    right = index == itemCount
+                                    top = true
+                                    bottom = true
+                                }
+                            }
+                        }
+                    }
             }
         }
     }
