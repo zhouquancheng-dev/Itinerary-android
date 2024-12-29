@@ -14,7 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
-import com.example.common.util.ReflectionUtil
+import com.example.common.util.ext.newViewBinding
 
 abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
 
@@ -39,7 +39,7 @@ abstract class BaseBindFragment<VB : ViewBinding> : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = ReflectionUtil.newViewBinding(layoutInflater, this.javaClass)
+        _binding = newViewBinding(layoutInflater, javaClass)
         return binding.root
     }
 

@@ -15,10 +15,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.example.common.util.ReflectionUtil
+import com.example.common.util.ext.newViewBinding
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatActivity() {
+abstract class BaseVmBindActivity<VM : ViewModel, VB : ViewBinding> : AppCompatActivity() {
 
     private var _binding: VB? = null
     protected val binding: VB
@@ -59,7 +59,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
 
     private fun initBinding() {
         if (_binding == null) {
-            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+            _binding = newViewBinding(layoutInflater, javaClass, 1)
         }
     }
 
@@ -81,7 +81,7 @@ abstract class BaseVmBindActivity<VB : ViewBinding, VM : ViewModel> : AppCompatA
 
     @Suppress("UNCHECKED_CAST")
     protected open fun getViewModelClass(): Class<VM> {
-        val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[1]
+        val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
         return type as Class<VM>
     }
 

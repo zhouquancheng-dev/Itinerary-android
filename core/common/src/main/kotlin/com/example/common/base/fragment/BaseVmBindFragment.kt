@@ -16,10 +16,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewbinding.ViewBinding
-import com.example.common.util.ReflectionUtil
+import com.example.common.util.ext.newViewBinding
 import java.lang.reflect.ParameterizedType
 
-abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment() {
+abstract class BaseVmBindFragment<VM : ViewModel, VB : ViewBinding> : Fragment() {
 
     private var _binding: VB? = null
     protected val binding: VB
@@ -44,8 +44,7 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // 使用反射初始化 ViewBinding
-        _binding = ReflectionUtil.newViewBinding(inflater, javaClass)
+        _binding = newViewBinding(layoutInflater, javaClass, 1)
         return binding.root
     }
 
@@ -69,7 +68,7 @@ abstract class BaseVmBindFragment<VB : ViewBinding, VM : ViewModel> : Fragment()
 
     @Suppress("UNCHECKED_CAST")
     protected open fun getViewModelClass(): Class<VM> {
-        val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[1]
+        val type = (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]
         return type as Class<VM>
     }
 

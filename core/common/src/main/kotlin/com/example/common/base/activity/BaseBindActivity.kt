@@ -13,7 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.viewbinding.ViewBinding
-import com.example.common.util.ReflectionUtil
+import com.example.common.util.ext.newViewBinding
 
 abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -52,7 +52,7 @@ abstract class BaseBindActivity<VB : ViewBinding> : AppCompatActivity() {
 
     private fun initBinding() {
         if (_binding == null) {
-            _binding = ReflectionUtil.newViewBinding(layoutInflater, javaClass)
+            _binding = newViewBinding(layoutInflater, javaClass)
         }
     }
 

@@ -25,7 +25,7 @@ import kotlinx.coroutines.runBlocking
  * 在 Kotlin 文件顶层创建 DataStore 实例一次，便可在应用的所有其余部分通过此属性访问该实例.这样可以更轻松地将 DataStore 保留为单例
  * 使用 preferencesDataStore 委托创建一个 DataStore 实例，并将 Context 作为接收者
  */
-private const val MY_APP_DATASTORE = "ItineraryDataStore"
+private const val MY_APP_DATASTORE = "AppDataStore"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = MY_APP_DATASTORE)
 
 /**
