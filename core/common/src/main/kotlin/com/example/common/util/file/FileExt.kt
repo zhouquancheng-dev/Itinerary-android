@@ -16,7 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toFile
-import com.avatar.lite.scas.R
+import com.example.common.util.mime.MimeUtils
 import kotlinx.coroutines.flow.flow
 import java.io.*
 import java.nio.file.Files
