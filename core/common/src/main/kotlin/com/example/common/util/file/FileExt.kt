@@ -1,10 +1,13 @@
 package com.example.common.util.file
 
+import android.app.Activity
+import android.app.Application
 import android.content.*
 import android.graphics.Bitmap
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
@@ -13,10 +16,7 @@ import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toFile
-import com.blankj.utilcode.util.FileUtils
-import com.example.common.util.file.BaseFolder
-import com.example.common.util.file.createOrExistsDir
-import com.example.common.util.mime.MimeUtils
+import com.avatar.lite.scas.R
 import kotlinx.coroutines.flow.flow
 import java.io.*
 import java.nio.file.Files
@@ -95,6 +95,71 @@ fun File.share(context: Context, packageName: String? = null) {
         putExtra(Intent.EXTRA_STREAM, uri)
     }
     context.startActivity(Intent.createChooser(intent, nameWithoutExtension))
+}
+
+/**
+ * Shares a Bitmap image with other applications on the device.
+ *
+ * This function takes a Bitmap and shares it as a PNG image using the device's sharing mechanism.
+ * It saves the Bitmap to a temporary file in the app's cache directory, creates a content URI for the file,
+ * and then launches the share intent chooser, allowing the user to select the app they want to share the image with.
+ *
+ * The temporary file is automatically registered for deletion after the share operation.
+ *
+ * @receiver The Bitmap to be shared.
+ * @param context The Context used to access application resources and start the sharing activity.
+ *
+ * @throws IllegalArgumentException if the bitmap is null.
+ */
+fun Bitmap.share(context: Context) {
+    val tempFile = context.saveBitmapToCache(this)
+    val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", tempFile)
+
+    val intent = Intent(Intent.ACTION_SEND).apply {
+        type = "image/png"
+        putExtra(Intent.EXTRA_STREAM, uri)
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+
+    val appName = context.applicationInfo.loadLabel(context.packageManager).toString()
+
+    context.startActivity(
+        Intent.createChooser(intent, appName).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    )
+
+    context.registerTempFileDeletion(tempFile)
+}
+
+// 临时保存 Bitmap 到缓存目录
+private fun Context.saveBitmapToCache(bitmap: Bitmap): File {
+    val tempFile = File(cacheDir, "shared_image.png")
+    FileOutputStream(tempFile).use { outputStream ->
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+    }
+    return tempFile
+}
+
+// 注册生命周期回调，系统分享ui关闭后自动删除文件
+private fun Context.registerTempFileDeletion(tempFile: File) {
+    if (this is Application) {
+        registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityDestroyed(activity: Activity) {
+                if (activity.intent?.action == Intent.ACTION_CHOOSER || activity.intent?.action == Intent.ACTION_SEND) {
+                    if (tempFile.exists()) {
+                        tempFile.delete()
+                    }
+                    unregisterActivityLifecycleCallbacks(this)
+                }
+            }
+
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+        })
+    }
 }
 
 /**
