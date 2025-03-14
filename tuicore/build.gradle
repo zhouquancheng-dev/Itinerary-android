@@ -4,12 +4,12 @@ plugins {
 
 
 android {
-    compileSdk 34
+    compileSdk 35
 //    buildToolsVersion "30.0.3"
     namespace "com.tencent.qcloud.tuicore"
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
@@ -46,7 +46,7 @@ dependencies {
     if (projects.contains("imsdk-plus")) {
         api project(':imsdk-plus')
     } else {
-        api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.0.5895"
+        api rootProject.getProperties().containsKey("imSdk") ? rootProject.ext.imSdk : "com.tencent.imsdk:imsdk-plus:8.4.6667"
     }
 
 }

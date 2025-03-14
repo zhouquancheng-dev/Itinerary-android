@@ -3,12 +3,12 @@ plugins {
 }
 
 android {
-    compileSdk 34
+    compileSdk 35
 //    buildToolsVersion "30.0.3"
     namespace "com.tencent.qcloud.tuikit.timcommon"
     defaultConfig {
         minSdkVersion 26
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
@@ -42,7 +42,7 @@ dependencies {
     plugin-build-End*/
 
     def projects = this.rootProject.getAllprojects().stream().map { project -> project.name }.collect()
-    api projects.contains("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.0.5895"
+    api projects.contains("tuicore") ? project(':tuicore') : "com.tencent.liteav.tuikit:tuicore:8.4.6667"
     implementation 'com.google.code.gson:gson:2.11.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.github.bumptech.glide:glide:4.16.0'

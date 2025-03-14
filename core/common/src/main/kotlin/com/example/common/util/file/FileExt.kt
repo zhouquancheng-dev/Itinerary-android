@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.*
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
@@ -12,6 +13,7 @@ import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
@@ -22,6 +24,8 @@ import java.io.*
 import java.nio.file.Files
 import java.util.Calendar
 import java.util.Locale
+import java.util.zip.ZipException
+import java.util.zip.ZipFile
 
 private const val TAG = "FileExt"
 
@@ -30,26 +34,30 @@ private val ALBUM_DIR = Environment.DIRECTORY_PICTURES
 private class OutputFileTaker(var file: File? = null)
 
 /**
- * 获取应用程序的基本文件夹。
+ * Storage and File System Operations
  */
-val Context.BaseFolder: File
+
+/**
+ * Gets the application's base folder.
+ */
+val Context.baseFolder: File
     get() = getExternalFilesDir(null) ?: filesDir
 
 /**
- * 获取临时缓存文件夹。
+ * Gets the temporary cache folder.
  */
-val Context.TempCacheFolder: File
-    get() = File(BaseFolder, "tempCache").apply { createOrExistsDir() }
+val Context.tempCacheFolder: File
+    get() = File(baseFolder, "tempCache").apply { createOrExistsDir() }
 
 /**
- * 创建或验证目录是否存在。
- * @return 如果目录已创建或已存在，则返回true；否则返回false。
+ * Creates a directory if it doesn't exist.
+ * @return true if the directory was created or already exists; false otherwise.
  */
 fun File.createOrExistsDir(): Boolean = if (exists()) isDirectory else mkdirs()
 
 /**
- * 创建或验证文件是否存在。
- * @return 如果文件已创建或已存在，则返回true；否则返回false。
+ * Creates a file if it doesn't exist.
+ * @return true if the file was created or already exists; false otherwise.
  */
 fun File.createOrExistsFile(): Boolean = if (exists()) {
     isFile
@@ -58,16 +66,132 @@ fun File.createOrExistsFile(): Boolean = if (exists()) {
 }
 
 /**
- * 获取Uri中的文件名。
+ * Opens a file with the appropriate app based on MIME type.
+ * @param path The file path to open
+ */
+@OptIn(ExperimentalStdlibApi::class)
+fun Context.openFile(path: String) {
+    try {
+        val file = File(path)
+
+        // Check if file exists and is readable
+        if (!file.exists()) {
+            Log.e(TAG, "File does not exist: $path")
+            Toast.makeText(this, "File not found: ${file.name}", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (!file.canRead()) {
+            Log.e(TAG, "File is not readable: $path")
+            Toast.makeText(this, "Cannot read file: ${file.name}", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Get MIME type based on file extension
+        val extension = file.extension.lowercase()
+        val mimeType = MimeUtils.guessMimeTypeFromExtension(extension) ?: "*/*"
+
+        Log.d(TAG, "Opening file: $path with MIME type: $mimeType")
+
+        val fileUri = FileProvider.getUriForFile(this, "$packageName.fileProvider", file)
+        Log.d(TAG, "File URI: $fileUri")
+
+        val intent = Intent(Intent.ACTION_VIEW).apply {
+            setDataAndType(fileUri, mimeType)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        // Check if there's an app that can handle this file type
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        } else {
+            Log.e(TAG, "No app found to handle MIME type: $mimeType")
+            Toast.makeText(this, "No app found to open this file type", Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception) {
+        Log.e(TAG, "Error opening file: ${e.message}", e)
+        Toast.makeText(this, "Error opening file: ${e.message}", Toast.LENGTH_SHORT).show()
+    }
+}
+
+/**
+ * URI Operations
+ */
+
+/**
+ * Gets the filename from a URI.
  */
 val Uri.fileName: String
     get() = Uri.decode(path).toString().substringAfterLast("/")
 
 /**
- * 分享Uri文件
- * @param context 上下文
- * @param cacheFile 缓存文件
- * @param packageName 目标应用的包名（可选）
+ * Gets the filename from a URI using ContentResolver.
+ * @param context Context for ContentResolver
+ * @return Filename or empty string if not found
+ */
+fun Uri.findFileName(context: Context): String {
+    return runCatching {
+        context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.DISPLAY_NAME), null, null, null)?.use {
+            val nameIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)
+            if (it.moveToFirst()) {
+                it.getStringOrNull(nameIndex) ?: ""
+            } else ""
+        } ?: ""
+    }.getOrElse { "" }
+}
+
+/**
+ * Finds the absolute path of a URI.
+ * @param context Context for ContentResolver
+ * @return Absolute path or empty string if not found
+ */
+fun Uri.findAbsolutePath(context: Context): String {
+    return runCatching {
+        when (scheme) {
+            "file" -> toFile().absolutePath
+            else -> {
+                var path = ""
+                context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.DATA), null, null, null)?.use {
+                    val pathIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DATA)
+                    if (it.moveToFirst()) path = it.getString(pathIndex)
+                }
+                path
+            }
+        }
+    }.getOrElse { "" }
+}
+
+/**
+ * Finds the file size of a URI.
+ * @param context Context for ContentResolver
+ * @return File size in bytes or 0 if not found
+ */
+fun Uri.findFileSize(context: Context): Long {
+    return runCatching {
+        when (scheme) {
+            "file" -> toFile().length()
+            else -> {
+                var size = 0L
+                context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.SIZE), null, null, null)?.use {
+                    val sizeIndex = it.getColumnIndex(MediaStore.Files.FileColumns.SIZE)
+                    if (it.moveToFirst()) size = it.getLongOrNull(sizeIndex) ?: 0L
+                }
+                size
+            }
+        }
+    }.getOrElse { 0L }
+}
+
+/**
+ * Sharing Operations
+ */
+
+/**
+ * Shares a URI file.
+ * @param context Context for sharing
+ * @param cacheFile Cache file for sharing
+ * @param packageName Target package name (optional)
  */
 fun Uri.share(context: Context, cacheFile: File, packageName: String? = null) {
     val mimeType = MimeUtils.guessMimeTypeFromExtension(cacheFile.extension)
@@ -81,9 +205,9 @@ fun Uri.share(context: Context, cacheFile: File, packageName: String? = null) {
 }
 
 /**
- * 分享文件
- * @param context 上下文
- * @param packageName 目标应用的包名（可选）
+ * Shares a file.
+ * @param context Context for sharing
+ * @param packageName Target package name (optional)
  */
 fun File.share(context: Context, packageName: String? = null) {
     val uri = FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", this)
@@ -130,16 +254,156 @@ fun Bitmap.share(context: Context) {
     context.registerTempFileDeletion(tempFile)
 }
 
-// 临时保存 Bitmap 到缓存目录
+/**
+ * Shares multiple image files.
+ * @param context Context for sharing
+ * @param packageName Target package name (optional)
+ */
+fun List<File>.sharePicFiles(context: Context, packageName: String? = null) {
+    val uriList = map {
+        FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", it)
+    }
+    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+        packageName?.let { setPackage(it) }
+        type = "image/*"
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uriList))
+    }
+    context.startActivity(Intent.createChooser(intent, "Share"))
+}
+
+/**
+ * Shares multiple image URIs.
+ * @param context Context for sharing
+ * @param packageName Target package name (optional)
+ */
+fun List<Uri>.sharePicUris(context: Context, packageName: String? = null) {
+    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
+        packageName?.let { setPackage(it) }
+        type = "image/*"
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(this@sharePicUris))
+    }
+    context.startActivity(Intent.createChooser(intent, "Share"))
+}
+
+/**
+ * Media Storage Operations
+ */
+
+/**
+ * Moves multiple files to a public directory.
+ * @param context Context for ContentResolver
+ * @param parentDir Parent directory in public storage
+ * @param childDir Child directory in public storage
+ * @return List of URIs for the moved files
+ */
+fun List<File>.moveToPublicDir(context: Context, parentDir: String, childDir: String): List<Uri?> {
+    return map { it.moveToPublicDir(context, parentDir, childDir) }
+}
+
+/**
+ * Moves a file to a public directory.
+ * @param context Context for ContentResolver
+ * @param parentDir Parent directory in public storage
+ * @param childDir Child directory in public storage
+ * @return URI of the moved file
+ */
+fun File.moveToPublicDir(context: Context, parentDir: String, childDir: String): Uri? {
+    val mimeType = MimeUtils.guessMimeTypeFromExtension(extension)
+    var resultUri: Uri? = null
+
+    try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android Q and above
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, name)
+                put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
+                put(MediaStore.Images.ImageColumns.TITLE, name)
+                put(MediaStore.Images.ImageColumns.RELATIVE_PATH, "$parentDir${File.separator}$childDir")
+            }
+
+            FileInputStream(this).use { inputStream ->
+                val insertUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                insertUri?.let { uri ->
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                        resultUri = uri
+                    }
+                }
+            }
+        } else {
+            // Pre-Android Q
+            val dstFilePath = "${Environment.getExternalStoragePublicDirectory(parentDir)}${File.separator}$name"
+            if (renameTo(File(dstFilePath))) {
+                MediaScannerConnection.scanFile(context, arrayOf(dstFilePath), arrayOf(mimeType), null)
+                resultUri = FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", File(dstFilePath))
+            }
+        }
+    } catch (e: Exception) {
+        Log.e(TAG, "Error moving file to public directory", e)
+    }
+
+    return resultUri
+}
+
+/**
+ * Moves a file to a public directory, returns success status.
+ * @param context Context for ContentResolver
+ * @param parentDir Parent directory in public storage
+ * @param childDir Child directory in public storage
+ * @return true if successful, false otherwise
+ */
+fun File.moveToPublicDirWithStatus(context: Context, parentDir: String, childDir: String): Boolean {
+    val mimeType = MimeUtils.guessMimeTypeFromExtension(extension)
+    var moveSuccess = false
+
+    try {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val values = ContentValues().apply {
+                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, name)
+                put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
+                put(MediaStore.Images.ImageColumns.TITLE, name)
+                put(MediaStore.Images.ImageColumns.RELATIVE_PATH, "$parentDir${File.separator}$childDir")
+            }
+            FileInputStream(this).use { inputStream ->
+                val insertUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                insertUri?.let { uri ->
+                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                        inputStream.copyTo(outputStream)
+                        moveSuccess = true
+                    }
+                }
+            }
+        } else {
+            val dstFilePath = "${Environment.getExternalStoragePublicDirectory(parentDir)}${File.separator}$name"
+            if (renameTo(File(dstFilePath))) {
+                moveSuccess = true
+                MediaScannerConnection.scanFile(context, arrayOf(dstFilePath), arrayOf(mimeType), null)
+            }
+        }
+    } catch (e: Exception) {
+        Log.e(TAG, "Error moving file to public directory", e)
+        moveSuccess = false
+    }
+
+    return moveSuccess
+}
+
+/**
+ * Image Operations
+ */
+
+// Temporarily save Bitmap to cache directory
 private fun Context.saveBitmapToCache(bitmap: Bitmap): File {
-    val tempFile = File(cacheDir, "shared_image.png")
+    val tempFile = File(tempCacheFolder, "shared_image.png")
     FileOutputStream(tempFile).use { outputStream ->
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
     }
     return tempFile
 }
 
-// 注册生命周期回调，系统分享ui关闭后自动删除文件
+// Register lifecycle callback to automatically delete file after sharing
 private fun Context.registerTempFileDeletion(tempFile: File) {
     if (this is Application) {
         registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
@@ -163,195 +427,37 @@ private fun Context.registerTempFileDeletion(tempFile: File) {
 }
 
 /**
- * 打开文件
- * @param path 文件路径
- */
-fun Context.openFile(path: String) {
-    val intent = Intent(Intent.ACTION_VIEW)
-    val file = File(path)
-    val fileUri = FileProvider.getUriForFile(this, "$packageName.fileProvider", file)
-    Log.e(TAG, fileUri.toString())
-    intent.setDataAndType(fileUri, MimeUtils.guessMimeTypeFromExtension(file.extension))
-    startActivity(intent)
-}
-
-/**
- * 批量分享图片文件
- */
-fun List<File>.sharePicFile(context: Context, packageName: String? = null) {
-    val uriList = map {
-        FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", it)
-    }
-    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-        packageName?.let { setPackage(it) }
-        type = "image/*"
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(uriList))
-    }
-    context.startActivity(Intent.createChooser(intent, "批量分享"))
-}
-
-/**
- * 批量分享图片Uri
- */
-fun List<Uri>.sharePicUri(context: Context, packageName: String? = null) {
-    val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
-        packageName?.let { setPackage(it) }
-        type = "image/*"
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-        putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(this@sharePicUri))
-    }
-    context.startActivity(Intent.createChooser(intent, "批量分享"))
-}
-
-/**
- * 将多个文件移动到公共目录
- * @return 返回Uri列表
- */
-fun List<File>.moveToPublicDir(context: Context, parentDir: String, childDir: String): List<Uri?> {
-    return map { it.moveToPublicDir(context, parentDir, childDir) }
-}
-
-/**
- * 将单个文件移动到公共目录
- * @return 返回Uri
- */
-fun File.moveToPublicDir(context: Context, parentDir: String, childDir: String): Uri? {
-    val mimeType = MimeUtils.guessMimeTypeFromExtension(extension)
-    var resultUri: Uri? = null
-
-    try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // 适配Android Q及以上版本
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, name)
-                put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
-                put(MediaStore.Images.ImageColumns.TITLE, name)
-                put(MediaStore.Images.ImageColumns.RELATIVE_PATH, "$parentDir${File.separator}$childDir")
-            }
-
-            FileInputStream(this).use { inputStream ->
-                val insertUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-                insertUri?.let { uri ->
-                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        val buffer = ByteArray(4096)
-                        var byteCount: Int
-                        while (inputStream.read(buffer).also { byteCount = it } != -1) {
-                            outputStream.write(buffer, 0, byteCount)
-                        }
-                        resultUri = uri
-                    }
-                }
-            }
-        } else {
-            // 适配Android Q以下版本
-            val dstFilePath = "${Environment.getExternalStoragePublicDirectory(parentDir)}${File.separator}$name"
-            if (renameTo(File(dstFilePath))) {
-                MediaScannerConnection.scanFile(context, arrayOf(dstFilePath), arrayOf(mimeType), null)
-                resultUri = FileProvider.getUriForFile(context, "${context.packageName}.fileProvider", File(dstFilePath))
-            }
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-    }
-
-    return resultUri
-}
-
-/**
- * 将文件移动到公共目录，处理Android版本的差异。
- * @param context 用于访问系统资源的上下文。
- * @param parentDir 公共存储中的父目录。
- * @param childDir 公共存储中的子目录。
- * @return 表示移动是否成功的布尔值。
- */
-fun File.moveToPublicDirReturnBoolean(context: Context, parentDir: String, childDir: String): Boolean {
-    val mimeType = MimeUtils.guessMimeTypeFromExtension(extension)
-    var moveSuccess = false
-
-    try {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val values = ContentValues().apply {
-                put(MediaStore.Images.ImageColumns.DISPLAY_NAME, name)
-                put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
-                put(MediaStore.Images.ImageColumns.TITLE, name)
-                put(MediaStore.Images.ImageColumns.RELATIVE_PATH, "$parentDir${File.separator}$childDir")
-            }
-            FileInputStream(this).use { inputStream ->
-                val insertUri = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                insertUri?.let { uri ->
-                    context.contentResolver.openOutputStream(uri)?.use { outputStream ->
-                        val buffer = ByteArray(4096)
-                        var byteCount: Int
-                        while (inputStream.read(buffer).also { byteCount = it } != -1) {
-                            outputStream.write(buffer, 0, byteCount)
-                        }
-                        moveSuccess = true
-                    }
-                }
-            }
-        } else {
-            val dstFilePath = "${Environment.getExternalStoragePublicDirectory(parentDir)}${File.separator}$name"
-            if (renameTo(File(dstFilePath))) {
-                moveSuccess = true
-                MediaScannerConnection.scanFile(context, arrayOf(dstFilePath), arrayOf(mimeType), null)
-            }
-        }
-    } catch (e: Exception) {
-        e.printStackTrace()
-        moveSuccess = false
-    }
-
-    return moveSuccess
-}
-
-/**
- * 获取Uri的文件名
- */
-fun Uri.findFileName(context: Context): String {
-    return runCatching {
-        var name = ""
-        context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.DISPLAY_NAME), null, null, null)?.use {
-            val nameIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DISPLAY_NAME)
-            it.moveToFirst()
-            name = it.getStringOrNull(nameIndex) ?: ""
-        }
-        name
-    }.getOrElse { "" }
-}
-
-/**
- * 复制图片文件到相册的Pictures文件夹
- * @param context 上下文
- * @param fileName 文件名（包含扩展名）
- * @param relativePath 相对于Pictures的路径
- * @return 返回保存的Uri
+ * Copies an image file to the album's Pictures folder.
+ * @param context Context for ContentResolver
+ * @param fileName Filename (with extension)
+ * @param relativePath Path relative to Pictures
+ * @return URI of the saved image
  */
 fun File.copyToAlbum(context: Context, fileName: String, relativePath: String?): Uri? {
     if (!this.canRead() || !this.exists()) {
-        Log.w(TAG, "check: read file error: $this")
+        Log.w(TAG, "File check failed: cannot read or doesn't exist: $this")
         return null
     }
-    return this.inputStream().use { it.saveToAlbum(context, fileName, relativePath) }
+    return inputStream().use { it.saveToAlbum(context, fileName, relativePath) }
 }
 
 /**
- * 保存图片输入流到相册的Pictures文件夹
- * @param context 上下文
- * @param fileName 文件名（包含扩展名）
- * @param relativePath 相对于Pictures的路径
- * @return 返回保存的Uri
+ * Saves an image input stream to the album's Pictures folder.
+ * @param context Context for ContentResolver
+ * @param fileName Filename (with extension)
+ * @param relativePath Path relative to Pictures
+ * @return URI of the saved image
  */
 fun InputStream.saveToAlbum(context: Context, fileName: String, relativePath: String?): Uri? {
     val resolver = context.contentResolver
     val outputFile = OutputFileTaker()
     val imageUri = resolver.insertMediaImage(fileName, relativePath, outputFile)
     if (imageUri == null) {
-        Log.w(TAG, "insert: error: uri == null")
+        Log.w(TAG, "Insert media image failed: uri is null")
         return null
     }
 
-    // 保存图片
+    // Save the image
     imageUri.outputStream(resolver)?.use { output ->
         this.use { input ->
             input.copyTo(output)
@@ -362,12 +468,12 @@ fun InputStream.saveToAlbum(context: Context, fileName: String, relativePath: St
 }
 
 /**
- * 保存Bitmap到相册的Pictures文件夹
- * @param context 上下文
- * @param fileName 文件名（包含扩展名）
- * @param relativePath 相对于Pictures的路径
- * @param quality 图片质量
- * @return 返回保存的Uri
+ * Saves a Bitmap to the album's Pictures folder.
+ * @param context Context for ContentResolver
+ * @param fileName Filename (with extension)
+ * @param relativePath Path relative to Pictures
+ * @param quality Image quality (0-100)
+ * @return URI of the saved image
  */
 fun Bitmap.saveToAlbum(
     context: Context,
@@ -379,11 +485,11 @@ fun Bitmap.saveToAlbum(
     val outputFile = OutputFileTaker()
     val imageUri = resolver.insertMediaImage(fileName, relativePath, outputFile)
     if (imageUri == null) {
-        Log.w(TAG, "insert: error: uri == null")
+        Log.w(TAG, "Insert media image failed: uri is null")
         return null
     }
 
-    // 保存Bitmap
+    // Save the Bitmap
     imageUri.outputStream(resolver)?.use {
         val format = fileName.getBitmapFormat()
         this.compress(format, quality, it)
@@ -393,21 +499,21 @@ fun Bitmap.saveToAlbum(
 }
 
 /**
- * 获取指定Uri的输出流
- * @param resolver 内容解析器
- * @return 输出流对象
+ * Gets the output stream for a URI.
+ * @param resolver ContentResolver
+ * @return OutputStream or null if not found
  */
 private fun Uri.outputStream(resolver: ContentResolver): OutputStream? {
     return try {
         resolver.openOutputStream(this)
     } catch (e: FileNotFoundException) {
-        Log.e(TAG, "save: open stream error: $e")
+        Log.e(TAG, "Error opening output stream for URI: $e")
         null
     }
 }
 
 /**
- * 完成保存任务并更新媒体库状态
+ * Completes the pending operation and updates media library status.
  */
 private fun Uri.finishPending(
     context: Context,
@@ -420,19 +526,19 @@ private fun Uri.finishPending(
             imageValues.put(MediaStore.Images.Media.SIZE, it.length())
         }
         resolver.update(this, imageValues, null, null)
-        // 通知媒体库更新
-        val intent = Intent(@Suppress("DEPRECATION") Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, this)
+        // Notify media scanner
+        val intent = @Suppress("DEPRECATION") Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, this)
         context.sendBroadcast(intent)
     } else {
-        // Android Q及以上版本，需要设置IS_PENDING为0，表示可见
+        // For Android Q and above, set IS_PENDING to 0 to make visible
         imageValues.put(MediaStore.Images.Media.IS_PENDING, 0)
         resolver.update(this, imageValues, null, null)
     }
 }
 
 /**
- * 获取文件的压缩格式
- * @return 图片的压缩格式
+ * Gets the bitmap compression format based on filename.
+ * @return Compression format
  */
 @Suppress("DEPRECATION")
 private fun String.getBitmapFormat(): Bitmap.CompressFormat {
@@ -449,8 +555,8 @@ private fun String.getBitmapFormat(): Bitmap.CompressFormat {
 }
 
 /**
- * 获取文件的MIME类型
- * @return MIME类型字符串
+ * Gets the MIME type based on filename.
+ * @return MIME type or null if unknown
  */
 private fun String.getMimeType(): String? {
     return when {
@@ -463,11 +569,11 @@ private fun String.getMimeType(): String? {
 }
 
 /**
- * 插入图片到媒体库
- * @param fileName 文件名
- * @param relativePath 相对路径
- * @param outputFileTaker 用于存储输出文件的对象
- * @return 插入图片的Uri
+ * Inserts an image into the media library.
+ * @param fileName Filename
+ * @param relativePath Relative path
+ * @param outputFileTaker Object to store output file
+ * @return URI of the inserted image
  */
 private fun ContentResolver.insertMediaImage(
     fileName: String,
@@ -491,11 +597,11 @@ private fun ContentResolver.insertMediaImage(
         }
         collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
     } else {
-        // Android Q以下版本处理逻辑
+        // For Android versions below Q
         val pictures = @Suppress("DEPRECATION") Environment.getExternalStoragePublicDirectory(ALBUM_DIR)
         val saveDir = relativePath?.let { File(pictures, it) } ?: pictures
         if (!saveDir.exists() && !saveDir.mkdirs()) {
-            Log.e(TAG, "save: error: can't create Pictures directory")
+            Log.e(TAG, "Error: Can't create Pictures directory")
             return null
         }
 
@@ -521,32 +627,31 @@ private fun ContentResolver.insertMediaImage(
 }
 
 /**
- * Android Q以下版本，查询媒体库中当前路径是否存在
- * @return 返回Uri，null表示不存在
+ * Queries the media database for an image path (for Android pre-Q).
+ * @return URI if found, null otherwise
  */
 private fun ContentResolver.queryMediaImage28(imagePath: String): Uri? {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) return null
 
     val imageFile = File(imagePath)
     if (imageFile.canRead() && imageFile.exists()) {
-        Log.v(TAG, "query: path: $imagePath exists")
-        // 文件已存在，返回一个file://xxx的uri
+        Log.v(TAG, "Path exists: $imagePath")
+        // File exists, return a file:// URI
         return Uri.fromFile(imageFile)
     }
 
     val collection = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-    val query = query(
+    query(
         collection,
         arrayOf(MediaStore.Images.Media._ID, @Suppress("DEPRECATION") MediaStore.Images.Media.DATA),
         "${@Suppress("DEPRECATION") MediaStore.Images.Media.DATA} == ?",
         arrayOf(imagePath), null
-    )
-    query?.use {
+    )?.use {
         while (it.moveToNext()) {
             val idColumn = it.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
             val id = it.getLong(idColumn)
             val existsUri = ContentUris.withAppendedId(collection, id)
-            Log.v(TAG, "query: path: $imagePath exists uri: $existsUri")
+            Log.v(TAG, "Path exists in media database: $imagePath, URI: $existsUri")
             return existsUri
         }
     }
@@ -554,193 +659,153 @@ private fun ContentResolver.queryMediaImage28(imagePath: String): Uri? {
 }
 
 /**
- * 将视频保存到系统相册
- * @param context 上下文
- * @param videoFile 视频文件路径
- * @param deleteSource 是否删除源文件，默认为true删除
- * @return 成功返回true，失败返回false
+ * Video Operations
+ */
+
+/**
+ * Saves a video to the system gallery.
+ * @param context Context for ContentResolver
+ * @param videoFile Video file path
+ * @param deleteSource Whether to delete the source file (default: true)
+ * @return true if successful, false otherwise
  */
 fun saveVideoToGallery(context: Context, videoFile: String, deleteSource: Boolean = true): Boolean {
-    Log.d(TAG, "saveVideoToAlbum() videoFile = [$videoFile]")
+    Log.d(TAG, "Saving video to gallery: $videoFile")
     return if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-        saveVideoToAlbumBeforeQ(context, videoFile, deleteSource)
+        saveVideoToGalleryLegacy(context, videoFile, deleteSource)
     } else {
-        saveVideoToAlbumAfterQ(context, videoFile, deleteSource)
+        saveVideoToGalleryModern(context, videoFile, deleteSource)
     }
 }
 
 /**
- * 保存视频到系统相册（适配Android Q及以上版本）
- * @param context 上下文
- * @param videoFile 视频文件路径
- * @param deleteSource 是否删除源文件
- * @return 成功返回true，失败返回false
+ * Saves a video to the system gallery for Android Q and above.
+ * @param context Context for ContentResolver
+ * @param videoFile Video file path
+ * @param deleteSource Whether to delete the source file
+ * @return true if successful, false otherwise
  */
 @Suppress("DEPRECATION")
-private fun saveVideoToAlbumAfterQ(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
+private fun saveVideoToGalleryModern(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
     return try {
         val contentResolver = context.contentResolver
         val tempFile = File(videoFile)
         val contentValues = getVideoContentValues(context, tempFile, System.currentTimeMillis())
         val uri = contentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
 
-        // 拷贝文件到新Uri
-        copyFileAfterQ(context, contentResolver, tempFile, uri, deleteSource)
+        // Copy file to new URI
+        copyFileModern(context, contentResolver, tempFile, uri, deleteSource)
 
-        // 更新Uri状态为可见
+        // Update URI status to visible
         contentValues.clear()
         contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
         contentResolver.update(uri!!, contentValues, null, null)
 
-        // 发送媒体扫描广播
+        // Send media scan broadcast
         context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
         true
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e(TAG, "Error saving video to gallery", e)
         false
     }
 }
 
 /**
- * 保存视频到系统相册（适配Android Q以下版本）
- * @param context 上下文
- * @param videoFile 视频文件路径
- * @param deleteSource 是否删除源文件
- * @return 成功返回true，失败返回false
+ * Saves a video to the system gallery for Android pre-Q.
+ * @param context Context for ContentResolver
+ * @param videoFile Video file path
+ * @param deleteSource Whether to delete the source file
+ * @return true if successful, false otherwise
  */
-private fun saveVideoToAlbumBeforeQ(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
+private fun saveVideoToGalleryLegacy(context: Context, videoFile: String, deleteSource: Boolean): Boolean {
     val picDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
     val tempFile = File(videoFile)
     val destFile = File(picDir, "${context.packageName}${File.separator}${tempFile.name}")
 
     return try {
-        // 拷贝文件到目标路径
+        // Copy file to destination
         FileInputStream(tempFile).use { ins ->
-            BufferedOutputStream(FileOutputStream(destFile)).use { ous ->
-                val buffer = ByteArray(1024)
-                var bytesRead: Int
-                while (ins.read(buffer).also { bytesRead = it } > 0) {
-                    ous.write(buffer, 0, bytesRead)
+            destFile.parentFile?.mkdirs()
+            FileOutputStream(destFile).use { fos ->
+                BufferedOutputStream(fos).use { ous ->
+                    ins.copyTo(ous)
                 }
             }
         }
 
-        // 删除源文件
-        if (deleteSource) {
-            if (tempFile.exists()) {
-                tempFile.delete()
-            }
+        // Delete source file if requested
+        if (deleteSource && tempFile.exists()) {
+            tempFile.delete()
         }
 
-        // 通知媒体库更新
+        // Notify media scanner
         MediaScannerConnection.scanFile(context, arrayOf(destFile.absolutePath), arrayOf("video/*")) { path, uri ->
-            Log.d(TAG, "saveVideoToAlbum: $path $uri")
+            Log.d(TAG, "Video scan complete: $path $uri")
         }
         true
     } catch (e: Exception) {
-        e.printStackTrace()
+        Log.e(TAG, "Error saving video to gallery", e)
         false
     }
 }
 
 /**
- * 在Android Q及以上版本中将视频文件拷贝到相册的Uri位置
- * @param context 上下文
- * @param localContentResolver 内容解析器
- * @param tempFile 临时文件
- * @param localUri 保存位置的Uri
- * @param deleteSource 是否删除源文件
+ * Copies a file to a URI location for Android Q and above.
+ * @param context Context for ContentResolver
+ * @param contentResolver ContentResolver
+ * @param tempFile Source file
+ * @param uri Destination URI
+ * @param deleteSource Whether to delete the source file
  */
-private fun copyFileAfterQ(
+private fun copyFileModern(
     context: Context,
-    localContentResolver: ContentResolver,
+    contentResolver: ContentResolver,
     tempFile: File,
-    localUri: Uri?,
+    uri: Uri?,
     deleteSource: Boolean
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
         context.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.Q
     ) {
-        localUri?.let {
-            // 拷贝文件到目标Uri
-            localContentResolver.openOutputStream(it)?.use { outputStream ->
+        uri?.let {
+            // Copy file to destination URI
+            contentResolver.openOutputStream(it)?.use { outputStream ->
                 Files.copy(tempFile.toPath(), outputStream)
             }
-            if (deleteSource) {
-                if (tempFile.exists()) {
-                    tempFile.delete() // 删除临时文件
-                }
+            if (deleteSource && tempFile.exists()) {
+                tempFile.delete() // Delete temporary file
             }
         }
     }
 }
 
 /**
- * 获取视频文件的ContentValues
- * @param context 上下文
- * @param paramFile 视频文件
- * @param timestamp 时间戳
- * @return ContentValues对象
+ * Gets ContentValues for a video file.
+ * @param context Context for package name
+ * @param file Video file
+ * @param timestamp Time in milliseconds
+ * @return ContentValues for media store
  */
-private fun getVideoContentValues(context: Context, paramFile: File, timestamp: Long): ContentValues {
+private fun getVideoContentValues(context: Context, file: File, timestamp: Long): ContentValues {
     return ContentValues().apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             put(MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_DCIM + File.separator + context.packageName)
         }
-        put(MediaStore.Video.Media.TITLE, paramFile.name)
-        put(MediaStore.Video.Media.DISPLAY_NAME, paramFile.name)
+        put(MediaStore.Video.Media.TITLE, file.name)
+        put(MediaStore.Video.Media.DISPLAY_NAME, file.name)
         put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
         put(MediaStore.Video.Media.DATE_TAKEN, timestamp)
         put(MediaStore.Video.Media.DATE_MODIFIED, timestamp)
         put(MediaStore.Video.Media.DATE_ADDED, timestamp)
-        put(MediaStore.Video.Media.SIZE, paramFile.length())
+        put(MediaStore.Video.Media.SIZE, file.length())
     }
 }
 
-
 /**
- * 查找Uri的绝对路径。
- * @param context 用于解析Uri的上下文。
- * @return Uri的绝对路径。
+ * File Type Checking and Utilities
  */
-fun Uri.findAbsolutePath(context: Context): String {
-    return runCatching {
-        when (scheme) {
-            "file" -> toFile().absolutePath
-            else -> {
-                var path = ""
-                context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.DATA), null, null, null)?.use {
-                    val pathIndex = it.getColumnIndex(MediaStore.Files.FileColumns.DATA)
-                    if (it.moveToFirst()) path = it.getString(pathIndex)
-                }
-                path
-            }
-        }
-    }.getOrElse { "" }
-}
 
-/**
- * 查找由Uri表示的文件大小。
- * @param context 用于解析Uri的上下文。
- * @return 文件的字节大小。
- */
-fun Uri.findFileSize(context: Context): Long {
-    return runCatching {
-        when (scheme) {
-            "file" -> toFile().length()
-            else -> {
-                var size = 0L
-                context.contentResolver.query(this, arrayOf(MediaStore.Files.FileColumns.SIZE), null, null, null)?.use {
-                    val sizeIndex = it.getColumnIndex(MediaStore.Files.FileColumns.SIZE)
-                    if (it.moveToFirst()) size = it.getLongOrNull(sizeIndex) ?: 0L
-                }
-                size
-            }
-        }
-    }.getOrElse { 0L }
-}
-
-// 扩展属性：以字节为单位的大小
+// Size constants
 val Int.BYTE: Int
     get() = this
 
@@ -754,18 +819,125 @@ val Int.GB: Int
     get() = 1024 * MB
 
 /**
- * 将字节大小转换为带有指定精度的易读内存大小格式。
- * @param precision 小数位数精度。
- * @return 格式化的大小字符串，包含适当的单位（B、KB、MB、GB）。
+ * Checks if a file is a valid image by attempting to decode it.
+ * @return true if the file is a valid image, false otherwise
  */
-fun Long.byteToFitMemorySize(precision: Int = 1): String {
-    require(precision >= 0) { "精度必须大于等于零" }
-    if (this < 0) throw IllegalArgumentException("字节大小不能小于零！")
+fun File.isValidImage(): Boolean {
+    return try {
+        if (!exists() || !canRead()) {
+            return false
+        }
+
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true // Only decode bounds, not the actual bitmap
+        }
+
+        BitmapFactory.decodeFile(absolutePath, options)
+
+        // If the width and height are > 0, it's likely a valid image
+        options.outWidth > 0 && options.outHeight > 0
+    } catch (e: Exception) {
+        Log.e(TAG, "Error checking if file is valid image: ${e.message}", e)
+        false
+    }
+}
+
+/**
+ * Converts byte size to human-readable size format with specified precision.
+ * @param precision Decimal precision (default: 2)
+ * @return Formatted size string with appropriate unit (B, KB, MB, GB)
+ */
+fun Long.byteToFitMemorySize(precision: Int = 2): String {
+    require(precision >= 0) { "Precision must be non-negative" }
+    if (this < 0) throw IllegalArgumentException("Byte size cannot be negative")
 
     return when {
-        this < 1.KB -> String.format(Locale.getDefault(), "%.${precision}fB", toDouble())
+        this < 1.KB -> String.format(Locale.getDefault(), "%dB", this)
         this < 1.MB -> String.format(Locale.getDefault(), "%.${precision}fKB", toDouble() / 1.KB)
         this < 1.GB -> String.format(Locale.getDefault(), "%.${precision}fMB", toDouble() / 1.MB)
         else -> String.format(Locale.getDefault(), "%.${precision}fGB", toDouble() / 1.GB)
+    }
+}
+
+/**
+ * Checks if a file is a valid ZIP file by attempting to open it.
+ * @return true if the file is a valid ZIP file, false otherwise
+ */
+fun File.isValidZipFile(): Boolean {
+    return try {
+        if (!exists() || !canRead()) {
+            return false
+        }
+
+        ZipFile(this).use { zipFile ->
+            zipFile.entries().hasMoreElements() // Just check if we can read the ZIP structure
+        }
+        true
+    } catch (e: ZipException) {
+        Log.e(TAG, "Not a valid ZIP file: ${e.message}", e)
+        false
+    } catch (e: Exception) {
+        Log.e(TAG, "Error checking if file is valid ZIP: ${e.message}", e)
+        false
+    }
+}
+
+/**
+ * Checks if a file is an archive file based on its extension and MIME type.
+ * @return true if the file is an archive file, false otherwise
+ */
+@OptIn(ExperimentalStdlibApi::class)
+fun File.isArchiveFile(): Boolean {
+    if (!exists() || !canRead()) {
+        return false
+    }
+
+    val extension = extension.lowercase()
+    val mimeType = MimeUtils.guessMimeTypeFromExtension(extension)
+
+    // Common archive extensions
+    val archiveExtensions = listOf("zip", "rar", "7z", "tar", "gz", "bz2", "xz", "tgz")
+
+    // Common archive MIME types
+    val archiveMimeTypes = listOf(
+        "application/zip",
+        "application/x-rar-compressed",
+        "application/x-7z-compressed",
+        "application/x-tar",
+        "application/gzip",
+        "application/x-bzip2",
+        "application/x-xz"
+    )
+
+    return extension in archiveExtensions || mimeType in archiveMimeTypes
+}
+
+/**
+ * Checks if a file can be extracted with Zip4j.
+ * This includes both regular and password-protected ZIP files.
+ *
+ * @return true if the file is a valid ZIP file that can be extracted with Zip4j
+ */
+fun File.canExtractWithZip4j(): Boolean {
+    if (!exists() || !canRead()) {
+        return false
+    }
+
+    // First check the extension to avoid unnecessary operations
+    @OptIn(ExperimentalStdlibApi::class)
+    val extension = extension.lowercase()
+    if (extension != "zip") {
+        return false
+    }
+
+    // Then try to open it as a ZIP file
+    return try {
+        val zipFile = net.lingala.zip4j.ZipFile(this)
+        // If we can get the file headers, it's a valid ZIP
+        zipFile.fileHeaders
+        true
+    } catch (e: Exception) {
+        Log.e(TAG, "Error checking if file can be extracted with Zip4j: ${e.message}", e)
+        false
     }
 }
