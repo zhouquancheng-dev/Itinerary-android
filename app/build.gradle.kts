@@ -37,8 +37,6 @@ android {
             useSupportLibrary = true
         }
 
-        resourceConfigurations.addAll(listOf("en", "zh-rCN"))
-
         ndk {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
@@ -148,6 +146,10 @@ android {
 
     kapt {
         correctErrorTypes = true
+    }
+
+    androidResources {
+        localeFilters.addAll(listOf("en", "zh-rCN"))
     }
 }
 
