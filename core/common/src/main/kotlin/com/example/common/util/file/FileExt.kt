@@ -431,14 +431,31 @@ private fun Context.registerTempFileDeletion(tempFile: File) {
  * @param context Context for ContentResolver
  * @param fileName Filename (with extension)
  * @param relativePath Path relative to Pictures
+ * @param deleteSource Whether to delete the source file after copying (default: true)
  * @return URI of the saved image
  */
-fun File.copyToAlbum(context: Context, fileName: String, relativePath: String?): Uri? {
+fun File.copyToAlbum(
+    context: Context,
+    fileName: String,
+    relativePath: String?,
+    deleteSource: Boolean = true
+): Uri? {
     if (!this.canRead() || !this.exists()) {
         Log.w(TAG, "File check failed: cannot read or doesn't exist: $this")
         return null
     }
-    return inputStream().use { it.saveToAlbum(context, fileName, relativePath) }
+    val uri = inputStream().use { it.saveToAlbum(context, fileName, relativePath) }
+    
+    // Delete source file if requested and the copy was successful
+    if (deleteSource && uri != null && this.exists()) {
+        if (this.delete()) {
+            Log.d(TAG, "Source file deleted after copying to album: $this")
+        } else {
+            Log.w(TAG, "Failed to delete source file after copying to album: $this")
+        }
+    }
+    
+    return uri
 }
 
 /**
