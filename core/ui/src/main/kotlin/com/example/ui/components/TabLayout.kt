@@ -14,10 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.SecondaryScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
@@ -38,7 +37,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.theme.JetItineraryTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomScrollableTabRow(
     tabs: List<String>,
@@ -112,7 +110,8 @@ fun CustomScrollableTabColumn(
         tabs.forEachIndexed { index, title ->
             Surface(
                 onClick = { onTabSelected(index) },
-                modifier = Modifier.padding(10.dp).semantics { contentDescription = tabs[selectedTabIndex] },
+                modifier = Modifier.padding(10.dp)
+                    .semantics { contentDescription = tabs[selectedTabIndex] },
                 shape = RoundedCornerShape(50.dp),
                 color = Color.Transparent
             ) {
@@ -161,58 +160,34 @@ fun CustomTabLayout(
     containerColor: Color = Color.White
 ) {
     val tabHeight = 48.dp
-    val tabIndicatorHeight = 5.dp
 
-    ScrollableTabRow(
-        selectedTabIndex = selectedTabIndex,
+    SecondaryScrollableTabRow(selectedTabIndex,
         modifier = modifier.height(tabHeight),
         containerColor = containerColor,
+        contentColor = TabRowDefaults.secondaryContentColor,
         edgePadding = 8.dp,
-        indicator = { tabPositions ->
-            if (tabPositions.isNotEmpty()) {
-                val tabPosition = tabPositions[selectedTabIndex]
-                // 指示器的长度
-                val indicatorWidth = 30.dp
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(tabIndicatorHeight)
-                        .padding(top = tabHeight - tabIndicatorHeight)
-                ) {
-                    // 绘制圆角短横条
-                    drawRoundRect(
-                        color = Color(0xFFD5FD88),
-                        topLeft = Offset(
-                            x = tabPosition.left.toPx() + (tabPosition.width.toPx() - indicatorWidth.toPx()) / 2,
-                            y = 0f
-                        ),
-                        size = Size(indicatorWidth.toPx(), tabIndicatorHeight.toPx()),
-                        cornerRadius = CornerRadius(
-                            x = tabIndicatorHeight.toPx() / 2,
-                            y = tabIndicatorHeight.toPx() / 2
+        indicator = {
+            // 自定义 indicator 待实现
+        },
+        divider = @Composable { HorizontalDivider() },
+        tabs = {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = index == selectedTabIndex,
+                    onClick = { onTabSelected(index) },
+                    selectedContentColor = Color.Transparent,
+                    unselectedContentColor = Color.Transparent,
+                    text = {
+                        Text(
+                            text = title,
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontSize = 16.sp,
+                            color = if (index == selectedTabIndex) textColor else Color.Gray
                         )
-                    )
-                }
+                    }
+                )
             }
-        }
-    ) {
-        tabs.forEachIndexed { index, title ->
-            Tab(
-                selected = index == selectedTabIndex,
-                onClick = { onTabSelected(index) },
-                selectedContentColor = Color.Transparent,
-                unselectedContentColor = Color.Transparent,
-                text = {
-                    Text(
-                        text = title,
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontSize = 16.sp,
-                        color = if (index == selectedTabIndex) textColor else Color.Gray
-                    )
-                }
-            )
-        }
-    }
+        })
 }
 
 @PreviewLightDark
