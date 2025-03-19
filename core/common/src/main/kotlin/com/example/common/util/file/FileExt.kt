@@ -822,31 +822,6 @@ private fun getVideoContentValues(context: Context, file: File, timestamp: Long)
  * File Type Checking and Utilities
  */
 
-// Size constants - defined based on whether binary or decimal is preferred
-/**
- * Get size in bytes based on specified prefix type
- * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
- */
-fun Int.toBytes(binary: Boolean = false): Int = this
-
-/**
- * Get size in KB/KiB based on specified prefix type
- * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
- */
-fun Int.toKB(binary: Boolean = false): Int = this * if (binary) 1024 else 1000
-
-/**
- * Get size in MB/MiB based on specified prefix type
- * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
- */
-fun Int.toMB(binary: Boolean = false): Int = this.toKB(binary) * if (binary) 1024 else 1000
-
-/**
- * Get size in GB/GiB based on specified prefix type
- * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
- */
-fun Int.toGB(binary: Boolean = false): Int = this.toMB(binary) * if (binary) 1024 else 1000
-
 /**
  * Converts byte size to human-readable size format with specified precision.
  * @param precision Decimal precision (default: 2)
@@ -858,19 +833,41 @@ fun Long.byteToFitMemorySize(precision: Int = 2, useBinaryPrefix: Boolean = fals
     require(precision >= 0) { "Precision must be non-negative" }
     if (this < 0) throw IllegalArgumentException("Byte size cannot be negative")
 
-    val factor = if (useBinaryPrefix) 1024 else 1000
-    val units = if (useBinaryPrefix) arrayOf("B", "KiB", "MiB", "GiB", "TiB")
-    else arrayOf("B", "KB", "MB", "GB", "TB")
+    // Use the existing extension properties based on useBinaryPrefix
+    val kb = if (useBinaryPrefix) 1.toKB(true) else 1.KB
+    val mb = if (useBinaryPrefix) 1.toMB(true) else 1.MB
+    val gb = if (useBinaryPrefix) 1.toGB(true) else 1.GB
 
-    if (this < factor) {
-        return String.format(Locale.getDefault(), "%dB", this)
+    // Choose the appropriate unit symbols
+    val kbUnit = if (useBinaryPrefix) "KiB" else "KB"
+    val mbUnit = if (useBinaryPrefix) "MiB" else "MB"
+    val gbUnit = if (useBinaryPrefix) "GiB" else "GB"
+
+    return when {
+        this < kb -> String.format(Locale.getDefault(), "%dB", this)
+        this < mb -> String.format(Locale.getDefault(), "%.${precision}f%s", toDouble() / kb, kbUnit)
+        this < gb -> String.format(Locale.getDefault(), "%.${precision}f%s", toDouble() / mb, mbUnit)
+        else -> String.format(Locale.getDefault(), "%.${precision}f%s", toDouble() / gb, gbUnit)
     }
-
-    val exp = (Math.log(this.toDouble()) / Math.log(factor.toDouble())).toInt()
-    val unitValue = this.toDouble() / Math.pow(factor.toDouble(), exp.toDouble())
-
-    return String.format(Locale.getDefault(), "%.${precision}f%s", unitValue, units[exp])
 }
+
+// Size constants with binary option
+val Int.BYTE: Int
+    get() = this
+
+val Int.KB: Int
+    get() = 1000 * BYTE
+
+val Int.MB: Int
+    get() = 1000 * KB
+
+val Int.GB: Int
+    get() = 1000 * MB
+
+// Additional binary-based extension functions
+fun Int.toKB(binary: Boolean): Int = this * if (binary) 1024 else 1000
+fun Int.toMB(binary: Boolean): Int = this.toKB(binary) * if (binary) 1024 else 1000
+fun Int.toGB(binary: Boolean): Int = this.toMB(binary) * if (binary) 1024 else 1000
 
 /**
  * Checks if a file is a valid image by attempting to decode it.
