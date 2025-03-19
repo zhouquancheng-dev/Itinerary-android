@@ -822,18 +822,55 @@ private fun getVideoContentValues(context: Context, file: File, timestamp: Long)
  * File Type Checking and Utilities
  */
 
-// Size constants
-val Int.BYTE: Int
-    get() = this
+// Size constants - defined based on whether binary or decimal is preferred
+/**
+ * Get size in bytes based on specified prefix type
+ * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
+ */
+fun Int.toBytes(binary: Boolean = false): Int = this
 
-val Int.KB: Int
-    get() = 1024 * BYTE
+/**
+ * Get size in KB/KiB based on specified prefix type
+ * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
+ */
+fun Int.toKB(binary: Boolean = false): Int = this * if (binary) 1024 else 1000
 
-val Int.MB: Int
-    get() = 1024 * KB
+/**
+ * Get size in MB/MiB based on specified prefix type
+ * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
+ */
+fun Int.toMB(binary: Boolean = false): Int = this.toKB(binary) * if (binary) 1024 else 1000
 
-val Int.GB: Int
-    get() = 1024 * MB
+/**
+ * Get size in GB/GiB based on specified prefix type
+ * @param binary Whether to use binary prefix (1024) instead of decimal (1000)
+ */
+fun Int.toGB(binary: Boolean = false): Int = this.toMB(binary) * if (binary) 1024 else 1000
+
+/**
+ * Converts byte size to human-readable size format with specified precision.
+ * @param precision Decimal precision (default: 2)
+ * @param useBinaryPrefix Whether to use binary prefix (1024) and units (KiB, MiB, GiB) instead of
+ *                        decimal prefix (1000) and units (KB, MB, GB)
+ * @return Formatted size string with appropriate unit
+ */
+fun Long.byteToFitMemorySize(precision: Int = 2, useBinaryPrefix: Boolean = false): String {
+    require(precision >= 0) { "Precision must be non-negative" }
+    if (this < 0) throw IllegalArgumentException("Byte size cannot be negative")
+
+    val factor = if (useBinaryPrefix) 1024 else 1000
+    val units = if (useBinaryPrefix) arrayOf("B", "KiB", "MiB", "GiB", "TiB")
+    else arrayOf("B", "KB", "MB", "GB", "TB")
+
+    if (this < factor) {
+        return String.format(Locale.getDefault(), "%dB", this)
+    }
+
+    val exp = (Math.log(this.toDouble()) / Math.log(factor.toDouble())).toInt()
+    val unitValue = this.toDouble() / Math.pow(factor.toDouble(), exp.toDouble())
+
+    return String.format(Locale.getDefault(), "%.${precision}f%s", unitValue, units[exp])
+}
 
 /**
  * Checks if a file is a valid image by attempting to decode it.
@@ -856,23 +893,6 @@ fun File.isValidImage(): Boolean {
     } catch (e: Exception) {
         Log.e(TAG, "Error checking if file is valid image: ${e.message}", e)
         false
-    }
-}
-
-/**
- * Converts byte size to human-readable size format with specified precision.
- * @param precision Decimal precision (default: 2)
- * @return Formatted size string with appropriate unit (B, KB, MB, GB)
- */
-fun Long.byteToFitMemorySize(precision: Int = 2): String {
-    require(precision >= 0) { "Precision must be non-negative" }
-    if (this < 0) throw IllegalArgumentException("Byte size cannot be negative")
-
-    return when {
-        this < 1.KB -> String.format(Locale.getDefault(), "%dB", this)
-        this < 1.MB -> String.format(Locale.getDefault(), "%.${precision}fKB", toDouble() / 1.KB)
-        this < 1.GB -> String.format(Locale.getDefault(), "%.${precision}fMB", toDouble() / 1.MB)
-        else -> String.format(Locale.getDefault(), "%.${precision}fGB", toDouble() / 1.GB)
     }
 }
 
