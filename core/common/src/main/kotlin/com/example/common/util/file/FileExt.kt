@@ -5,6 +5,7 @@ import android.app.Application
 import android.content.*
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.ImageDecoder
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
@@ -19,7 +20,9 @@ import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toFile
 import com.example.common.util.mime.MimeUtils
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
 import java.io.*
 import java.nio.file.Files
 import java.util.Calendar
@@ -181,6 +184,35 @@ fun Uri.findFileSize(context: Context): Long {
             }
         }
     }.getOrElse { 0L }
+}
+
+/**
+ * Loads a Bitmap from the given Uri, compatible with all API levels.
+ * Returns a mutable Bitmap if possible.
+ *
+ * @receiver Uri The Uri of the image to load.
+ * @param context Context used to access ContentResolver.
+ * @return Bitmap? The loaded Bitmap if successful, otherwise null.
+ */
+suspend fun Uri.loadBitmap(context: Context): Bitmap? {
+    return withContext(Dispatchers.Default) {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val source = ImageDecoder.createSource(context.contentResolver, this@loadBitmap)
+                return@withContext ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    decoder.isMutableRequired = true
+                }
+            } else {
+                context.contentResolver.openInputStream(this@loadBitmap)?.use {
+                    return@withContext BitmapFactory.decodeStream(it)
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Error loading bitmap", e)
+            null
+        }
+    }
 }
 
 /**
@@ -834,9 +866,9 @@ fun Long.byteToFitMemorySize(precision: Int = 2, useBinaryPrefix: Boolean = fals
     if (this < 0) throw IllegalArgumentException("Byte size cannot be negative")
 
     // Use the existing extension properties based on useBinaryPrefix
-    val kb = if (useBinaryPrefix) 1.toKB(true) else 1.KB
-    val mb = if (useBinaryPrefix) 1.toMB(true) else 1.MB
-    val gb = if (useBinaryPrefix) 1.toGB(true) else 1.GB
+    val kb = 1.toKB(useBinaryPrefix)
+    val mb = 1.toMB(useBinaryPrefix)
+    val gb = 1.toGB(useBinaryPrefix)
 
     // Choose the appropriate unit symbols
     val kbUnit = if (useBinaryPrefix) "KiB" else "KB"
